@@ -7,6 +7,9 @@ from datetime import datetime
 from flask import Flask, request, jsonify, render_template
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+import pymongo
+import certifi
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,8 +19,11 @@ phone_id = os.environ.get("PHONE_ID")
 mongo_uri = os.environ.get("MONGO_URI")
 
 # MongoDB setup
-client = MongoClient(mongo_uri)
-db = client.get_database("SpeedGo")
+client = pymongo.MongoClient(
+    "mongodb+srv://tarirofmunzwa:tariel03@cluster0.at4g3qd.mongodb.net/SpeedGo?retryWrites=true&w=majority",
+    tlsCAFile=certifi.where()
+)
+db = client["SpeedGo"]
 user_states_collection = db.user_states
 quotes_collection = db.quotes
 bookings_collection = db.bookings
