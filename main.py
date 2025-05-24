@@ -21,6 +21,7 @@ mongo_uri = os.environ.get("MONGO_URI")
 # MongoDB setup
 client = pymongo.MongoClient(
     "mongodb+srv://tarirofmunzwa:tariel03@cluster0.at4g3qd.mongodb.net/SpeedGo?retryWrites=true&w=majority",
+    tls=True,
     tlsCAFile=certifi.where()
 )
 db = client["SpeedGo"]
