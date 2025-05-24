@@ -479,6 +479,8 @@ def webhook():
 def message_handler(prompt, sender, phone_id):
     user_state = get_user_state(sender)
     user_state['sender'] = sender
+    # Send the welcome message and set the state to select_language
+    handle_welcome(prompt, user_data, phone_id)
     updated_state = get_action(user_state['step'], prompt, user_state, phone_id)
     update_user_state(sender, updated_state)
 
