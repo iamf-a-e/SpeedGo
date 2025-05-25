@@ -17,6 +17,8 @@ logging.basicConfig(level=logging.INFO)
 wa_token = os.environ.get("WA_TOKEN")  # WhatsApp API Key
 phone_id = os.environ.get("PHONE_ID") 
 mongo_uri = os.environ.get("MONGO_URI")
+gen_api = os.environ.get("GEN_API")    # Gemini API Key
+owner_phone = os.environ.get("OWNER_PHONE")
 
 # MongoDB setup
 client = pymongo.MongoClient(
