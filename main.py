@@ -21,12 +21,8 @@ gen_api = os.environ.get("GEN_API")    # Gemini API Key
 owner_phone = os.environ.get("OWNER_PHONE")
 
 # MongoDB setup
-client = pymongo.MongoClient(
-    "mongodb+srv://tarirofmunzwa:tariel03@cluster0.at4g3qd.mongodb.net/SpeedGo?retryWrites=true&w=majority",
-    tls=False,
-    tlsCAFile=certifi.where()
-)
-db = client["SpeedGo"]
+client = MongoClient(mongo_uri)
+db = client.get_database("SpeedGo")
 user_states_collection = db.user_states
 quotes_collection = db.quotes
 bookings_collection = db.bookings
