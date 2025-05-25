@@ -5,24 +5,17 @@ import requests
 import random
 import string
 from datetime import datetime
-from flask import Flask, request, jsonify, render_template
 from upstash_redis import Redis
 
 logging.basicConfig(level=logging.INFO)
 
-# Environment variables
 wa_token = os.environ.get("WA_TOKEN")
 phone_id = os.environ.get("PHONE_ID")
-gen_api = os.environ.get("GEN_API")
-owner_phone = os.environ.get("OWNER_PHONE")
-
-# Upstash Redis setup
 redis = Redis(
     url=os.environ["UPSTASH_REDIS_REST_URL"],
     token=os.environ["UPSTASH_REDIS_REST_TOKEN"]
 )
 
-# User serialization helpers
 class User:
     def __init__(self, phone_number):
         self.phone_number = phone_number
@@ -49,7 +42,6 @@ class User:
         user.offer_data = data.get("offer_data", {})
         return user
 
-# State helpers
 def get_user_state(phone_number):
     state = redis.get(phone_number)
     if state is None:
@@ -82,7 +74,6 @@ def send(answer, sender, phone_id):
     except requests.exceptions.RequestException as e:
         logging.error(f"Failed to send message: {e}")
 
-# State handlers (Ndebele flow)
 def handle_welcome(prompt, user_data, phone_id):
     send(
         "Sawubona! Wamukelekile kuSpeedGo Services yokucubungula amanzi eZimbabwe. "
@@ -430,7 +421,6 @@ def handle_booking_confirmation(prompt, user_data, phone_id):
         send("Xhumana nethimba lethu ukuze uhlele kabusha usuku.", user_data['sender'], phone_id)
         return {'step': 'booking_confirmation', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-# Action mapping
 action_mapping = {
     "welcome": handle_welcome,
     "select_language": handle_select_language,
@@ -452,50 +442,3 @@ action_mapping = {
 def get_action(current_state, prompt, user_data, phone_id):
     handler = action_mapping.get(current_state, handle_welcome)
     return handler(prompt, user_data, phone_id)
-
-# Flask app
-app = Flask(__name__)
-
-@app.route("/", methods=["GET", "POST"])
-def index():
-    return render_template("connected.html")
-
-@app.route("/webhook", methods=["GET", "POST"])
-def webhook():
-    if request.method == "GET":
-        mode = request.args.get("hub.mode")
-        token = request.args.get("hub.verify_token")
-        challenge = request.args.get("hub.challenge")
-        if mode == "subscribe" and token == "BOT":
-            return challenge, 200
-        return "Failed", 403
-
-    elif request.method == "POST":
-        data = request.get_json()
-        logging.info(f"Incoming webhook data: {data}")
-        try:
-            entry = data["entry"][0]
-            changes = entry["changes"][0]
-            value = changes["value"]
-            phone_id = value["metadata"]["phone_number_id"]
-            messages = value.get("messages", [])
-            if messages:
-                message = messages[0]
-                sender = message["from"]
-                if "text" in message:
-                    prompt = message["text"]["body"].strip()
-                    message_handler(prompt, sender, phone_id)
-                else:
-                    send("Sicela uthumele umlayezo wombhalo (text)", sender, phone_id)
-        except Exception as e:
-            logging.error(f"Error processing webhook: {e}", exc_info=True)
-        return jsonify({"status": "ok"}), 200
-
-def message_handler(prompt, sender, phone_id):
-    user_state = get_user_state(sender)
-    user_state['sender'] = sender
-    next_state = get_action(user_state['step'], prompt, user_state, phone_id)
-    update_user_state(sender, next_state)
-
-if __name__ == "__main__":
-    app.run(debug=True, port=8000)
