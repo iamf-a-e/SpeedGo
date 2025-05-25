@@ -4,7 +4,7 @@ import logging
 from flask import Flask, request, jsonify, render_template
 from upstash_redis import Redis
 
-import main as english
+import english
 import shona
 import ndebele
 
