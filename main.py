@@ -419,8 +419,11 @@ def send(answer, sender, phone_id):
     try:
         response = requests.post(url, headers=headers, json=data)
         response.raise_for_status()
+        logging.info(f"Sent message to {sender}: {answer}")
+        logging.info(f"WhatsApp API response: {response.json()}")
     except requests.exceptions.RequestException as e:
-        logging.error(f"Failed to send message: {e}")
+        error_text = getattr(e.response, 'text', None)
+        logging.error(f"Failed to send message to {sender}: {e} | Response: {error_text}")
 
 # Action mapping
 action_mapping = {
@@ -488,10 +491,9 @@ def webhook():
 def message_handler(prompt, sender, phone_id):
     user_state = get_user_state(sender)
     user_state['sender'] = sender
-    # Send the welcome message and set the state to select_language
-    handle_welcome(prompt, user_data, phone_id)
     updated_state = get_action(user_state['step'], prompt, user_state, phone_id)
     update_user_state(sender, updated_state)
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
