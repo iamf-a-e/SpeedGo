@@ -9,6 +9,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 import pymongo
 import certifi
+from upstash_redis import Redis
 
 
 logging.basicConfig(level=logging.INFO)
@@ -16,12 +17,15 @@ logging.basicConfig(level=logging.INFO)
 # Environment variables
 wa_token = os.environ.get("WA_TOKEN")  # WhatsApp API Key
 phone_id = os.environ.get("PHONE_ID") 
-mongo_uri = os.environ.get("MONGO_URI")
 gen_api = os.environ.get("GEN_API")    # Gemini API Key
 owner_phone = os.environ.get("OWNER_PHONE")
+redis = Redis(url="https://organic-cub-37552.upstash.io", token="AZKwAAIjcDEyOGMzNzE4NmVjYmE0YzA5OGRlNTFlNWM0YWExZjE3ZXAxMA")
 
-# MongoDB setup
-client = MongoClient(mongo_uri)
+redis.set("foo", "bar")
+value = redis.get("foo")
+
+# RedisDB setup
+client = RedisClient(redis_url)
 db = client.get_database("SpeedGo")
 user_states_collection = db.user_states
 quotes_collection = db.quotes
