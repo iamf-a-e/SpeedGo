@@ -489,6 +489,7 @@ def webhook():
         return jsonify({"status": "ok"}), 200
 
 def message_handler(prompt, sender, phone_id):
+    logging.info(f"message_handler called with prompt={prompt}, sender={sender}, phone_id={phone_id}")
     user_state = get_user_state(sender)
     user_state['sender'] = sender
     updated_state = get_action(user_state['step'], prompt, user_state, phone_id)
