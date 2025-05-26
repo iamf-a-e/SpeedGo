@@ -32,7 +32,7 @@ def get_user_language(sender):
 def get_user_state(sender):
     state = redis.get(sender)
     if state is None:
-        return {"step": "welcome", "sender": sender}
+        return None
     if isinstance(state, str):
         return json.loads(state)
     return state
@@ -62,32 +62,42 @@ def webhook():
                 if "text" in message:
                     prompt = message["text"]["body"].strip()
                     user_state = get_user_state(sender)
-                    user_state['sender'] = sender
-
-                    # Determine language phase or delegate to handler
-                    lang = None
-                    if user_state.get('user') and 'language' in user_state['user']:
-                        lang = user_state['user']['language']
-
-                    # Initial phase or language selection
-                    if user_state.get('step') in ['welcome', 'select_language'] or not lang:
-                        # Always use English logic for language selection
-                        next_state = english.get_action(user_state['step'], prompt, user_state, phone_id)
-                        # Update user state after language selection
-                        if next_state.get('user') and 'language' in next_state['user']:
-                            lang = next_state['user']['language']
-                        redis.set(sender, json.dumps(next_state))
+                    # If user state does not exist, always send language selection logic
+                    if user_state is None:
+                        # Send language selection prompt and save step as 'select_language'
+                        english.send(
+                            "Hi there! Welcome to SpeedGo Services for borehole drilling in Zimbabwe. "
+                            "We provide reliable borehole drilling and water solutions across Zimbabwe.\n\n"
+                            "Choose your preferred language:\n"
+                            "1. English\n"
+                            "2. Shona\n"
+                            "3. Ndebele",
+                            sender, phone_id
+                        )
+                        redis.set(sender, json.dumps({"step": "select_language", "sender": sender}))
                     else:
-                        # Delegate to language-specific handler
-                        if lang.lower() == "shona":
-                            next_state = shona.get_action(user_state['step'], prompt, user_state, phone_id)
-                            shona.update_user_state(sender, next_state)
-                        elif lang.lower() == "ndebele":
-                            next_state = ndebele.get_action(user_state['step'], prompt, user_state, phone_id)
-                            ndebele.update_user_state(sender, next_state)
-                        else:
+                        user_state['sender'] = sender
+                        lang = None
+                        if user_state.get('user') and 'language' in user_state['user']:
+                            lang = user_state['user']['language']
+
+                        # If in language selection phase or language not set, always use English logic for language selection
+                        if user_state.get('step') == 'select_language' or not lang:
                             next_state = english.get_action(user_state['step'], prompt, user_state, phone_id)
-                            english.update_user_state(sender, next_state)
+                            if next_state.get('user') and 'language' in next_state['user']:
+                                lang = next_state['user']['language']
+                            redis.set(sender, json.dumps(next_state))
+                        else:
+                            # Delegate to language-specific handler
+                            if lang.lower() == "shona":
+                                next_state = shona.get_action(user_state['step'], prompt, user_state, phone_id)
+                                shona.update_user_state(sender, next_state)
+                            elif lang.lower() == "ndebele":
+                                next_state = ndebele.get_action(user_state['step'], prompt, user_state, phone_id)
+                                ndebele.update_user_state(sender, next_state)
+                            else:
+                                next_state = english.get_action(user_state['step'], prompt, user_state, phone_id)
+                                english.update_user_state(sender, next_state)
                 else:
                     english.send("Please send a text message", sender, phone_id)
         except Exception as e:
