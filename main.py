@@ -1,10 +1,11 @@
 import os
 import json
 import logging
+from datetime import datetime, timedelta
 from flask import Flask, request, jsonify, render_template
 from upstash_redis import Redis
 
-import english
+import main as english
 import shona
 import ndebele
 
@@ -14,6 +15,8 @@ redis = Redis(
     url=os.environ["UPSTASH_REDIS_REST_URL"],
     token=os.environ["UPSTASH_REDIS_REST_TOKEN"]
 )
+
+SESSION_TIMEOUT_SECONDS = 60
 
 app = Flask(__name__)
 
@@ -34,8 +37,20 @@ def get_user_state(sender):
     if state is None:
         return None
     if isinstance(state, str):
-        return json.loads(state)
+        state = json.loads(state)
+    # Check for session expiration
+    ts = state.get("last_active")
+    if ts:
+        last_active = datetime.fromisoformat(ts)
+        if datetime.utcnow() - last_active > timedelta(seconds=SESSION_TIMEOUT_SECONDS):
+            # Expired: delete session and return None
+            redis.delete(sender)
+            return None
     return state
+
+def set_user_state(sender, state):
+    state["last_active"] = datetime.utcnow().isoformat()
+    redis.set(sender, json.dumps(state))
 
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
@@ -74,7 +89,7 @@ def webhook():
                             "3. Ndebele",
                             sender, phone_id
                         )
-                        redis.set(sender, json.dumps({"step": "select_language", "sender": sender}))
+                        set_user_state(sender, {"step": "select_language", "sender": sender})
                     else:
                         user_state['sender'] = sender
                         lang = None
@@ -86,7 +101,7 @@ def webhook():
                             next_state = english.get_action(user_state['step'], prompt, user_state, phone_id)
                             if next_state.get('user') and 'language' in next_state['user']:
                                 lang = next_state['user']['language']
-                            redis.set(sender, json.dumps(next_state))
+                            set_user_state(sender, next_state)
                         else:
                             # Delegate to language-specific handler
                             if lang.lower() == "shona":
@@ -97,7 +112,7 @@ def webhook():
                                 ndebele.update_user_state(sender, next_state)
                             else:
                                 next_state = english.get_action(user_state['step'], prompt, user_state, phone_id)
-                                english.update_user_state(sender, next_state)
+                                set_user_state(sender, next_state)
                 else:
                     english.send("Please send a text message", sender, phone_id)
         except Exception as e:
