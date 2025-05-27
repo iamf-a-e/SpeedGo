@@ -77,7 +77,7 @@ def send(answer, sender, phone_id):
 
 def handle_select_language(prompt, user_data, phone_id):
     user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
-    if prompt == "1":
+    if prompt == "3":
         user.language = "Ndebele"
         update_user_state(user_data['sender'], {
             'step': 'main_menu',
