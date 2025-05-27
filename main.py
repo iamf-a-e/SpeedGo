@@ -52,6 +52,15 @@ def set_user_state(sender, state):
     state["last_active"] = datetime.utcnow().isoformat()
     redis.set(sender, json.dumps(state))
 
+
+def get_action(current_state, prompt, user_data, phone_id):
+    # Ensure 'user' key exists
+    if 'user' not in user_data:
+        user_data['user'] = User(user_data['sender']).to_dict()
+    handler = action_mapping.get(current_state, handle_welcome)
+    return handler(prompt, user_data, phone_id)
+
+
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     if request.method == "GET":
