@@ -21,7 +21,6 @@ SESSION_TIMEOUT_SECONDS = 60
 app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
-data = request.json
 def index():
     return render_template("connected.html")
 
