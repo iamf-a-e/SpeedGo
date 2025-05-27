@@ -112,6 +112,17 @@ def webhook():
                                 lang = next_state['user']['language']
                             set_user_state(sender, next_state)
                         else:
+                            # Get or initialize user state
+                            user_state = get_user_state(sender) or {'sender': sender, 'step': 'handle_welcome'}
+                            
+                            # Ensure 'user' key exists
+                            if 'user' not in user_state:
+                                user_state['user'] = User(sender).to_dict()
+                            
+                            # Call the handler
+                            step = user_state.get("step", "handle_welcome")
+                            response_state = get_action(step, prompt, user_state, phone_id)
+
                             # Delegate to language-specific handler
                             if lang.lower() == "shona":
                                 next_state = shona.get_action(user_state['step'], prompt, user_state, phone_id)
