@@ -21,6 +21,7 @@ SESSION_TIMEOUT_SECONDS = 60
 app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
+data = request.json
 def index():
     return render_template("connected.html")
 
@@ -115,25 +116,51 @@ def webhook():
                             # Get or initialize user state
                             user_state = get_user_state(sender) or {'sender': sender, 'step': 'welcome'}
                             
-                        # Ensure 'user' key exists
-                        if 'user' not in user_state:
-                            user_state['user'] = User(sender).to_dict()
-                        
-                        # Extract language from user state
-                        user_lang = user_state['user'].get("language", "English").lower()
-                        
-                        # Get current step and delegate to appropriate language module
-                        step = user_state.get("step", "welcome")
-                        
-                        if user_lang == "shona":
-                            next_state = shona.get_action(step, prompt, user_state, phone_id)
-                            shona.update_user_state(sender, next_state)
-                        elif user_lang == "ndebele":
-                            next_state = ndebele.get_action(step, prompt, user_state, phone_id)
-                            ndebele.update_user_state(sender, next_state)
-                        else:
-                            next_state = english.get_action(step, prompt, user_state, phone_id)
-                            english.update_user_state(sender, next_state)
+    # Extract sender phone and message text
+    sender = data.get('sender')  # adjust key name as per your webhook JSON
+    prompt = data.get('message') # the user message text
+
+    if not sender or not prompt:
+        return jsonify({"error": "Missing sender or message"}), 400
+
+    # Load user state from Redis
+    user_state = get_user_state(sender)
+    if not isinstance(user_state, dict):
+        user_state = {}
+
+    # Ensure 'user' key exists
+    if 'user' not in user_state:
+        # Initialize user data - customize as you like
+        user_state['user'] = {
+            "id": sender,
+            "language": "english",  # default language
+            # add other user data here
+        }
+
+    # Get user language (default to English)
+    user_lang = user_state.get('user', {}).get('language', 'english').lower()
+
+            # Get current step or default
+            step = user_state.get('step', 'welcome')
+        
+            # Call appropriate language module based on user language
+            if user_lang == "shona":
+                next_state = shona.get_action(step, prompt, user_state, sender)
+                shona.update_user_state(sender, next_state)
+            elif user_lang == "ndebele":
+                next_state = ndebele.get_action(step, prompt, user_state, sender)
+                ndebele.update_user_state(sender, next_state)
+            else:
+                next_state = english.get_action(step, prompt, user_state, sender)
+                english.update_user_state(sender, next_state)
+        
+            # Save updated state back to Redis
+            set_user_state(sender, next_state)
+        
+            # Return a response (adjust based on your language module's output)
+            response_text = next_state.get('response', 'Sorry, something went wrong.')
+        
+            return jsonify({"response": response_text})
                     
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
