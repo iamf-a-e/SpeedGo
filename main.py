@@ -4,6 +4,9 @@ import logging
 from datetime import datetime, timedelta
 from flask import Flask, request, jsonify, render_template
 from upstash_redis import Redis
+import english
+import shona
+import ndebele
 
 
 logging.basicConfig(level=logging.INFO)
