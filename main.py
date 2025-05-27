@@ -135,8 +135,8 @@ def webhook():
                             next_state = english.get_action(step, prompt, user_state, phone_id)
                             english.update_user_state(sender, next_state)
                             
-                        else:
-                            english.send("Please send a text message", sender, phone_id)
+              else:
+                 english.send("Please send a text message", sender, phone_id)
                     
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
