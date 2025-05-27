@@ -57,7 +57,7 @@ def get_action(current_state, prompt, user_data, phone_id):
     # Ensure 'user' key exists
     if 'user' not in user_data:
         user_data['user'] = User(user_data['sender']).to_dict()
-    handler = action_mapping.get(current_state, handle_welcome)
+    handler = action_mapping.get(current_state, welcome)
     return handler(prompt, user_data, phone_id)
 
 
@@ -113,14 +113,14 @@ def webhook():
                             set_user_state(sender, next_state)
                         else:
                             # Get or initialize user state
-                            user_state = get_user_state(sender) or {'sender': sender, 'step': 'handle_welcome'}
+                            user_state = get_user_state(sender) or {'sender': sender, 'step': 'welcome'}
                             
                             # Ensure 'user' key exists
                             if 'user' not in user_state:
                                 user_state['user'] = User(sender).to_dict()
                             
                             # Call the handler
-                            step = user_state.get("step", "handle_welcome")
+                            step = user_state.get("step", "welcome")
                             response_state = get_action(step, prompt, user_state, phone_id)
 
                             # Delegate to language-specific handler
