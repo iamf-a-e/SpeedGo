@@ -74,19 +74,10 @@ def send(answer, sender, phone_id):
     except requests.exceptions.RequestException as e:
         logging.error(f"Failed to send message: {e}")
 
-def handle_welcome(prompt, user_data, phone_id):
-    send(
-        "Mhoro! Mauya kuSpeedGo Services yekuchera mabhodhoro emvura muZimbabwe. "
-        "Tinoita basa rekuvimbika rekuchera mabhodhoro nemhinduro dzemvura munyika yose yeZimbabwe.\n\n"
-        "Pindura ne1 kuti urambe uchishandisa chiShona.",
-        user_data['sender'], phone_id
-    )
-    update_user_state(user_data['sender'], {'step': 'select_language'})
-    return {'step': 'select_language', 'sender': user_data['sender']}
 
 def handle_select_language(prompt, user_data, phone_id):
     user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
-    if prompt == "1":
+    if prompt == "2":
         user.language = "Shona"
         update_user_state(user_data['sender'], {
             'step': 'main_menu',
