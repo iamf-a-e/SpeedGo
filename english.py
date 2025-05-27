@@ -418,8 +418,6 @@ def handle_booking_confirmation(prompt, user_data, phone_id):
         return {'step': 'booking_confirmation', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 action_mapping = {
-    "welcome": handle_welcome,
-    "select_language": handle_select_language,
     "main_menu": handle_main_menu,
     "select_service": handle_select_service,
     "collect_quote_details": handle_collect_quote_details,
@@ -436,5 +434,5 @@ action_mapping = {
 }
 
 def get_action(current_state, prompt, user_data, phone_id):
-    handler = action_mapping.get(current_state, handle_welcome)
+    handler = action_mapping.get(current_state, handle_main_menu)
     return handler(prompt, user_data, phone_id)
