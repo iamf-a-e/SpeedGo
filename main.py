@@ -126,18 +126,14 @@ def webhook():
                         step = user_state.get("step", "welcome")
                         
                         if user_lang == "shona":
-                            import shona
                             next_state = shona.get_action(step, prompt, user_state, phone_id)
                             shona.update_user_state(sender, next_state)
                         elif user_lang == "ndebele":
-                            import ndebele
                             next_state = ndebele.get_action(step, prompt, user_state, phone_id)
                             ndebele.update_user_state(sender, next_state)
                         else:
-                            import english
                             next_state = english.get_action(step, prompt, user_state, phone_id)
                             english.update_user_state(sender, next_state)
-
                     
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
