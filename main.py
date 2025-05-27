@@ -5,9 +5,6 @@ from datetime import datetime, timedelta
 from flask import Flask, request, jsonify, render_template
 from upstash_redis import Redis
 
-import english
-import shona
-import ndebele
 
 logging.basicConfig(level=logging.INFO)
 
@@ -115,26 +112,32 @@ def webhook():
                             # Get or initialize user state
                             user_state = get_user_state(sender) or {'sender': sender, 'step': 'welcome'}
                             
-                            # Ensure 'user' key exists
-                            if 'user' not in user_state:
-                                user_state['user'] = User(sender).to_dict()
+                        # Ensure 'user' key exists
+                        if 'user' not in user_state:
+                            user_state['user'] = User(sender).to_dict()
+                        
+                        # Extract language from user state
+                        user_lang = user_state['user'].get("language", "English").lower()
+                        
+                        # Get current step and delegate to appropriate language module
+                        step = user_state.get("step", "welcome")
+                        
+                        if user_lang == "shona":
+                            import shona
+                            next_state = shona.get_action(step, prompt, user_state, phone_id)
+                            shona.update_user_state(sender, next_state)
+                        elif user_lang == "ndebele":
+                            import ndebele
+                            next_state = ndebele.get_action(step, prompt, user_state, phone_id)
+                            ndebele.update_user_state(sender, next_state)
+                        else:
+                            import english
+                            next_state = english.get_action(step, prompt, user_state, phone_id)
+                            english.update_user_state(sender, next_state)
                             
-                            # Call the handler
-                            step = user_state.get("step", "welcome")
-                            response_state = get_action(step, prompt, user_state, phone_id)
-
-                            # Delegate to language-specific handler
-                            if lang.lower() == "shona":
-                                next_state = shona.get_action(user_state['step'], prompt, user_state, phone_id)
-                                shona.update_user_state(sender, next_state)
-                            elif lang.lower() == "ndebele":
-                                next_state = ndebele.get_action(user_state['step'], prompt, user_state, phone_id)
-                                ndebele.update_user_state(sender, next_state)
-                            else:
-                                next_state = english.get_action(user_state['step'], prompt, user_state, phone_id)
-                                set_user_state(sender, next_state)
-                else:
-                    english.send("Please send a text message", sender, phone_id)
+                        else:
+                            english.send("Please send a text message", sender, phone_id)
+                    
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
         return jsonify({"status": "ok"}), 200
