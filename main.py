@@ -48,9 +48,6 @@ def get_user_state(sender):
             return None
     return state
 
-def set_user_state(sender, state):
-    state["last_active"] = datetime.utcnow().isoformat()
-    redis.set(sender, json.dumps(state))
 
 
 def get_action(current_state, prompt, user_data, phone_id):
@@ -61,73 +58,70 @@ def get_action(current_state, prompt, user_data, phone_id):
     return handler(prompt, user_data, phone_id)
 
 
-@app.route("/webhook", methods=["GET", "POST"])
-def webhook():
-    if request.method == "GET":
-        mode = request.args.get("hub.mode")
-        token = request.args.get("hub.verify_token")
-        challenge = request.args.get("hub.challenge")
-        if mode == "subscribe" and token == "BOT":
-            return challenge, 200
-        return "Failed", 403
-
-    elif request.method == "POST":
-        data = request.get_json()
-        logging.info(f"Incoming webhook data: {data}")
+def get_user_state(user_id):
+    data = redis_client.get(user_id)
+    if data:
         try:
-            entry = data["entry"][0]
-            changes = entry["changes"][0]
-            value = changes["value"]
-            phone_id = value["metadata"]["phone_number_id"]
-            messages = value.get("messages", [])
-            if messages:
-                message = messages[0]
-                sender = message["from"]
-                if "text" in message:
-                    prompt = message["text"]["body"].strip()
-                    user_state = get_user_state(sender)
-                    # If user state does not exist, always send language selection logic
-                    if user_state is None:
-                        # Send language selection prompt and save step as 'select_language'
-                        english.send(
-                            "Hi there! Welcome to SpeedGo Services for borehole drilling in Zimbabwe. "
-                            "We provide reliable borehole drilling and water solutions across Zimbabwe.\n\n"
-                            "Choose your preferred language:\n"
-                            "1. English\n"
-                            "2. Shona\n"
-                            "3. Ndebele",
-                            sender, phone_id
-                        )
-                        set_user_state(sender, {"step": "select_language", "sender": sender})
-                    else:
-                        user_state['sender'] = sender
-                        lang = None
-                        if user_state.get('user') and 'language' in user_state['user']:
-                            lang = user_state['user']['language']
+            return json.loads(data)
+        except Exception:
+            return {}
+    return {}
 
-                        # If in language selection phase or language not set, always use English logic for language selection
-                        if user_state.get('step') == 'select_language' or not lang:
-                            next_state = english.get_action(user_state['step'], prompt, user_state, phone_id)
-                            if next_state.get('user') and 'language' in next_state['user']:
-                                lang = next_state['user']['language']
-                            set_user_state(sender, next_state)
-                        else:
-                            # Get or initialize user state
-                            user_state = get_user_state(sender) or {'sender': sender, 'step': 'welcome'}
-                            
 
-    user_lang = user_state['user'].get("language", "English").lower()
-    step = user_state.get("step", "welcome")
-    
+def set_user_state(user_id, state_dict):
+    redis_client.set(user_id, json.dumps(state_dict))
+
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    data = request.json
+
+    # Extract sender phone and message text
+    sender = data.get('sender')  # adjust key name as per your webhook JSON
+    prompt = data.get('message') # the user message text
+
+    if not sender or not prompt:
+        return jsonify({"error": "Missing sender or message"}), 400
+
+    # Load user state from Redis
+    user_state = get_user_state(sender)
+    if not isinstance(user_state, dict):
+        user_state = {}
+
+    # Ensure 'user' key exists
+    if 'user' not in user_state:
+        # Initialize user data - customize as you like
+        user_state['user'] = {
+            "id": sender,
+            "language": "english",  # default language
+            # add other user data here
+        }
+
+    # Get user language (default to English)
+    user_lang = user_state.get('user', {}).get('language', 'english').lower()
+
+    # Get current step or default
+    step = user_state.get('step', 'welcome')
+
+    # Call appropriate language module based on user language
     if user_lang == "shona":
-        next_state = shona.get_action(step, prompt, user_state, phone_id)
+        next_state = shona.get_action(step, prompt, user_state, sender)
         shona.update_user_state(sender, next_state)
     elif user_lang == "ndebele":
-        next_state = ndebele.get_action(step, prompt, user_state, phone_id)
+        next_state = ndebele.get_action(step, prompt, user_state, sender)
         ndebele.update_user_state(sender, next_state)
     else:
-        next_state = english.get_action(step, prompt, user_state, phone_id)
+        next_state = english.get_action(step, prompt, user_state, sender)
         english.update_user_state(sender, next_state)
+
+    # Save updated state back to Redis
+    set_user_state(sender, next_state)
+
+    # Return a response (adjust based on your language module's output)
+    response_text = next_state.get('response', 'Sorry, something went wrong.')
+
+    return jsonify({"response": response_text})
+
 
 
 if __name__ == "__main__":
