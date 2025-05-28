@@ -788,7 +788,7 @@ action_mapping = {
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
     ),
-    "handle_main_menu2":select_service2,
+    "handle_main_menu2":select_service,
     "select_service2": handle_select_service2,
     "collect_quote_details2": handle_collect_quote_details2,
     "quote_response2": handle_quote_response2,
