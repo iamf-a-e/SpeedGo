@@ -82,6 +82,52 @@ def send(answer, sender, phone_id):
     except requests.exceptions.RequestException as e:
         logging.error(f"Failed to send message: {e}")
 
+def select_service():
+    services = {
+        "1": "Borehole drilling",
+        "2": "Borehole pump installation",
+        "3": "Water pond construction",
+        "4": "Weir dam construction",
+    }
+    
+    print("\nAvailable Services:")
+    for key, value in services.items():
+        print(f"{key}. {value}")
+    
+    while True:
+        choice = input("\nSelect a service (1-4) or 'q' to quit: ")
+        if choice.lower() == 'q':
+            return None
+        if choice in services:
+            selected_service = services[choice]
+            print(f"\nYou selected: {selected_service}")
+            return {selected_service, 'step': 'handle_select_service'}
+        print("Invalid selection. Please try again.")
+
+
+def select_service2():
+    services = {
+        "1": "Kuchera bhodhoro",
+        "2": "Kuisa pombi yebhodhoro",
+        "3": "Kuvaka pond yemvura",
+        "4": "Kuvaka weir dam",
+    }
+    
+    print("\nAvailable Services:")
+    for key, value in services.items():
+        print(f"{key}. {value}")
+    
+    while True:
+        choice = input("\nSelect a service (1-4) or 'q' to quit: ")
+        if choice.lower() == 'q':
+            return None
+        if choice in services:
+            selected_service = services[choice]
+            print(f"\nYou selected: {selected_service}")
+            return {selected_service, 'step': 'handle_select_service2'}
+        print("Invalid selection. Please try again.")
+        
+
 # State handlers (English flow only)
 def handle_welcome(prompt, user_data, phone_id):
     send(
