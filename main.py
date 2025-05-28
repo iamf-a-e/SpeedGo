@@ -105,7 +105,7 @@ def select_service(user_state):
         print("Invalid selection. Please try again.")
         # Update and return user_state
         user_state["selected_service"] = selected_service
-        user_state["step"] = "collect_quote_details"
+        user_state["step"] = "handle_main_menu"
         return user_state
         
     print("Invalid choice. Please select a number between 1 and 4.")
@@ -134,7 +134,7 @@ def select_service2(user_state):
         print("Invalid selection. Please try again.")
         # Update and return user_state
         user_state["selected_service"] = selected_service
-        user_state["step"] = "collect_quote_details2"
+        user_state["step"] = "handle_main_menu2"
         return user_state
         
     print("Ndapota sarudza sevhisi pakati pa1-4.")
