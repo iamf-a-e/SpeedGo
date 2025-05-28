@@ -82,7 +82,7 @@ def send(answer, sender, phone_id):
     except requests.exceptions.RequestException as e:
         logging.error(f"Failed to send message: {e}")
 
-def select_service():
+def select_service(user_state):
     services = {
         "1": "Borehole drilling",
         "2": "Borehole pump installation",
@@ -103,6 +103,12 @@ def select_service():
             print(f"\nYou selected: {selected_service}")
             return {'selected_service':selected_service, 'step': 'handle_select_service'}
         print("Invalid selection. Please try again.")
+        # Update and return user_state
+        user_state["selected_service"] = selected_service
+        user_state["step"] = "handle_select_service2"
+            return user_state
+        else:
+            print("Invalid choice. Please select a number between 1 and 4.")
 
 
 def select_service2():
@@ -126,6 +132,12 @@ def select_service2():
             print(f"\nYou selected: {selected_service}")
             return {'selected_service':selected_service, 'step': 'handle_select_service2'}
         print("Invalid selection. Please try again.")
+        # Update and return user_state
+        user_state["selected_service"] = selected_service
+        user_state["step"] = "handle_select_service2"
+            return user_state
+        else:
+            print("Ndapota sarudza sevhisi pakati pa1-4.")
         
 
 # State handlers (English flow only)
