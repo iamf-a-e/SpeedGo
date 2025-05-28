@@ -515,6 +515,32 @@ def handle_booking_confirmation(prompt, user_data, phone_id):
         return {'step': 'booking_confirmation', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
+def handle_select_language2(prompt, user_data, phone_id):
+    user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
+    if prompt == "2":
+        user.language = "Shona"
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu2',
+            'user': user.to_dict()
+        })
+        send(
+            "Tatenda!\n"
+            "Tinokubatsirai sei nhasi?\n\n"
+            "1. Kukumbira quotation\n"
+            "2. Bhuka Site Visit\n"
+            "3. Tarisa Project Status\n"
+            "4. Dzidza nezve Kuchera Bhodhoro\n"
+            "5. Taura neMunhu\n\n"
+            "Pindura nenhamba (semuenzaniso, 1)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'main_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Ndapota pindura ne2 kuti urambe uchishandisa chiShona.", user_data['sender'], phone_id)
+        return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
+        
+
+
 def handle_main_menu2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     if prompt == "1":  # Kukumbira quotation
@@ -846,7 +872,8 @@ action_mapping = {
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
     ),
-    "handle_main_menu2":select_service,
+    "select_language2": handle_select_language2,
+    "main_menu2": handle_main_menu2,
     "select_service2": handle_select_service2,
     "collect_quote_details2": handle_collect_quote_details2,
     "quote_response2": handle_quote_response2,
