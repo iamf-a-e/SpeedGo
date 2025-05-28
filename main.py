@@ -106,9 +106,9 @@ def select_service(user_state):
         # Update and return user_state
         user_state["selected_service"] = selected_service
         user_state["step"] = "handle_select_service2"
-            return user_state
-        else:
-            print("Invalid choice. Please select a number between 1 and 4.")
+        return user_state
+        
+    print("Invalid choice. Please select a number between 1 and 4.")
 
 
 def select_service2():
@@ -135,9 +135,9 @@ def select_service2():
         # Update and return user_state
         user_state["selected_service"] = selected_service
         user_state["step"] = "handle_select_service2"
-            return user_state
-        else:
-            print("Ndapota sarudza sevhisi pakati pa1-4.")
+        return user_state
+        
+    print("Ndapota sarudza sevhisi pakati pa1-4.")
         
 
 # State handlers (English flow only)
