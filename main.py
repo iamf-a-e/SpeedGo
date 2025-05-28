@@ -76,17 +76,14 @@ def send(message, recipient, phone_id):
 # === English Chat Logic Handlers ===
 def handle_welcome(prompt, user_data, phone_id):
     send(
-        "Hi there! Welcome to SpeedGo Services for borehole drilling in Zimbabwe. "
-        "We provide reliable borehole drilling and water solutions across Zimbabwe."
-
-"
-        "Choose your preferred language:
-"
-        "1. English
-"
-        "2. Shona
-"
-        "3. Ndebele",
+        """Hi there! Welcome to SpeedGo Services for borehole drilling in Zimbabwe.
+        We provide reliable borehole drilling and water solutions across Zimbabwe.
+        
+        Choose your preferred language:
+        1. English
+        2. Shona
+        3. Ndebele"""
+        
         user_data['sender'], phone_id
     )
     update_user_state(user_data['sender'], {'step': 'select_language'})
