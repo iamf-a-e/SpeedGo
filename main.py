@@ -101,7 +101,7 @@ def select_service():
         if choice in services:
             selected_service = services[choice]
             print(f"\nYou selected: {selected_service}")
-            return {selected_service, 'step': 'handle_select_service'}
+            return {'selected_service':selected_service, 'step': 'handle_select_service'}
         print("Invalid selection. Please try again.")
 
 
@@ -124,7 +124,7 @@ def select_service2():
         if choice in services:
             selected_service = services[choice]
             print(f"\nYou selected: {selected_service}")
-            return {selected_service, 'step': 'handle_select_service2'}
+            return {'selected_service':selected_service, 'step': 'handle_select_service2'}
         print("Invalid selection. Please try again.")
         
 
