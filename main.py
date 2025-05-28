@@ -111,7 +111,7 @@ def select_service(user_state):
     print("Invalid choice. Please select a number between 1 and 4.")
 
 
-def select_service2():
+def select_service2(user_state):
     services = {
         "1": "Kuchera bhodhoro",
         "2": "Kuisa pombi yebhodhoro",
