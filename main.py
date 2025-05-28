@@ -77,7 +77,7 @@ def send(message, recipient, phone_id):
 def handle_welcome(prompt, user_data, phone_id):
     send(
         "Hi there! Welcome to SpeedGo Services for borehole drilling in Zimbabwe. "
-        "We provide reliable borehole drilling and water solutions across Zimbabwe.
+        "We provide reliable borehole drilling and water solutions across Zimbabwe."
 
 "
         "Choose your preferred language:
