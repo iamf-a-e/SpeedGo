@@ -288,7 +288,7 @@ def handle_select_service(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            "To give you a quick estimate, tell me your location (City/Town or GPS)\n"
+            "To give you a quick estimate, tell me your location (City/Town or GPS)\n",
             user_data['sender'], phone_id
         )
         return {'step': 'collect_quote_details', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -625,7 +625,7 @@ def handle_select_service2(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            "Kuti ndikupai fungidziro inokurumidza, ndiudzei nzvimbo yenyu (Guta/Kumba kana GPS)\n"
+            "Kuti ndikupai fungidziro inokurumidza, ndiudzei nzvimbo yenyu (Guta/Kumba kana GPS)\n",
             user_data['sender'], phone_id
         )
         return {'step': 'collect_quote_details2', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -959,7 +959,7 @@ def handle_select_service3(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            "Ukukwenzela isilinganiso esisheshayo, ngicela ungitshele indawo yakho (City/Town noma GPS)\n"
+            "Ukukwenzela isilinganiso esisheshayo, ngicela ungitshele indawo yakho (City/Town noma GPS)\n",
             user_data['sender'], phone_id
         )
         return {'step': 'collect_quote_details3', 'user': user.to_dict(), 'sender': user_data['sender']}
