@@ -239,26 +239,20 @@ def handle_main_menu(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "2":  # Book site visit
+    elif prompt == "2":  # Search Price Using Location
         update_user_state(user_data['sender'], {
-            'step': 'collect_booking_info',
+            'step': 'get_pricing_for_location',
             'user': user.to_dict()
         })
         send(
-            "To book a site visit, please provide the following:\n"
-            "- Full Name:\n"
-            "- Preferred Date (dd/mm/yyyy):\n"
-            "- Site Address:\n"
-            "- Mobile Number:\n"
-            "- Payment Method (Prepayment / Cash at site):\n\n"
-            "Type 'Submit' to confirm your booking.",
+           "To get you pricing, please enter your location (City/Town or GPS coordinates):",
             user_data['sender'], phone_id
         )
-        return {'step': 'collect_booking_info', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'get_pricing_for_location', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "3":  # Check Project Status
         send("This feature is coming soon. Please contact your agent for updates.", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "4":  # Learn About Borehole Drilling
+    elif prompt == "4":  # FAQs or Learn About Borehole Drilling
         send(
             "We offer:\n"
             "- Borehole drilling\n"
@@ -266,8 +260,12 @@ def handle_main_menu(prompt, user_data, phone_id):
             "- Water pond and weir dam construction\n"
             "Contact us for more info!", user_data['sender'], phone_id
         )
-        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "5":  # Human agent
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}      
+
+    elif prompt == "5":  #  Other services
+        send("Connecting you to a human agent...", user_data['sender'], phone_id)
+        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "6":  # Human agent
         send("Connecting you to a human agent...", user_data['sender'], phone_id)
         return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
