@@ -96,7 +96,7 @@ def select_service(user_state):
         print(f"{key}. {value}")
     
     while True:
-        choice = input("\nSelect a service (1-4) or 'q' to quit: ")
+        choice = input("\nSelect a service (1-5) or 'q' to quit: ")
         if choice.lower() == 'q':
             return None
         if choice in services:
@@ -1296,6 +1296,7 @@ action_mapping = {
     "booking_details": handle_booking_details,
     "collect_booking_info": handle_collect_booking_info,
     "booking_confirmation": handle_booking_confirmation,
+    "get_pricing_for_location": handle_get_pricing_for_location,
     "human_agent": lambda prompt, user_data, phone_id: (
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
