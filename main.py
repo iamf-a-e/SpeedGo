@@ -233,7 +233,7 @@ def handle_main_menu(prompt, user_data, phone_id):
             "1. Water survey\n"
             "2. Borehole drilling\n"
             "3. Pump installation\n"
-            "4. Commercial hole drilling"
+            "4. Commercial hole drilling\n"
             "5. Borehole Deepening",
             user_data['sender'], phone_id
         )
