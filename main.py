@@ -84,10 +84,11 @@ def send(answer, sender, phone_id):
 
 def select_service(user_state):
     services = {
-        "1": "Borehole drilling",
-        "2": "Borehole pump installation",
-        "3": "Water pond construction",
-        "4": "Weir dam construction",
+        "1": "Water survey",
+        "2": "Borehole drilling",
+        "3": "Pump installation",
+        "4": "Commercial hole drilling",
+        "5": "Borehole Deepening",
     }
     
     print("\nAvailable Services:")
@@ -276,10 +277,11 @@ def handle_main_menu(prompt, user_data, phone_id):
 def handle_select_service(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     services = {
-        "1": "Borehole drilling",
-        "2": "Borehole pump installation",
-        "3": "Water pond construction",
-        "4": "Weir dam construction"
+        "1": "Water survey",
+        "2": "Borehole drilling",
+        "3": "Pump installation",
+        "4": "Commercial hole drilling",
+        "5": "Borehole Deepening",
     }
     if prompt in services:
         user.quote_data['service'] = services[prompt]
