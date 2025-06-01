@@ -274,29 +274,48 @@ def handle_main_menu(prompt, user_data, phone_id):
         send("Please select a valid option (1-5).", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
+
 def handle_select_service(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
+
     services = {
         "1": "Water survey",
         "2": "Borehole drilling",
         "3": "Pump installation",
         "4": "Commercial hole drilling",
-        "5": "Borehole Deepening",
+        "5": "Borehole Deepening",
     }
+
     if prompt in services:
         user.quote_data['service'] = services[prompt]
+        
         update_user_state(user_data['sender'], {
-            'step': 'collect_quote_details',
+            'step': 'get_pricing_for_location',  # <- CHANGED STEP
             'user': user.to_dict()
         })
+
         send(
-            "To give you a quick estimate, tell me your location (City/Town or GPS)\n",
-            user_data['sender'], phone_id
+            "To give you a quick estimate, please enter your location (City/Town or GPS coordinates):",
+            user_data['sender'],
+            phone_id
         )
-        return {'step': 'collect_quote_details', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+        return {
+            'step': 'get_pricing_for_location',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
     else:
-        send("Please select a valid service (1-4).", user_data['sender'], phone_id)
-        return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
+        send("Please select a valid service (1-5).", user_data['sender'], phone_id)
+
+        return {
+            'step': 'select_service',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
 
 def handle_collect_quote_details(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
@@ -531,6 +550,69 @@ def handle_booking_confirmation(prompt, user_data, phone_id):
     else:
         send("Please contact our support team to reschedule.", user_data['sender'], phone_id)
         return {'step': 'booking_confirmation', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+location_pricing = {
+    "bulawayo": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 25
+        },
+        "Pump Installation": -,
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "harare": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 2000,
+            "class 9": 2300,
+            "class 10": 2800,
+            "included_depth_m": 40,
+            "extra_per_m": 30
+        },
+        "Pump Installation": -,
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    
+}
+
+
+def calculate_borehole_drilling_price(location, drilling_class, actual_depth_m):
+    drilling_info = location_pricing[location]["Borehole Drilling"]
+    base_price = drilling_info[drilling_class]
+    included_depth = drilling_info["included_depth_m"]
+    extra_per_m = drilling_info["extra_per_m"]
+
+    if actual_depth_m <= included_depth:
+        return base_price
+
+    extra_depth = actual_depth_m - included_depth
+    extra_cost = extra_depth * extra_per_m
+    return base_price + extra_cost
+
+
+
+def normalize_location(location_text):
+    return location_text.strip().lower()
+
+
+def get_pricing_for_location(location_input):
+    location = normalize_location(location_input)
+    services = location_pricing.get(location)
+
+    if not services:
+        return "Sorry, we don't have pricing for your location yet."
+
+    pricing_lines = [f"{service}: {price}" for service, price in services.items()]
+    return "Here are the prices for your area:\n" + "\n".join(pricing_lines)
+
+
 
 
 def handle_select_language2(prompt, user_data, phone_id):
