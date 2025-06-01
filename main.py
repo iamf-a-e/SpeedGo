@@ -113,8 +113,8 @@ def select_service(user_state):
 
 def select_service2(user_state):
     services = {
-        "1": "Kuchera bhodhoro",
-        "2": "Kuisa pombi yebhodhoro",
+        "1": "Kuchera chibhorani",
+        "2": "Kuisa pombi yechibhorani",
         "3": "Kuvaka pond yemvura",
         "4": "Kuvaka weir dam",
     }
@@ -166,10 +166,11 @@ def handle_select_language(prompt, user_data, phone_id):
             "Thank you!\n"
             "How can we help you today?\n\n"
             "1. Request a quote\n"
-            "2. Book a Site Visit\n"
+            "2. Search Price Using Location\n"
             "3. Check Project Status\n"
-            "4. Learn About Borehole Drilling\n"
-            "5. Talk to a Human Agent\n\n"
+            "4. FAQs or Learn About Borehole Drilling\n"
+            "5. Other services\n"
+            "6. Talk to a Human Agent\n\n"
             "Please reply with a number (e.g., 1)",
             user_data['sender'], phone_id
         )
@@ -185,10 +186,11 @@ def handle_select_language(prompt, user_data, phone_id):
             "Tatenda!\n"
             "Tinokubatsirai sei nhasi?\n\n"
             "1. Kukumbira quotation\n"
-            "2. Bhuka Site Visit\n"
-            "3. Tarisa Project Status\n"
-            "4. Dzidza nezve Kuchera Bhodhoro\n"
-            "5. Taura neMunhu\n\n"
+            "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
+            "3. Tarisa Mamiriro ePurojekiti\n"
+            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n"
+            "5. Zvimwe Zvatinoita\n"
+            "6. Taura neMunhu\n\n"
             "Pindura nenhamba (semuenzaniso, 1)",
             user_data['sender'], phone_id
         )
@@ -203,11 +205,12 @@ def handle_select_language(prompt, user_data, phone_id):
         send(
             "Siyabonga!\n"
             "Singakusiza njani lamuhla?\n\n"
-            "1. Cela ikhotheshini\n"
-            "2. Bhuka Uvakatjho Lwendawo\n"
-            "3. Hlola Isimo Sephrojekthi\n"
-            "4. Funda Ngokucubungula Amanzi\n"
-            "5. Khuluma Lomuntu\n\n"
+            "1. Cela isiphakamiso\n"
+            "2. Phanda Intengo Ngokusebenzisa Indawo\n"
+            "3. Bheka Isimo Sephrojekthi\n"
+            "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
+            "5. Eminye Imisebenzi\n"
+            "6. Khuluma Nomuntu\n\n"
             "Phendula ngenombolo (umzekeliso: 1)",
             user_data['sender'], phone_id
         )
@@ -227,10 +230,11 @@ def handle_main_menu(prompt, user_data, phone_id):
         send(
             "Thank you!\n"
             "Select the service:\n"
-            "1. Borehole drilling\n"
-            "2. Borehole pump installation\n"
-            "3. Water pond construction\n"
-            "4. Weir dam construction",
+            "1. Water survey\n"
+            "2. Borehole drilling\n"
+            "3. Pump installation\n"
+            "4. Commercial hole drilling"
+            "5. Borehole Deepening",
             user_data['sender'], phone_id
         )
         return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -284,14 +288,7 @@ def handle_select_service(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            "To give you a quick estimate, please answer the following:\n\n"
-            "1. Your location (City/Town or GPS):\n"
-            "2. Desired borehole depth (if known):\n"
-            "3. Purpose (Domestic / Agricultural / Industrial):\n"
-            "4. Did you conduct a water survey? (Yes or No)\n"
-            "5. If you need borehole Deepening, type 'Deepening'\n"
-            "6. PVC pipe casing: Class 6 or Class 9 or Class 10\n\n"
-            "Reply with your answers, each on a new line.",
+            "To give you a quick estimate, tell me your location (City/Town or GPS)\n"
             user_data['sender'], phone_id
         )
         return {'step': 'collect_quote_details', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -548,7 +545,7 @@ def handle_select_language2(prompt, user_data, phone_id):
             "1. Kukumbira quotation\n"
             "2. Bhuka Site Visit\n"
             "3. Tarisa Project Status\n"
-            "4. Dzidza nezve Kuchera Bhodhoro\n"
+            "4. Dzidza nezve Kuchera chibhorani\n"
             "5. Taura neMunhu\n\n"
             "Pindura nenhamba (semuenzaniso, 1)",
             user_data['sender'], phone_id
@@ -570,10 +567,11 @@ def handle_main_menu2(prompt, user_data, phone_id):
         send(
             "Tatenda!\n"
             "Sarudza sevhisi yaunoda:\n"
-            "1. Kuchera bhodhoro\n"
-            "2. Kuisa pombi yebhodhoro\n"
-            "3. Kuvaka pond yemvura\n"
-            "4. Kuvaka weir dam",
+            "1. Kuongorora mvura\n"
+            "2. Kuchera chibhorani\n"
+            "3. Kuisa pombi yechibhorani\n"
+            "4. Kuvaka chibhorani chebhizimusi\n"
+            "5. Kudzikisa chibhorani",
             user_data['sender'], phone_id
         )
         return {'step': 'select_service2', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -596,11 +594,11 @@ def handle_main_menu2(prompt, user_data, phone_id):
     elif prompt == "3":  # Tarisa Project Status
         send("Chikamu ichi chichauya munguva pfupi. Bata agent yenyu kuti muwane mamiriro epurojekiti.", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "4":  # Dzidza nezve Kuchera Bhodhoro
+    elif prompt == "4":  # Dzidza nezve Kuchera chibhorani
         send(
             "Tinopa:\n"
-            "- Kuchera bhodhoro\n"
-            "- Kuisa pombi yebhodhoro\n"
+            "- Kuchera chibhorani\n"
+            "- Kuisa pombi yechibhorani\n"
             "- Kuvaka pond nemadhamu eWeir\n"
             "Bata isu kuti uwane ruzivo rwakadzama!", user_data['sender'], phone_id
         )
@@ -615,8 +613,8 @@ def handle_main_menu2(prompt, user_data, phone_id):
 def handle_select_service2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     services = {
-        "1": "Kuchera bhodhoro",
-        "2": "Kuisa pombi yebhodhoro",
+        "1": "Kuchera chibhorani",
+        "2": "Kuisa pombi yechibhorani",
         "3": "Kuvaka pond yemvura",
         "4": "Kuvaka weir dam"
     }
@@ -627,14 +625,7 @@ def handle_select_service2(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            "Kuti tikupai mutengo, tapota pindurai izvi:\n\n"
-            "1. Nzvimbo yenyu (guta/kero kana GPS):\n"
-            "2. Kudzika kwamunoda (kana muchiziva):\n"
-            "3. Chinangwa (Kumba / Kurima / Factory):\n"
-            "4. Makaita water survey here? (Ehe kana Kwete)\n"
-            "5. Kana muchida deepening, nyorai 'Deepening'\n"
-            "6. PVC pipe casing: Class 6, Class 9 kana Class 10\n\n"
-            "Pindurai mumutsara woga woga.",
+            "Kuti ndikupai fungidziro inokurumidza, ndiudzei nzvimbo yenyu (Guta/Kumba kana GPS)\n"
             user_data['sender'], phone_id
         )
         return {'step': 'collect_quote_details2', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -693,7 +684,7 @@ def handle_quote_response2(prompt, user_data, phone_id):
         send(
             "Zvakanaka! Nyorai mutengo wenyu muchitevedza fomati:\n\n"
             "- Water Survey: $_\n"
-            "- Kuchera Bhodhoro: $_",
+            "- Kuchera chibhorani: $_",
             user_data['sender'], phone_id
         )
         return {'step': 'collect_offer_details2', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -786,7 +777,7 @@ def handle_offer_response2(prompt, user_data, phone_id):
         send(
             "Nyorai zvakare mutengo wenyu muchitevedza fomati:\n\n"
             "- Water Survey: $_\n"
-            "- Kuchera Bhodhoro: $_",
+            "- Kuchera chibhorani: $_",
             user_data['sender'], phone_id
         )
         return {'step': 'collect_offer_details2', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -861,7 +852,7 @@ def handle_booking_confirmation2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     if prompt == "2":
         send(
-            "Zvakanaka! Bhuku rako rekuchera bhodhoro raitwa.\n\n"
+            "Zvakanaka! Bhuku rako rekuchera chibhorani raitwa.\n\n"
             "Zuva: China, 23 Chivabvu 2025\n"
             "Nguva: 8:00 AM\n"
             "Inotora: 5hrs\n"
@@ -910,10 +901,11 @@ def handle_main_menu3(prompt, user_data, phone_id):
         send(
             "Siyabonga!\n"
             "Khetha insiza oyidingayo:\n"
-            "1. Ukucubungula amanzi (borehole drilling)\n"
-            "2. Ukufakwa kwepompi yeborehole\n"
-            "3. Ukwakhiwa kwepond yamanzi\n"
-            "4. Ukwakhiwa kweweir dam",
+            "1. Ukuhlolwa kwamanzi\n"
+            "2. Ukugwanywa komthombo\n"
+            "3. Ukufakelwa kwepompo\n"
+            "4. Ukugwanywa kwemithombo yezentengiso\n"
+            "5. Ukwembelwa kwakhona umthombo (ukujiya)",
             user_data['sender'], phone_id
         )
         return {'step': 'select_service3', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -967,14 +959,7 @@ def handle_select_service3(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            "Ukuze sikunikeze inani eliqondileyo, phendula okulandelayo:\n\n"
-            "1. Indawo okuyo (Idolobho/Ikheli noma GPS):\n"
-            "2. Ukujula okudingayo (uma wazi):\n"
-            "3. Inhloso (Ekhaya / Ezolimo / Ezimbonini):\n"
-            "4. Sewenze ucwaningo lwamanzi? (Yebo noma Cha)\n"
-            "5. Uma udinga ukujula (deepening), bhala 'Deepening'\n"
-            "6. PVC pipe casing: Class 6, Class 9 noma Class 10\n\n"
-            "Phendula ngamunye emgqeni wayo.",
+            "Ukukwenzela isilinganiso esisheshayo, ngicela ungitshele indawo yakho (City/Town noma GPS)\n"
             user_data['sender'], phone_id
         )
         return {'step': 'collect_quote_details3', 'user': user.to_dict(), 'sender': user_data['sender']}
