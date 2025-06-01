@@ -613,6 +613,32 @@ def get_pricing_for_location(location_input):
     return "Here are the prices for your area:\n" + "\n".join(pricing_lines)
 
 
+def handle_get_pricing_for_location(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    # Normalize and fetch pricing info
+    pricing_message = get_pricing_for_location(prompt)
+
+    # Save the user's location
+    user.quote_data['location'] = prompt
+
+    # Update state (you can change next step as needed)
+    update_user_state(user_data['sender'], {
+        'step': 'collect_booking_info',  
+        'user': user.to_dict()
+    })
+
+    # Send pricing message to user
+    send(pricing_message, user_data['sender'], phone_id)
+
+    return {
+        'step': 'collect_booking_info',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+
+
 
 
 def handle_select_language2(prompt, user_data, phone_id):
@@ -1288,7 +1314,8 @@ action_mapping = {
     "welcome": handle_welcome,
     "select_language": handle_select_language,
     "main_menu": handle_main_menu,
-    "select_service": handle_select_service,
+    "select_service": handle_select_service,    
+    "get_pricing_for_location": handle_get_pricing_for_location,
     "collect_quote_details": handle_collect_quote_details,
     "quote_response": handle_quote_response,
     "collect_offer_details": handle_collect_offer_details,
@@ -1296,7 +1323,6 @@ action_mapping = {
     "booking_details": handle_booking_details,
     "collect_booking_info": handle_collect_booking_info,
     "booking_confirmation": handle_booking_confirmation,
-    "handle_select_service": get_pricing_for_location,
     "human_agent": lambda prompt, user_data, phone_id: (
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
