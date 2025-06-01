@@ -562,7 +562,7 @@ location_pricing = {
             "included_depth_m": 40,
             "extra_per_m": 25
         },
-        "Pump Installation": -,
+        "Pump Installation": 0,
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -575,7 +575,7 @@ location_pricing = {
             "included_depth_m": 40,
             "extra_per_m": 30
         },
-        "Pump Installation": -,
+        "Pump Installation": 0,
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
