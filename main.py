@@ -249,9 +249,20 @@ def handle_main_menu(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'get_pricing_for_location', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "3":  # Check Project Status
-        send("This feature is coming soon. Please contact your agent for updates.", user_data['sender'], phone_id)
-        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "3":  # Check Project Status now becomes service selection
+        send(
+            "Please choose one of the following options:\n"
+            "1. I have a tank and tank stand\n"
+            "2. I don't have a tank and tank stand\n"
+            "3. I have all materials, I need labor only\n"
+            "4. I want a Solar borehole installation\n"
+            "5. I want an Electric borehole installation\n"
+            "6. I want to speak to a human agent",
+            user_data['sender'],
+            phone_id
+        )
+        return {'step': 'project_status_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
     elif prompt == "4":  # FAQs or Learn About Borehole Drilling
         send(
             "We offer:\n"
@@ -468,6 +479,78 @@ def handle_offer_response(prompt, user_data, phone_id):
     else:
         send("Please select a valid option (1-3).", user_data['sender'], phone_id)
         return {'step': 'offer_response', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif user_data.get("step") == "project_status_menu":
+        if prompt == "1":
+            send(
+                "Great! To proceed with installation, please provide the following details:\n\n"
+                "1. Tank Capacity (in liters)\n"
+                "2. Pump Type (Solar or Electric)\n"
+                "3. Installation Site (Location or GPS coordinates)\n"
+                "4. Preferred installation time (Morning or Afternoon)",
+                user_data['sender'],
+                phone_id
+            )
+            return {'step': 'collect_info_1', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+        elif prompt == "2":
+            send(
+                "No worries! We can supply the tank and tank stand. Please provide the following details:\n\n"
+                "1. Desired Tank Capacity (in liters)\n"
+                "2. Pump Type (Solar or Electric)\n"
+                "3. Installation Site (Location or GPS coordinates)\n"
+                "4. Preferred installation time (Morning or Afternoon)",
+                user_data['sender'],
+                phone_id
+            )
+            return {'step': 'collect_info_2', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+        elif prompt == "3":
+            send(
+                "Thanks for letting us know. Please provide the following details:\n\n"
+                "1. Pump Type (Solar or Electric)\n"
+                "2. Installation Site (Location or GPS coordinates)\n"
+                "3. Preferred installation time (Morning or Afternoon)",
+                user_data['sender'],
+                phone_id
+            )
+            return {'step': 'collect_info_3', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+        elif prompt == "4":
+            send(
+                "Excellent choice! We offer complete solar-powered borehole systems. Please provide the following:\n\n"
+                "1. Do you already have a tank and tank stand? (Yes/No)\n"
+                "2. Desired Tank Capacity (liters)\n"
+                "3. Installation Site (Location or GPS coordinates)\n"
+                "4. Preferred installation time (Morning or Afternoon)",
+                user_data['sender'],
+                phone_id
+            )
+            return {'step': 'collect_info_4', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+        elif prompt == "5":
+            send(
+                "Understood. Please share the following information:\n\n"
+                "1. Do you already have a tank and tank stand? (Yes/No)\n"
+                "2. Desired Tank Capacity (liters)\n"
+                "3. Installation Site (Location or GPS coordinates)\n"
+                "4. Preferred installation time (Morning or Afternoon)",
+                user_data['sender'],
+                phone_id
+            )
+            return {'step': 'collect_info_5', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+        elif prompt == "6":
+            send("Please hold on while I connect you to one of our representatives...", user_data['sender'], phone_id)
+            # Optionally simulate wait
+            time.sleep(5)
+            send("Alternatively, you can call us directly at [Phone Number] or send a message anytime.", user_data['sender'], phone_id)
+            return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+        else:
+            send("Please choose a valid option (1 to 6).", user_data['sender'], phone_id)
+            return {'step': 'project_status_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
 
 def handle_booking_details(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
