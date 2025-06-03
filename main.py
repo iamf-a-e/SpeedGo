@@ -150,9 +150,17 @@ def handle_main_menu(prompt, user_data, phone_id):
         )
         return {'step': 'get_pricing_for_location', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "3":  # Check Project Status
+        update_user_state(user_data['sender'], {
+            'step': 'select_service',
+            'user': user.to_dict()
+        })
         send("This feature is coming soon. Please contact your agent for updates.", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "4":
+        update_user_state(user_data['sender'], {
+            'step': 'select_service',
+            'user': user.to_dict()
+        })
         send(
             "Please choose an FAQ category:\n\n"
             "1. Borehole Drilling FAQs\n"
@@ -166,6 +174,10 @@ def handle_main_menu(prompt, user_data, phone_id):
 
 
     elif prompt == "5":  # Human agent
+        update_user_state(user_data['sender'], {
+            'step': 'select_service',
+            'user': user.to_dict()
+        })
         send("Connecting you to a human agent...", user_data['sender'], phone_id)
         return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
@@ -174,6 +186,10 @@ def handle_main_menu(prompt, user_data, phone_id):
 
     def faq_menu(prompt, user_data, phone_id):
         if prompt == "1": # Borehole Drilling FAQs
+            update_user_state(user_data['sender'], {
+                'step': 'select_service',
+                'user': user.to_dict()
+            })
             send(
                 "Here are the most common questions about borehole drilling:\n\n"
                 "1. How much does borehole drilling cost?\n"
@@ -189,6 +205,10 @@ def handle_main_menu(prompt, user_data, phone_id):
             return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
 
         elif prompt == "2": # Pump Installation FAQs
+            update_user_state(user_data['sender'], {
+                'step': 'select_service',
+                'user': user.to_dict()
+            })
             send(
                 "Here are common questions about pump installation:\n\n"
                 "1. What’s the difference between solar and electric pumps?\n"
@@ -202,6 +222,10 @@ def handle_main_menu(prompt, user_data, phone_id):
             return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
     
         elif prompt == "3": # Ask a different question
+            update_user_state(user_data['sender'], {
+                'step': 'select_service',
+                'user': user.to_dict()
+            })
             send(
                 "Please type your question below, and we’ll do our best to assist you.\n"
                 "(Your message will be reviewed by our team.)",
@@ -210,6 +234,10 @@ def handle_main_menu(prompt, user_data, phone_id):
             return {'step': 'custom_question', 'user': user.to_dict(), 'sender': user_data['sender']}
     
         elif prompt == "4": # Speak to a human agent
+            update_user_state(user_data['sender'], {
+                'step': 'select_service',
+                'user': user.to_dict()
+            })
             send("Please hold while I connect you to a representative…", user_data['sender'], phone_id)
             time.sleep(5)
             send("You can also call us directly at [Phone Number].", user_data['sender'], phone_id)
@@ -224,6 +252,10 @@ def handle_main_menu(prompt, user_data, phone_id):
     
     
     def faq_borehole (prompt, user_data, phone_id):
+        update_user_state(user_data['sender'], {
+            'step': 'select_service',
+            'user': user.to_dict()
+        })
         responses = {
             "1": "The cost depends on your location, depth, and soil conditions. Please send us your location and site access details for a personalized quote.",
             "2": "Typically 4–6 hours or up to several days, depending on site conditions, rock type, and accessibility.",
@@ -245,6 +277,10 @@ def handle_main_menu(prompt, user_data, phone_id):
 
 
     def faq_pump (prompt, user_data, phone_id):
+        update_user_state(user_data['sender'], {
+            'step': 'select_service',
+            'user': user.to_dict()
+        })
         responses = {
             "1": "Solar pumps use energy from solar panels and are ideal for off-grid or remote areas. Electric pumps rely on the power grid and are typically more affordable upfront but depend on electricity availability.",
             "2": "Yes! We offer labor-only packages if you already have the necessary materials.",
