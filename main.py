@@ -7,6 +7,7 @@ import string
 from datetime import datetime
 from flask import Flask, request, jsonify, render_template
 from upstash_redis import Redis
+import google.generativeai as genai
 
 logging.basicConfig(level=logging.INFO)
 
@@ -252,6 +253,58 @@ def faq_menu(prompt, user_data, phone_id):
     else:
         send("Please select a valid option (1–5).", user_data['sender'], phone_id)
         return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def custom_question(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    # Validate that prompt is not empty
+    if not prompt.strip():
+        send("Please type your question.", user_data['sender'], phone_id)
+        return {'step': 'custom_question', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    # Gemini prompt template
+    system_prompt = (
+        "You are a helpful assistant for SpeedGo, a borehole drilling and pump installation company in Zimbabwe. "
+        "You will only answer questions related to SpeedGo's services, pricing, processes, or customer support. "
+        "If the user's question is unrelated to SpeedGo, politely let them know that you can only assist with SpeedGo-related topics."
+    )
+
+    try:
+        model = genai.GenerativeModel("gemini-pro")
+        response = model.generate_content([system_prompt, prompt])
+
+        answer = response.text.strip() if hasattr(response, "text") else "I'm sorry, I give you a response at the moment."
+
+    except Exception as e:
+        answer = "Sorry, something went wrong while processing your question. Please try again later."
+        print(f"[Gemini error] {e}")
+
+    send(answer, user_data['sender'], phone_id)
+
+    # Follow up options
+    send(
+        "Would you like to:\n"
+        "1. Ask another question\n"
+        "2. Return to Main Menu",
+        user_data['sender'], phone_id
+    )
+
+    return {'step': 'custom_question_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def custom_question_followup(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt == "1":
+        send("Please type your next question.", user_data['sender'], phone_id)
+        return {'step': 'custom_question', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        return handle_select_language("1", user_data, phone_id)
+
+    else:
+        send("Please reply 1 to ask another question or 2 to return to the main menu.", user_data['sender'], phone_id)
+        return {'step': 'custom_question_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
 
@@ -801,6 +854,8 @@ action_mapping = {
     "faq_pump": faq_pump,
     "faq_borehole_followup": faq_borehole_followup,
     "faq_pump_followup": faq_pump_followup,
+    "custom_question": custom_question,
+    "custom_question_followup": custom_question_followup,
     "human_agent": lambda prompt, user_data, phone_id: (
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
