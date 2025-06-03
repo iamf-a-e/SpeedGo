@@ -294,7 +294,7 @@ def handle_pump_status_info_request(prompt, user_data, phone_id):
             "John Doe\nREF123456 or 0771234567\nOptional Location",
             user_data['sender'], phone_id
         )
-        return {'step': 'drilling_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'pump_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     full_name = lines[0]
     reference = lines[1]
@@ -347,7 +347,7 @@ def handle_pump_status_updates_opt_in(prompt, user_data, phone_id):
         )
     else:
         send("Sorry, I didn't understand that. Please reply with Yes or No.", user_data['sender'], phone_id)
-        return {'step': 'drilling_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'pump_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # No further step – end the flow
     update_user_state(user_data['sender'], {
