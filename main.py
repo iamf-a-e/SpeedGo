@@ -204,7 +204,7 @@ def faq_menu(prompt, user_data, phone_id):
             "8. Back to FAQ Menu",
             user_data['sender'], phone_id
         )
-        return {'step': 'faq_borehole_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
     elif prompt == "2":  # Pump Installation FAQs
@@ -303,7 +303,7 @@ def faq_borehole(prompt, user_data, phone_id):
     else:
         send("Please choose a valid option (1–8).", user_data['sender'], phone_id)
 
-    return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
+    return {'step': 'faq_borehole_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
 def faq_pump(prompt, user_data, phone_id):
