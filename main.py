@@ -163,8 +163,16 @@ def handle_main_menu(prompt, user_data, phone_id):
         )
         return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-    elif user_data.get("step") == "faq_menu":
-        if prompt == "1":
+
+    elif user_data.get("step") == "main_menu" and prompt == "5":  # Human agent
+        send("Connecting you to a human agent...", user_data['sender'], phone_id)
+        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Please select a valid option (1-5).", user_data['sender'], phone_id)
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    def faq_menu(prompt, user_data, phone_id):
+        if prompt == "1": # Borehole Drilling FAQs
             send(
                 "Here are the most common questions about borehole drilling:\n\n"
                 "1. How much does borehole drilling cost?\n"
@@ -179,42 +187,42 @@ def handle_main_menu(prompt, user_data, phone_id):
             )
             return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-    elif prompt == "2":
-        send(
-            "Here are common questions about pump installation:\n\n"
-            "1. What’s the difference between solar and electric pumps?\n"
-            "2. Can you install if I already have materials?\n"
-            "3. How long does pump installation take?\n"
-            "4. What pump size do I need?\n"
-            "5. Do you supply tanks and tank stands?\n"
-            "6. Back to FAQ Menu",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "3":
-        send(
-            "Please type your question below, and we’ll do our best to assist you.\n"
-            "(Your message will be reviewed by our team.)",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'custom_question', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "4":
-        send("Please hold while I connect you to a representative…", user_data['sender'], phone_id)
-        time.sleep(5)
-        send("You can also call us directly at [Phone Number].", user_data['sender'], phone_id)
-        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "5":
-        return handle_select_language("1", user_data, phone_id)
-
-    else:
-        send("Please select a valid option (1–5).", user_data['sender'], phone_id)
-        return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-
-    if user_data.get("step") == "faq_borehole":
+        elif prompt == "2": # Pump Installation FAQs
+            send(
+                "Here are common questions about pump installation:\n\n"
+                "1. What’s the difference between solar and electric pumps?\n"
+                "2. Can you install if I already have materials?\n"
+                "3. How long does pump installation take?\n"
+                "4. What pump size do I need?\n"
+                "5. Do you supply tanks and tank stands?\n"
+                "6. Back to FAQ Menu",
+                user_data['sender'], phone_id
+            )
+            return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+        elif prompt == "3": # Ask a different question
+            send(
+                "Please type your question below, and we’ll do our best to assist you.\n"
+                "(Your message will be reviewed by our team.)",
+                user_data['sender'], phone_id
+            )
+            return {'step': 'custom_question', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+        elif prompt == "4": # Speak to a human agent
+            send("Please hold while I connect you to a representative…", user_data['sender'], phone_id)
+            time.sleep(5)
+            send("You can also call us directly at [Phone Number].", user_data['sender'], phone_id)
+            return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+        elif prompt == "5": # Main Menu
+            return handle_select_language("1", user_data, phone_id)
+    
+        else:
+            send("Please select a valid option (1–5).", user_data['sender'], phone_id)
+            return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    
+    def faq_borehole (prompt, user_data, phone_id):
         responses = {
             "1": "The cost depends on your location, depth, and soil conditions. Please send us your location and site access details for a personalized quote.",
             "2": "Typically 4–6 hours or up to several days, depending on site conditions, rock type, and accessibility.",
@@ -235,7 +243,7 @@ def handle_main_menu(prompt, user_data, phone_id):
         return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
-    elif user_data.get("step") == "faq_pump":
+    def faq_pump (prompt, user_data, phone_id):
         responses = {
             "1": "Solar pumps use energy from solar panels and are ideal for off-grid or remote areas. Electric pumps rely on the power grid and are typically more affordable upfront but depend on electricity availability.",
             "2": "Yes! We offer labor-only packages if you already have the necessary materials.",
@@ -255,14 +263,6 @@ def handle_main_menu(prompt, user_data, phone_id):
     
 
     
-
-
-    elif user_data.get("step") == "main_menu" and prompt == "5":  # Human agent
-        send("Connecting you to a human agent...", user_data['sender'], phone_id)
-        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
-    else:
-        send("Please select a valid option (1-5).", user_data['sender'], phone_id)
-        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 def handle_select_service(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
