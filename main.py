@@ -146,11 +146,19 @@ def handle_main_menu(prompt, user_data, phone_id):
         return {'step': 'get_pricing_for_location', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "3":  # Check Project Status
         update_user_state(user_data['sender'], {
-            'step': 'select_service',
+            'step': 'check_project_status_menu',
             'user': user.to_dict()
         })
-        send("This feature is coming soon. Please contact your agent for updates.", user_data['sender'], phone_id)
-        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+        send(
+            "Please choose an option:\n"
+            "1. Check status of borehole drilling\n"
+            "2. Check status of pump installation\n"
+            "3. Speak to a human agent\n"
+            "4. Main Menu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'check_project_status_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
     elif prompt == "4":
         update_user_state(user_data['sender'], {
             'step': 'faq_menu',
@@ -178,6 +186,53 @@ def handle_main_menu(prompt, user_data, phone_id):
     else:
         send("Please select a valid option (1-5).", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_check_project_status_menu(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt == "1":
+        update_user_state(user_data['sender'], {
+            'step': 'drilling_status_info_request',
+            'user': user.to_dict()
+        })
+        send(
+            "To check your drilling project status, please provide the following:\n\n"
+            "- Full Name used during booking\n"
+            "- Project Reference Number or Phone Number\n"
+            "- Location of the project (optional)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'drilling_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        update_user_state(user_data['sender'], {
+            'step': 'pump_status_info_request',
+            'user': user.to_dict()
+        })
+        send(
+            "To check your pump installation status, please provide the following:\n\n"
+            "- Full Name used during booking\n"
+            "- Project Reference Number or Phone Number\n"
+            "- Installation Site Location (optional)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'pump_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "3":
+        update_user_state(user_data['sender'], {
+            'step': 'human_agent',
+            'user': user.to_dict()
+        })
+        send("Please hold while I connect you to one of our support team members.", user_data['sender'], phone_id)
+        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "4":
+        return handle_main_menu("", user_data, phone_id)
+
+    else:
+        send("Invalid option. Please select 1, 2, 3, or 4.", user_data['sender'], phone_id)
+        return {'step': 'check_project_status_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
 
 
 def handle_enter_location_for_quote(prompt, user_data, phone_id):
