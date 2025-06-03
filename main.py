@@ -799,6 +799,8 @@ action_mapping = {
     "faq_menu": faq_menu,
     "faq_borehole": faq_borehole,
     "faq_pump": faq_pump,
+    "faq_borehole_followup": faq_borehole_followup,
+    "faq_pump_followup": faq_pump_followup,
     "human_agent": lambda prompt, user_data, phone_id: (
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
