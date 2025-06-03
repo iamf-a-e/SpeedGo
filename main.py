@@ -186,12 +186,13 @@ def handle_enter_location_for_quote(prompt, user_data, phone_id):
     # Save location
     user.quote_data['location'] = prompt.strip().lower()
 
-    # Update state to select service
+    # Update state to wait for service selection
     update_user_state(user_data['sender'], {
-        'step': 'select_service',
+        'step': 'select_service_quote',  # <- this is the key fix
         'user': user.to_dict()
     })
 
+    # Prompt for service
     send(
         "Thanks! Now select the service:\n"
         "1. Water survey\n"
@@ -202,19 +203,7 @@ def handle_enter_location_for_quote(prompt, user_data, phone_id):
         user_data['sender'], phone_id
     )
 
-    return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-def message_handler(prompt, sender, phone_id):
-    user_data = get_user_data(sender)
-    step = user_data.get('step')
-
-    if step == 'main_menu':
-        return handle_main_menu(prompt, user_data, phone_id)
-    elif step == 'enter_location_for_quote':
-        return handle_enter_location_for_quote(prompt, user_data, phone_id)
-    elif step == 'select_service':
-        return handle_select_service_quote(prompt, user_data, phone_id)
-
+    return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
 def human_agent(prompt, user_data, phone_id):
