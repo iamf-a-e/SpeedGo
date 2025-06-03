@@ -110,9 +110,8 @@ def handle_select_language(prompt, user_data, phone_id):
             "1. Request a quote\n"
             "2. Search Price Using Location\n"
             "3. Check Project Status\n"
-            "4. FAQs or Learn About Borehole Drilling\n"
-            "5. FAQs or Learn About Borehole Drilling\n"
-            "6. Talk to a Human Agent\n\n"
+            "4. FAQs or Learn About Borehole Drilling\n"        
+            "5. Talk to a Human Agent\n\n"
             "Please reply with a number (e.g., 1)",
             user_data['sender'], phone_id
         )
