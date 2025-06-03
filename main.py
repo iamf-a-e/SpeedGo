@@ -257,10 +257,6 @@ def faq_menu(prompt, user_data, phone_id):
 
 def faq_borehole(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    update_user_state(user_data['sender'], {
-        'step': 'faq_borehole',
-        'user': user.to_dict()
-    })
 
     responses = {
         "1": "The cost depends on your location, depth, and soil conditions. Please send us your location and site access details for a personalized quote.",
@@ -277,30 +273,34 @@ def faq_borehole(prompt, user_data, phone_id):
         send(responses[prompt], user_data['sender'], phone_id)
         if prompt == "8":
             return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    else:
-        send("Please choose a valid option (1–8).", user_data['sender'], phone_id)
 
-    return {'step': 'faq_borehole_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-
-
-def faq_borehole_followup(prompt, user_data, phone_id):
-    user = User.from_dict(user_data['user'])
-    update_user_state(user_data['sender'], {
-        'step': 'faq_borehole_followup',
-        'user': user.to_dict()
-    })
-
-    send(
+        send(
             "Would you like to:\n"
             "1. Ask another question from Borehole Drilling FAQs\n"
             "2. Return to Main Menu",
             user_data['sender'], phone_id
-    )
+        )
+        return {'step': 'faq_borehole_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Please choose a valid option (1–8).", user_data['sender'], phone_id)
+        return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def faq_borehole_followup(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
 
     if prompt == "1":
         send(
-            "Please choose a question:\n\n",
+            "Please choose a question:\n\n"
+            "1. How much does borehole drilling cost?\n"
+            "2. How long does it take to drill a borehole?\n"
+            "3. How deep will my borehole be?\n"
+            "4. Do I need permission to drill a borehole?\n"
+            "5. Do you do a water survey and drilling at the same time?\n"
+            "6. What if you do a water survey and find no water?\n"
+            "7. What equipment do you use?\n"
+            "8. Back to FAQ Menu",
             user_data['sender'], phone_id
         )
         return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -310,16 +310,11 @@ def faq_borehole_followup(prompt, user_data, phone_id):
 
     else:
         send("Please choose 1 to ask another question or 2 to return to the main menu.", user_data['sender'], phone_id)
-        return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
-
+        return {'step': 'faq_borehole_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
 def faq_pump(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    update_user_state(user_data['sender'], {
-        'step': 'faq_pump',
-        'user': user.to_dict()
-    })
 
     responses = {
         "1": "Solar pumps use energy from solar panels and are ideal for off-grid or remote areas. Electric pumps rely on the power grid and are typically more affordable upfront but depend on electricity availability.",
@@ -332,31 +327,36 @@ def faq_pump(prompt, user_data, phone_id):
 
     if prompt in responses:
         send(responses[prompt], user_data['sender'], phone_id)
+
         if prompt == "6":
             return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+        # ✅ After answering, show follow-up options
+        send(
+            "Would you like to:\n"
+            "1. Ask another question from Pump Installation FAQs\n"
+            "2. Return to Main Menu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_pump_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
     else:
         send("Please choose a valid option (1–6).", user_data['sender'], phone_id)
-
-    return {'step': 'faq_pump_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
 def faq_pump_followup(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    update_user_state(user_data['sender'], {
-        'step': 'faq_pump_followup',
-        'user': user.to_dict()
-    })
-
-    send(
-            "Would you like to:\n"
-            "1. Ask another question from Borehole Drilling FAQs\n"
-            "2. Return to Main Menu",
-            user_data['sender'], phone_id
-    )
 
     if prompt == "1":
         send(
-            "Please choose a question:\n\n",
+            "Please choose a question:\n\n"
+            "1. What’s the difference between solar and electric pumps?\n"
+            "2. Can you install if I already have materials?\n"
+            "3. How long does pump installation take?\n"
+            "4. What pump size do I need?\n"
+            "5. Do you supply tanks and tank stands?\n"
+            "6. Back to FAQ Menu",
             user_data['sender'], phone_id
         )
         return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -367,7 +367,6 @@ def faq_pump_followup(prompt, user_data, phone_id):
     else:
         send("Please choose 1 to ask another question or 2 to return to the main menu.", user_data['sender'], phone_id)
         return {'step': 'faq_pump_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
-
 
 
 def handle_select_service(prompt, user_data, phone_id):
