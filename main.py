@@ -877,8 +877,8 @@ def message_handler(prompt, sender, phone_id):
 
 
         if state == 'waiting_for_human_agent_response':
-        prompt_time = user_data.get('agent_prompt_time', 0)
-        elapsed = time.time() - prompt_time
+            prompt_time = user_data.get('agent_prompt_time', 0)
+            elapsed = time.time() - prompt_time
 
         if elapsed >= 10:
             # Send fallback prompt
