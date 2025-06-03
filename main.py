@@ -231,8 +231,7 @@ def faq_menu(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            "Please type your question below, and we’ll do our best to assist you.\n"
-            "(Your message will be reviewed by our team.)",
+            "Please type your question below, and we’ll do our best to assist you.\n",
             user_data['sender'], phone_id
         )
         return {'step': 'custom_question', 'user': user.to_dict(), 'sender': user_data['sender']}
