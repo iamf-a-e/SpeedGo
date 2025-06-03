@@ -215,7 +215,27 @@ def handle_main_menu(prompt, user_data, phone_id):
         return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
-    elif prompt == "5":  # Human agent
+    elif prompt == "5":  # Other Services
+    update_user_state(user_data['sender'], {
+        'step': 'other_services_menu',
+        'user': user.to_dict()
+    })
+    send(
+        "Welcome to Other Borehole Services. What service do you need?\n"
+        "1. Borehole Deepening\n"
+        "2. Borehole Flushing\n"
+        "3. PVC Casing Pipe Selection\n"
+        "4. Back to Main Menu",
+        user_data['sender'], phone_id
+    )
+    return {'step': 'other_services_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+else:
+    send("Please select a valid option (1-5).", user_data['sender'], phone_id)
+    return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
+    elif prompt == "6":  # Human agent
         update_user_state(user_data['sender'], {
             'step': 'select_service',
             'user': user.to_dict()
@@ -225,6 +245,369 @@ def handle_main_menu(prompt, user_data, phone_id):
     else:
         send("Please select a valid option (1-5).", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_other_services_menu(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        # Borehole Deepening casing question
+        send(
+            "To check if your borehole can be deepened:\n"
+            "Was the borehole cased:\n"
+            "1. Only at the top, with 180mm or larger diameter pipe\n"
+            "2. Top to bottom with 140mm or smaller diameter pipe",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'borehole_deepening_casing', 'user': user.to_dict()})
+        return {'step': 'borehole_deepening_casing', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        # Borehole Flushing problem type
+        send(
+            "What is the problem with your borehole?\n"
+            "1. Collapsed Borehole\n"
+            "2. Dirty Water Borehole",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'borehole_flushing_problem', 'user': user.to_dict()})
+        return {'step': 'borehole_flushing_problem', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "3":
+        # PVC casing class selection
+        send(
+            "We offer drilling boreholes following PVC casing pipe classes:\n"
+            "1. Class 6 – Standard\n"
+            "2. Class 9 – Stronger\n"
+            "3. Class 10 – Strongest\n"
+            "Which one would you like to check?",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'pvc_casing_selection', 'user': user.to_dict()})
+        return {'step': 'pvc_casing_selection', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "4":
+        # Back to main menu
+        update_user_state(user_data['sender'], {'step': 'main_menu', 'user': user.to_dict()})
+        send_main_menu(user_data['sender'], phone_id)
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Please select a valid option (1-4).", user_data['sender'], phone_id)
+        return {'step': 'other_services_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_borehole_deepening_casing(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        # Only at top, qualifies for deepening
+        send("Your borehole qualifies for deepening.\nPlease enter your location (town, ward, growth point, or GPS pin):",
+             user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'deepening_location', 'user': user.to_dict()})
+        return {'step': 'deepening_location', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        # Top to bottom with smaller pipe - no deepening
+        send(
+            "Unfortunately, boreholes cased from top to bottom with pipes smaller than 180mm cannot be deepened.\n"
+            "Options:\n"
+            "1. Back to Other Services\n"
+            "2. Talk to Support",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'deepening_no_deepening_options', 'user': user.to_dict()})
+        return {'step': 'deepening_no_deepening_options', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Please select a valid option (1 or 2).", user_data['sender'], phone_id)
+        return {'step': 'borehole_deepening_casing', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_deepening_no_deepening_options(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        # Back to Other Services menu
+        return handle_other_services_menu("0", user_data, phone_id)  # or send menu prompt directly
+
+    elif choice == "2":
+        send("Connecting you to support...", user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'human_agent', 'user': user.to_dict()})
+        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Please select a valid option (1 or 2).", user_data['sender'], phone_id)
+        return {'step': 'deepening_no_deepening_options', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_deepening_location(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = prompt.strip()
+
+    # Save location for deepening request
+    user.quote_data['location'] = location
+
+    # Fetch pricing from backend (you must implement this function)
+    price = get_pricing_for_other_services(location, "borehole_deepening")
+
+    send(
+        f"Deepening cost in {location} starts from USD {price} per meter.\n"
+        "Would you like to:\n"
+        "1. Confirm & Book Job\n"
+        "2. Back to Other Services",
+        user_data['sender'], phone_id
+    )
+    update_user_state(user_data['sender'], {'step': 'deepening_booking_confirm', 'user': user.to_dict()})
+    return {'step': 'deepening_booking_confirm', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_deepening_booking_confirm(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        # Start booking details collection
+        user.booking_data = {}
+        send("Please provide your full name:", user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'booking_full_name', 'user': user.to_dict()})
+        return {'step': 'booking_full_name', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        # Back to other services menu
+        return handle_other_services_menu("0", user_data, phone_id)
+
+    else:
+        send("Please select a valid option (1 or 2).", user_data['sender'], phone_id)
+        return {'step': 'deepening_booking_confirm', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_borehole_flushing_problem(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        # Collapsed Borehole
+        send(
+            "Do you know the borehole diameter?\n"
+            "1. 180mm or larger\n"
+            "2. Between 140mm and 180mm\n"
+            "3. 140mm or smaller",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'flushing_collapsed_diameter', 'user': user.to_dict()})
+        return {'step': 'flushing_collapsed_diameter', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        # Dirty Water Borehole
+        send("Please enter your location to check the price:", user_data['sender'], phone_id)
+        user.quote_data['flushing_type'] = 'dirty_water'
+        update_user_state(user_data['sender'], {'step': 'flushing_location', 'user': user.to_dict()})
+        return {'step': 'flushing_location', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Please select a valid option (1 or 2).", user_data['sender'], phone_id)
+        return {'step': 'borehole_flushing_problem', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_flushing_collapsed_diameter(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+    diameter_map = {
+        "1": "180mm_or_larger",
+        "2": "between_140_and_180mm",
+        "3": "140mm_or_smaller"
+    }
+
+    diameter = diameter_map.get(choice)
+    if not diameter:
+        send("Please select a valid option (1-3).", user_data['sender'], phone_id)
+        return {'step': 'flushing_collapsed_diameter', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    user.quote_data['flushing_type'] = 'collapsed'
+    user.quote_data['diameter'] = diameter
+
+    if diameter == "180mm_or_larger":
+        send("We can flush your borehole using rods with a drilling bit (more effective).\nPlease enter your location to check the price:",
+             user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'flushing_location', 'user': user.to_dict()})
+        return {'step': 'flushing_location', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif diameter == "between_140_and_180mm":
+        send("We can flush borehole with rods, no drilling bit.\nPlease enter your location to check the price:",
+             user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'flushing_location', 'user': user.to_dict()})
+        return {'step': 'flushing_location', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif diameter == "140mm_or_smaller":
+        send("We can flush the borehole using rods only (without drilling bit).\nPlease enter your location to check the price:",
+             user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'flushing_location', 'user': user.to_dict()})
+        return {'step': 'flushing_location', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_flushing_location(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = prompt.strip()
+    user.quote_data['location'] = location
+
+    flushing_type = user.quote_data.get('flushing_type')
+    diameter = user.quote_data.get('diameter')  # could be None
+
+    # Fetch price based on flushing_type and diameter
+    price = get_pricing_for_other_services(location, "borehole_flushing", {
+        'flushing_type': flushing_type,
+        'diameter': diameter
+    })
+
+    send(
+        f"Flushing cost in {location} starts from USD {price}.\n"
+        "Would you like to:\n"
+        "1. Confirm & Book Job\n"
+        "2. Back to Other Services",
+        user_data['sender'], phone_id
+    )
+    update_user_state(user_data['sender'], {'step': 'flushing_booking_confirm', 'user': user.to_dict()})
+    return {'step': 'flushing_booking_confirm', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_flushing_booking_confirm(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        user.booking_data = {}
+        send("Please provide your full name:", user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'booking_full_name', 'user': user.to_dict()})
+        return {'step': 'booking_full_name', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        return handle_other_services_menu("0", user_data, phone_id)
+
+    else:
+        send("Please select a valid option (1 or 2).", user_data['sender'], phone_id)
+        return {'step': 'flushing_booking_confirm', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_pvc_casing_selection(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+    pvc_map = {
+        "1": "Class 6 – Standard",
+        "2": "Class 9 – Stronger",
+        "3": "Class 10 – Strongest"
+    }
+
+    casing_class = pvc_map.get(choice)
+    if not casing_class:
+        send("Please select a valid option (1-3).", user_data['sender'], phone_id)
+        return {'step': 'pvc_casing_selection', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    user.quote_data['pvc_casing_class'] = casing_class
+
+    send(f"The price for {casing_class} PVC casing depends on your location.\nPlease enter your location:",
+         user_data['sender'], phone_id)
+    update_user_state(user_data['sender'], {'step': 'pvc_casing_location', 'user': user.to_dict()})
+    return {'step': 'pvc_casing_location', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_pvc_casing_location(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = prompt.strip()
+    user.quote_data['location'] = location
+
+    casing_class = user.quote_data.get('pvc_casing_class')
+
+    price = get_pricing_for_other_services(location, "pvc_casing", {'class': casing_class})
+
+    send(
+        f"Price for {casing_class} PVC casing in {location} is USD {price}.\n"
+        "Would you like to:\n"
+        "1. Confirm & Book\n"
+        "2. Back to Other Services",
+        user_data['sender'], phone_id
+    )
+    update_user_state(user_data['sender'], {'step': 'pvc_casing_booking_confirm', 'user': user.to_dict()})
+    return {'step': 'pvc_casing_booking_confirm', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_pvc_casing_booking_confirm(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        user.booking_data = {}
+        send("Please provide your full name:", user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'booking_full_name', 'user': user.to_dict()})
+        return {'step': 'booking_full_name', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        return handle_other_services_menu("0", user_data, phone_id)
+
+    else:
+        send("Please select a valid option (1 or 2).", user_data['sender'], phone_id)
+        return {'step': 'pvc_casing_booking_confirm', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+# Booking detail collection steps
+
+def handle_booking_full_name(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    full_name = prompt.strip()
+    user.booking_data['full_name'] = full_name
+    send("Please provide your phone number:", user_data['sender'], phone_id)
+    update_user_state(user_data['sender'], {'step': 'booking_phone', 'user': user.to_dict()})
+    return {'step': 'booking_phone', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_booking_phone(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    phone = prompt.strip()
+    user.booking_data['phone'] = phone
+    send("Please enter your exact location/address or share your GPS pin:", user_data['sender'], phone_id)
+    update_user_state(user_data['sender'], {'step': 'booking_location', 'user': user.to_dict()})
+    return {'step': 'booking_location', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_booking_location(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = prompt.strip()
+    user.booking_data['location'] = location
+    send("Please enter your preferred booking date (e.g., 2024-10-15):", user_data['sender'], phone_id)
+    update_user_state(user_data['sender'], {'step': 'booking_date', 'user': user.to_dict()})
+    return {'step': 'booking_date', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_booking_date(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    booking_date = prompt.strip()
+    user.booking_data['date'] = booking_date
+    send("If you have any notes or special requests, please enter them now. Otherwise, type 'No':", user_data['sender'], phone_id)
+    update_user_state(user_data['sender'], {'step': 'booking_notes', 'user': user.to_dict()})
+    return {'step': 'booking_notes', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_booking_notes(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    notes = prompt.strip()
+    user.booking_data['notes'] = notes if notes.lower() != 'no' else ''
+    
+    # At this point, save booking to database or call booking API
+    booking_confirmation_number = save_booking(user.booking_data)  # You must implement save_booking
+
+    send(
+        f"Thank you {user.booking_data['full_name']}! Your booking is confirmed.\n"
+        f"Booking Reference: {booking_confirmation_number}\n"
+        "Our team will contact you soon.\n"
+        "Type 'menu' to return to the main menu.",
+        user_data['sender'], phone_id
+    )
+    update_user_state(user_data['sender'], {'step': 'main_menu', 'user': user.to_dict()})
+    return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
 
 def handle_check_project_status_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
@@ -1454,7 +1837,48 @@ action_mapping = {
     "custom_question": custom_question,
     "custom_question_followup": custom_question_followup,
     "human_agent": human_agent,
-    "human_agent_followup": human_agent_followup,   
+    "human_agent_followup": human_agent_followup,  
+    # Other services menu flow
+    "other_services_menu": handle_other_services_menu,
+    
+    # Borehole Drilling
+    "borehole_drilling_menu": handle_borehole_drilling_menu,
+    "borehole_drilling_depth": handle_borehole_drilling_depth,
+    "borehole_drilling_diameter": handle_borehole_drilling_diameter,
+    "borehole_drilling_location": handle_borehole_drilling_location,
+    "borehole_drilling_booking_confirm": handle_borehole_drilling_booking_confirm,
+    
+    # Pump Installation
+    "pump_installation_menu": handle_pump_installation_menu,
+    "pump_installation_type": handle_pump_installation_type,
+    "pump_installation_power": handle_pump_installation_power,
+    "pump_installation_location": handle_pump_installation_location,
+    "pump_installation_booking_confirm": handle_pump_installation_booking_confirm,
+    
+    # Water Tank Installation
+    "water_tank_installation_menu": handle_water_tank_installation_menu,
+    "water_tank_installation_capacity": handle_water_tank_installation_capacity,
+    "water_tank_installation_location": handle_water_tank_installation_location,
+    "water_tank_installation_booking_confirm": handle_water_tank_installation_booking_confirm,
+    
+    # Flushing
+    "flushing_menu": handle_flushing_menu,
+    "flushing_type": handle_flushing_type,
+    "flushing_diameter": handle_flushing_diameter,
+    "flushing_location": handle_flushing_location,
+    "flushing_booking_confirm": handle_flushing_booking_confirm,
+    
+    # PVC Casing
+    "pvc_casing_selection": handle_pvc_casing_selection,
+    "pvc_casing_location": handle_pvc_casing_location,
+    "pvc_casing_booking_confirm": handle_pvc_casing_booking_confirm,
+    
+    # Booking details collection
+    "booking_full_name": handle_booking_full_name,
+    "booking_phone": handle_booking_phone,
+    "booking_location": handle_booking_location,
+    "booking_date": handle_booking_date,
+    "booking_notes": handle_booking_notes,
     "human_agent": lambda prompt, user_data, phone_id: (
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
