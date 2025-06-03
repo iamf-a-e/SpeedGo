@@ -188,7 +188,7 @@ def handle_main_menu(prompt, user_data, phone_id):
         user = User.from_dict(user_data['user']) 
         if prompt == "1": # Borehole Drilling FAQs
             update_user_state(user_data['sender'], {
-                'step': 'select_service',
+                'step': 'faq_borehole',
                 'user': user.to_dict()
             })
             send(
@@ -207,7 +207,7 @@ def handle_main_menu(prompt, user_data, phone_id):
 
         elif prompt == "2": # Pump Installation FAQs
             update_user_state(user_data['sender'], {
-                'step': 'select_service',
+                'step': 'faq_pump',
                 'user': user.to_dict()
             })
             send(
@@ -236,7 +236,7 @@ def handle_main_menu(prompt, user_data, phone_id):
     
         elif prompt == "4": # Speak to a human agent
             update_user_state(user_data['sender'], {
-                'step': 'select_service',
+                'step': 'main_menu',
                 'user': user.to_dict()
             })
             send("Please hold while I connect you to a representative…", user_data['sender'], phone_id)
@@ -721,7 +721,6 @@ action_mapping = {
     "select_language": handle_select_language,
     "main_menu": handle_main_menu,
     "select_service": handle_select_service,
-    "faq_menu": faq_menu,
     "get_pricing_for_location": handle_get_pricing_for_location,
     "collect_quote_details": handle_collect_quote_details,
     "quote_response": handle_quote_response,
