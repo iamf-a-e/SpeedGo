@@ -2867,6 +2867,36 @@ def handle_offer_response2(prompt, user_data, phone_id):
         send("Ndapota sarudza chisarudzo chiri pakati pe1 ne3.", user_data['sender'], phone_id)
         return {'step': 'offer_response2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+def handle_collect_offer_details2(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    user.offer_data['offer'] = prompt
+    user.offer_data['status'] = 'pending'
+    quote_id = user.quote_data.get('quote_id')
+    if quote_id:
+        q = redis.get(f"quote:{quote_id}")
+        if q:
+            q = json.loads(q)
+            q['offer_data'] = user.offer_data
+            redis.set(f"quote:{quote_id}", json.dumps(q))
+    update_user_state(user_data['sender'], {
+        'step': 'offer_response2',
+        'user': user.to_dict()
+    })
+    send(
+        "Chikumbiro chako chatumirwa kumaneja wedu wezvekutengesa. Tichapindura mukati meawa imwe chete.\n\n"
+        "Tinotenda nechipo chako!\n\n"
+        "Chikwata chedu chichachiongorora uye chipindure munguva pfupi.\n\n"
+        "Kunyange tichiedza kupa mitengo inokwanisika, mitengo yedu inoratidza unhu, kuchengetedzeka, uye kuvimbika.\n\n"
+        "Ungade kuita sei:\n"
+        "1. Enderera mberi kana chipo chagamuchirwa\n"
+        "2. Kutaura nemunhu\n"
+        "3. Kuchinja chipo chako"
+
+        user_data['sender'], phone_id
+    )
+    return {'step': 'offer_response2', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 
 def handle_booking_details2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
