@@ -307,6 +307,22 @@ def handle_pump_status_updates_opt_in(prompt, user_data, phone_id):
     return handle_main_menu("", user_data, phone_id)
 
 
+def handle_drilling_status_updates_opt_in(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    response = prompt.strip().lower()
+
+    if response in ['yes', 'y']:
+        send("Great! You'll now receive WhatsApp updates whenever your borehole drilling status changes.", user_data['sender'], phone_id)
+    elif response in ['no', 'n']:
+        send("No problem. You can always check the status again later if needed.", user_data['sender'], phone_id)
+    else:
+        send("Sorry, I didn't understand that. Please reply with Yes or No.", user_data['sender'], phone_id)
+        return {'step': 'drilling_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    return handle_main_menu("", user_data, phone_id)
+
+
+
 def handle_enter_location_for_quote(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
