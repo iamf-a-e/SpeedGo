@@ -937,9 +937,10 @@ def message_handler(prompt, sender, phone_id):
         return updated_state  # return something or None
 
 
-    user_data = get_user_data(sender)
-    customer_number = sender
-    state = user_data.get('step')
+    user_state = get_user_state(sender)
+    user_state['sender'] = sender    
+    next_state = get_action(user_state['step'], prompt, user_state, phone_id)
+    update_user_state(sender, next_state)
 
     
     
