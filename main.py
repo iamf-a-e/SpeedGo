@@ -953,7 +953,6 @@ def handle_get_pricing_for_location_quotes(prompt, user_data, phone_id):
         'sender': user_data['sender']
     }
 
-
 def handle_select_service_quote(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     location = user.quote_data.get('location')
@@ -982,20 +981,61 @@ def handle_select_service_quote(prompt, user_data, phone_id):
     # Get pricing
     pricing_message = get_pricing_for_location_quotes(location, selected_service)
 
-    # Update user state
+    # Ask if user wants to return to main menu or choose another service
+    followup_message = (
+        f"{pricing_message}\n\n"
+        "Would you like to:\n"
+        "1. Ask pricing for another service\n"
+        "2. Return to Main Menu"
+    )
+
+    # Update user state to expect follow-up choice
     update_user_state(user_data['sender'], {
-        'step': 'collect_booking_info',
+        'step': 'quote_followup',
         'user': user.to_dict()
     })
 
-    # Send pricing to user
-    send(pricing_message, user_data['sender'], phone_id)
+    send(followup_message, user_data['sender'], phone_id)
 
     return {
-        'step': 'collect_booking_info',
+        'step': 'quote_followup',
         'user': user.to_dict(),
         'sender': user_data['sender']
     }
+
+
+def handle_quote_followup(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt.strip() == "1":
+        # Stay in quote flow, show services again
+        update_user_state(user_data['sender'], {
+            'step': 'select_service_quote',
+            'user': user.to_dict()
+        })
+        send(
+            "Select another service:\n"
+            "1. Water survey\n"
+            "2. Borehole drilling\n"
+            "3. Pump installation\n"
+            "4. Commercial hole drilling\n"
+            "5. Borehole Deepening",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt.strip() == "2":
+        # Go back to main menu
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu',
+            'user': user.to_dict()
+        })
+        return handle_main_menu("0", user_data, phone_id)
+
+    else:
+        send("Invalid option. Reply 1 to ask about another service or 2 to return to the main menu.", user_data['sender'], phone_id)
+        return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
 
 
 
@@ -1072,6 +1112,7 @@ action_mapping = {
     "collect_quote_details": handle_collect_quote_details,
     "quote_response": handle_quote_response,
     "collect_offer_details": handle_collect_offer_details,
+    "quote_followup": handle_quote_followup,
     "offer_response": handle_offer_response,
     "booking_details": handle_booking_details,
     "collect_booking_info": handle_collect_booking_info,
