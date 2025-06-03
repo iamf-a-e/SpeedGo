@@ -350,7 +350,7 @@ def handle_deepening_location(prompt, user_data, phone_id):
     user.quote_data['location'] = location
 
     # Fetch pricing from backend (you must implement this function)
-    price = get_pricing_for_other_services(location, "borehole_deepening")
+    price = get_pricing_for_location_quotes(location, "borehole_deepening")
 
     send(
         f"Deepening cost in {location} starts from USD {price} per meter.\n"
