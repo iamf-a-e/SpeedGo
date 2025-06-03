@@ -185,6 +185,42 @@ def handle_main_menu(prompt, user_data, phone_id):
         send("Please select a valid option (1-5).", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
+def human_agent(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    customer_number = user_data['sender']
+    customer_name = user.name if hasattr(user, "name") and user.name else "Unknown"
+
+    # Notify the customer
+    send(
+        "Thank you. Please hold while I connect you to a SpeedGo representative...",
+        customer_number, phone_id
+    )
+
+    # Notify the agent
+    agent_message = (
+        f"👋 A customer would like to talk to you on WhatsApp.\n\n"
+        f"📱 Customer Number: {customer_number}\n"
+        f"🙋 Name: {customer_name}\n"
+        f"📩 Last Message: \"{prompt}\""
+    )
+
+    # Agent phone number (must be in international format)
+    agent_number = "+263719835124"
+
+    # Send message to agent
+    send(agent_message, agent_number, phone_id)
+
+    # Let customer know they can also reach out
+    send(
+        "Alternatively, you can message or call us directly at +263719835124.",
+        customer_number, phone_id
+    )
+
+    return {'step': 'main_menu', 'user': user.to_dict(), 'sender': customer_number}
+
+
+
 def faq_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user']) 
 
@@ -855,6 +891,7 @@ action_mapping = {
     "faq_pump_followup": faq_pump_followup,
     "custom_question": custom_question,
     "custom_question_followup": custom_question_followup,
+    "human_agent": human_agent,
     "human_agent": lambda prompt, user_data, phone_id: (
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
