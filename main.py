@@ -926,15 +926,13 @@ def webhook():
         return jsonify({"status": "ok"}), 200
 
 
-def message_handler(prompt, sender, phone_id):
-    # Load existing user state inside handler    
+def message_handler(prompt, sender, phone_id):      
     text = prompt.strip().lower()
 
-
-    # Greeting triggers ask_name flow
+   
     if text in ["hi", "hey", "hie"]:
-        user_state = {'step': 'ask_name', 'sender': sender}
-        updated_state = get_action('ask_name', prompt, user_state, phone_id)
+        user_state = {'step': 'handle_welcome', 'sender': sender}
+        updated_state = get_action('handle_welcome', prompt, user_state, phone_id)
         update_user_state(sender, updated_state)
         return updated_state  # return something or None
 
