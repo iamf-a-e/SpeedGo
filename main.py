@@ -3338,7 +3338,6 @@ action_mapping = {
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
     ),
-}
     "main_menu2": handle_main_menu2,
     "enter_location_for_quote2": handle_enter_location_for_quote2,  
     "select_service_quote2": handle_select_service_quote2, 
