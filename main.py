@@ -431,67 +431,7 @@ def handle_booking_confirmation(prompt, user_data, phone_id):
         send("Please contact our support team to reschedule.", user_data['sender'], phone_id)
         return {'step': 'booking_confirmation', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-# Action mapping
-action_mapping = {
-    "welcome": handle_welcome,
-    "select_language": handle_select_language,
-    "main_menu": handle_main_menu,
-    "select_service": handle_select_service,
-    "get_pricing_for_location": handle_get_pricing_for_location,
-    "collect_quote_details": handle_collect_quote_details,
-    "quote_response": handle_quote_response,
-    "collect_offer_details": handle_collect_offer_details,
-    "offer_response": handle_offer_response,
-    "booking_details": handle_booking_details,
-    "collect_booking_info": handle_collect_booking_info,
-    "booking_confirmation": handle_booking_confirmation,
-    "human_agent": lambda prompt, user_data, phone_id: (
-        send("A human agent will contact you soon.", user_data['sender'], phone_id)
-        or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
-    ),
-}
 
-def get_action(current_state, prompt, user_data, phone_id):
-    handler = action_mapping.get(current_state, handle_welcome)
-    return handler(prompt, user_data, phone_id)
-
-# Flask app
-app = Flask(__name__)
-
-@app.route("/", methods=["GET", "POST"])
-def index():
-    return render_template("connected.html")
-
-@app.route("/webhook", methods=["GET", "POST"])
-def webhook():
-    if request.method == "GET":
-        mode = request.args.get("hub.mode")
-        token = request.args.get("hub.verify_token")
-        challenge = request.args.get("hub.challenge")
-        if mode == "subscribe" and token == "BOT":
-            return challenge, 200
-        return "Failed", 403
-
-    elif request.method == "POST":
-        data = request.get_json()
-        logging.info(f"Incoming webhook data: {data}")
-        try:
-            entry = data["entry"][0]
-            changes = entry["changes"][0]
-            value = changes["value"]
-            phone_id = value["metadata"]["phone_number_id"]
-            messages = value.get("messages", [])
-            if messages:
-                message = messages[0]
-                sender = message["from"]
-                if "text" in message:
-                    prompt = message["text"]["body"].strip()
-                    message_handler(prompt, sender, phone_id)
-                else:
-                    send("Please send a text message", sender, phone_id)
-        except Exception as e:
-            logging.error(f"Error processing webhook: {e}", exc_info=True)
-        return jsonify({"status": "ok"}), 200
 
 
 location_pricing = {
@@ -580,6 +520,69 @@ def handle_get_pricing_for_location(prompt, user_data, phone_id):
     }
 
 
+
+
+# Action mapping
+action_mapping = {
+    "welcome": handle_welcome,
+    "select_language": handle_select_language,
+    "main_menu": handle_main_menu,
+    "select_service": handle_select_service,
+    "get_pricing_for_location": handle_get_pricing_for_location,
+    "collect_quote_details": handle_collect_quote_details,
+    "quote_response": handle_quote_response,
+    "collect_offer_details": handle_collect_offer_details,
+    "offer_response": handle_offer_response,
+    "booking_details": handle_booking_details,
+    "collect_booking_info": handle_collect_booking_info,
+    "booking_confirmation": handle_booking_confirmation,
+    "human_agent": lambda prompt, user_data, phone_id: (
+        send("A human agent will contact you soon.", user_data['sender'], phone_id)
+        or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
+    ),
+}
+
+def get_action(current_state, prompt, user_data, phone_id):
+    handler = action_mapping.get(current_state, handle_welcome)
+    return handler(prompt, user_data, phone_id)
+
+# Flask app
+app = Flask(__name__)
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    return render_template("connected.html")
+
+@app.route("/webhook", methods=["GET", "POST"])
+def webhook():
+    if request.method == "GET":
+        mode = request.args.get("hub.mode")
+        token = request.args.get("hub.verify_token")
+        challenge = request.args.get("hub.challenge")
+        if mode == "subscribe" and token == "BOT":
+            return challenge, 200
+        return "Failed", 403
+
+    elif request.method == "POST":
+        data = request.get_json()
+        logging.info(f"Incoming webhook data: {data}")
+        try:
+            entry = data["entry"][0]
+            changes = entry["changes"][0]
+            value = changes["value"]
+            phone_id = value["metadata"]["phone_number_id"]
+            messages = value.get("messages", [])
+            if messages:
+                message = messages[0]
+                sender = message["from"]
+                if "text" in message:
+                    prompt = message["text"]["body"].strip()
+                    message_handler(prompt, sender, phone_id)
+                else:
+                    send("Please send a text message", sender, phone_id)
+        except Exception as e:
+            logging.error(f"Error processing webhook: {e}", exc_info=True)
+        return jsonify({"status": "ok"}), 200
 
 
 def message_handler(prompt, sender, phone_id):
