@@ -376,7 +376,7 @@ def handle_deepening_booking_confirm(prompt, user_data, phone_id):
 
     elif choice == "2":
         # Back to other services menu
-        return handle_other_services_menu("0", user_data, phone_id)
+        return other_services_menu("0", user_data, phone_id)
 
     else:
         send("Please select a valid option (1 or 2).", user_data['sender'], phone_id)
