@@ -8,6 +8,8 @@ from datetime import datetime
 from flask import Flask, request, jsonify, render_template
 from upstash_redis import Redis
 import google.generativeai as genai
+import threading
+import time
 
 logging.basicConfig(level=logging.INFO)
 
@@ -190,6 +192,7 @@ def human_agent(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     customer_number = user_data['sender']
     customer_name = user.name if hasattr(user, "name") and user.name else "Unknown"
+    agent_number = "+263719835124"
 
     # Notify the customer
     send(
@@ -204,21 +207,20 @@ def human_agent(prompt, user_data, phone_id):
         f"🙋 Name: {customer_name}\n"
         f"📩 Last Message: \"{prompt}\""
     )
-
-    # Agent phone number (must be in international format)
-    agent_number = "+263719835124"
-
-    # Send message to agent
     send(agent_message, agent_number, phone_id)
 
-    # Let customer know they can also reach out
-    send(
-        "Alternatively, you can message or call us directly at +263719835124.",
-        customer_number, phone_id
-    )
+    # After 10 seconds, send fallback if no agent has responded
+    def send_fallback():
+        time.sleep(10)
+        send(
+            "Alternatively, you can message or call us directly at +263719835124.",
+            customer_number, phone_id
+        )
+
+    # Start background thread (non-blocking)
+    threading.Thread(target=send_fallback).start()
 
     return {'step': 'main_menu', 'user': user.to_dict(), 'sender': customer_number}
-
 
 
 def faq_menu(prompt, user_data, phone_id):
