@@ -123,7 +123,7 @@ def handle_select_language(prompt, user_data, phone_id):
 
 def handle_main_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    if prompt == "1":  # Request a quote
+    if user_data.get("step") == "main_menu" and prompt == "1":  # Request a quote
         update_user_state(user_data['sender'], {
             'step': 'select_service',
             'user': user.to_dict()
@@ -138,7 +138,7 @@ def handle_main_menu(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "2":  # Search Price Using Location
+    elif user_data.get("step") == "main_menu" and prompt == "2":  # Search Price Using Location
         update_user_state(user_data['sender'], {
             'step': 'get_pricing_for_location',
             'user': user.to_dict()
@@ -148,19 +148,116 @@ def handle_main_menu(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'get_pricing_for_location', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "3":  # Check Project Status
+    elif user_data.get("step") == "main_menu" and prompt == "3":  # Check Project Status
         send("This feature is coming soon. Please contact your agent for updates.", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "4":  # Learn About Borehole Drilling
+    elif user_data.get("step") == "main_menu" and prompt == "4":
         send(
-            "We offer:\n"
-            "- Borehole drilling\n"
-            "- Borehole pump installation\n"
-            "- Water pond and weir dam construction\n"
-            "Contact us for more info!", user_data['sender'], phone_id
+            "Welcome to SpeedGo – How can we assist you today? Please choose an FAQ category:\n\n"
+            "1. Borehole Drilling FAQs\n"
+            "2. Pump Installation FAQs\n"
+            "3. Ask a different question\n"
+            "4. Speak to a human agent\n"
+            "5. Main Menu",
+            user_data['sender'], phone_id
         )
+        return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif user_data.get("step") == "faq_menu":
+    if prompt == "1":
+        send(
+            "Here are the most common questions about borehole drilling:\n\n"
+            "1. How much does borehole drilling cost?\n"
+            "2. How long does it take to drill a borehole?\n"
+            "3. How deep will my borehole be?\n"
+            "4. Do I need permission to drill a borehole?\n"
+            "5. Do you do a water survey and drilling at the same time?\n"
+            "6. What if you do a water survey and find no water?\n"
+            "7. What equipment do you use?\n"
+            "8. Back to FAQ Menu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        send(
+            "Here are common questions about pump installation:\n\n"
+            "1. What’s the difference between solar and electric pumps?\n"
+            "2. Can you install if I already have materials?\n"
+            "3. How long does pump installation take?\n"
+            "4. What pump size do I need?\n"
+            "5. Do you supply tanks and tank stands?\n"
+            "6. Back to FAQ Menu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "3":
+        send(
+            "Please type your question below, and we’ll do our best to assist you.\n"
+            "(Your message will be reviewed by our team.)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'custom_question', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "4":
+        send("Please hold while I connect you to a representative…", user_data['sender'], phone_id)
+        time.sleep(5)
+        send("You can also call us directly at [Phone Number].", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "5":  # Human agent
+
+    elif prompt == "5":
+        return handle_select_language("1", user_data, phone_id)
+
+    else:
+        send("Please select a valid option (1–5).", user_data['sender'], phone_id)
+        return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+    elif user_data.get("step") == "faq_borehole":
+    responses = {
+        "1": "The cost depends on your location, depth, and soil conditions. Please send us your location and site access details for a personalized quote.",
+        "2": "Typically 4–6 hours or up to several days, depending on site conditions, rock type, and accessibility.",
+        "3": "Depth varies by area. The standard depth is around 40 meters, but boreholes can range from 40 to 150 meters depending on the underground water table.",
+        "4": "In some areas, a water permit may be required. We can assist you with the application if necessary.",
+        "5": "Yes, we offer both as a combined package or separately, depending on your preference.",
+        "6": "If the client wishes to drill at a second point, we offer a discount.\n\nNote: Survey machines detect underground water-bearing fractures or convergence points of underground streams. However, they do not measure the volume or flow rate of water. Therefore, borehole drilling carries no 100% guarantee of hitting water, as the fractures could be dry, moist, or wet.",
+        "7": "We use professional-grade rotary and percussion drilling rigs, GPS tools, and geological survey equipment.",
+        "8": None
+    }
+
+    if prompt in responses:
+        if prompt == "8":
+            return handle_select_language("1", user_data, phone_id)  # Reopen FAQ menu
+        send(responses[prompt], user_data['sender'], phone_id)
+    else:
+        send("Please choose a valid option (1–8).", user_data['sender'], phone_id)
+    return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+    elif user_data.get("step") == "faq_pump":
+    responses = {
+        "1": "Solar pumps use energy from solar panels and are ideal for off-grid or remote areas. Electric pumps rely on the power grid and are typically more affordable upfront but depend on electricity availability.",
+        "2": "Yes! We offer labor-only packages if you already have the necessary materials.",
+        "3": "Installation usually takes one day, provided materials are ready and site access is clear.",
+        "4": "Pump size depends on your water needs and borehole depth. We can assess your site and recommend the best option.",
+        "5": "Yes, we supply complete packages including water tanks, tank stands, and all necessary plumbing fittings.",
+        "6": None
+    }
+
+    if prompt in responses:
+        if prompt == "6":
+            return handle_select_language("1", user_data, phone_id)  # Back to FAQ menu
+        send(responses[prompt], user_data['sender'], phone_id)
+    else:
+        send("Please choose a valid option (1–6).", user_data['sender'], phone_id)
+    return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+    
+
+
+    elif user_data.get("step") == "main_menu" and prompt == "5":  # Human agent
         send("Connecting you to a human agent...", user_data['sender'], phone_id)
         return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
