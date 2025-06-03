@@ -1030,7 +1030,7 @@ def handle_quote_followup(prompt, user_data, phone_id):
             'step': 'main_menu',
             'user': user.to_dict()
         })
-        return handle_main_menu("0", user_data, phone_id)
+        return handle_select_language("0", user_data, phone_id)
 
     else:
         send("Invalid option. Reply 1 to ask about another service or 2 to return to the main menu.", user_data['sender'], phone_id)
