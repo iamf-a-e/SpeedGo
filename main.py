@@ -141,7 +141,7 @@ def handle_main_menu(prompt, user_data, phone_id):
             "5. Borehole Deepening",
             user_data['sender'], phone_id
         )
-        return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'handle_select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "2":  # Search Price Using Location
         update_user_state(user_data['sender'], {
             'step': 'get_pricing_for_location',
@@ -550,7 +550,7 @@ def handle_select_service(prompt, user_data, phone_id):
             "1. Your location (City/Town or GPS):\n",            
             user_data['sender'], phone_id
         )
-        return {'step': 'get_pricing_for_location', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'get_pricing_for_location_quotes', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
         send("Please select a valid service (1-4).", user_data['sender'], phone_id)
         return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -879,6 +879,106 @@ def handle_get_pricing_for_location(prompt, user_data, phone_id):
 
 
 
+def get_pricing_for_location_quotes(location_input, service_name):
+    location = normalize_location(location_input)
+    services = location_pricing.get(location)
+
+    if not services:
+        return f"Sorry, we don't have pricing for {location.title()} yet."
+
+    service_name = service_name.strip().lower()
+
+    for service, price in services.items():
+        if service.lower() == service_name:
+            if isinstance(price, dict):  # Handle Borehole Drilling (nested)
+                class_6 = price.get("class 6", "N/A")
+                class_9 = price.get("class 9", "N/A")
+                class_10 = price.get("class 10", "N/A")
+                included_depth = price.get("included_depth_m", "N/A")
+                extra_per_m = price.get("extra_per_m", "N/A")
+                return (
+                    f"{service} Pricing in {location.title()}:\n"
+                    f"- Class 6: ${class_6}\n"
+                    f"- Class 9: ${class_9}\n"
+                    f"- Class 10: ${class_10}\n"
+                    f"- Includes depth up to {included_depth}m\n"
+                    f"- Extra charge: ${extra_per_m}/m beyond included depth"
+                )
+            else:  # Flat price service
+                return f"The price for {service} in {location.title()} is ${price}."
+
+    return f"Sorry, we don't have pricing for '{service_name}' in {location.title()}."
+
+
+def handle_get_pricing_for_location_quotes(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    service = prompt.strip()
+
+    if not location:
+        send("Please provide your location before selecting a service.", user_data['sender'], phone_id)
+        return user_data
+
+    pricing_message = get_pricing_for_location_quotes(location, service)
+    user.quote_data['service'] = service
+
+    update_user_state(user_data['sender'], {
+        'step': 'collect_booking_info',
+        'user': user.to_dict()
+    })
+
+    send(pricing_message, user_data['sender'], phone_id)
+
+    return {
+        'step': 'collect_booking_info',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+
+def handle_select_service_quote(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+
+    if not location:
+        send("Please provide your location first before selecting a service.", user_data['sender'], phone_id)
+        return user_data
+
+    service_map = {
+        "1": "Water Survey",
+        "2": "Borehole Drilling",
+        "3": "Pump Installation",
+        "4": "Commercial Hole Drilling",
+        "5": "Borehole Deepening"
+    }
+
+    selected_service = service_map.get(prompt.strip())
+
+    if not selected_service:
+        send("Invalid option. Please reply with 1, 2, 3, 4 or 5 to choose a service.", user_data['sender'], phone_id)
+        return user_data
+
+    # Store selected service
+    user.quote_data['service'] = selected_service
+
+    # Get pricing
+    pricing_message = get_pricing_for_location_quotes(location, selected_service)
+
+    # Update user state
+    update_user_state(user_data['sender'], {
+        'step': 'collect_booking_info',
+        'user': user.to_dict()
+    })
+
+    # Send pricing to user
+    send(pricing_message, user_data['sender'], phone_id)
+
+    return {
+        'step': 'collect_booking_info',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
 
 
 def get_action(current_state, prompt, user_data, phone_id):
@@ -965,6 +1065,7 @@ action_mapping = {
     "custom_question_followup": custom_question_followup,
     "human_agent": human_agent,
     "human_agent_followup": human_agent_followup,
+    'select_service': handle_select_service_quote,
     "human_agent": lambda prompt, user_data, phone_id: (
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
