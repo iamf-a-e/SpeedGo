@@ -2890,8 +2890,7 @@ def handle_collect_offer_details2(prompt, user_data, phone_id):
         "Ungade kuita sei:\n"
         "1. Enderera mberi kana chipo chagamuchirwa\n"
         "2. Kutaura nemunhu\n"
-        "3. Kuchinja chipo chako"
-
+        "3. Kuchinja chipo chako",
         user_data['sender'], phone_id
     )
     return {'step': 'offer_response2', 'user': user.to_dict(), 'sender': user_data['sender']}
