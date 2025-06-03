@@ -874,12 +874,12 @@ def message_handler(prompt, sender, phone_id):
         updated_state = get_action('ask_name', prompt, user_state, phone_id)
         update_user_state(sender, updated_state)
         return
-
-
-        if state == 'waiting_for_human_agent_response':
-            prompt_time = user_data.get('agent_prompt_time', 0)
-            elapsed = time.time() - prompt_time
-
+    
+    state = user_data.get('step')
+    if state == 'waiting_for_human_agent_response':
+        prompt_time = user_data.get('agent_prompt_time', 0)
+        elapsed = time.time() - prompt_time
+    
         if elapsed >= 10:
             # Send fallback prompt
             send(
@@ -890,14 +890,14 @@ def message_handler(prompt, sender, phone_id):
                 "Would you like to return to the main menu?\n1. Yes\n2. No",
                 customer_number, phone_id
             )
-
+    
             # Update state to wait for user's Yes/No reply
             update_user_state(customer_number, {
                 'step': 'human_agent_followup',
                 'user': user_data['user'],
                 'sender': customer_number
             })
-
+    
             return {'step': 'human_agent_followup', 'user': user_data['user'], 'sender': customer_number}
         else:
             # Still waiting, do not send fallback yet
