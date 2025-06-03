@@ -867,11 +867,9 @@ def webhook():
 
 
 def message_handler(prompt, sender, phone_id):
-    # Load existing user state inside handler
-    user_data = get_user_data(sender)
+    # Load existing user state inside handler    
     text = prompt.strip().lower()
-    customer_number = sender
-    state = user_data.get('step')
+
 
     # Greeting triggers ask_name flow
     if text in ["hi", "hey", "hie"]:
@@ -879,6 +877,12 @@ def message_handler(prompt, sender, phone_id):
         updated_state = get_action('ask_name', prompt, user_state, phone_id)
         update_user_state(sender, updated_state)
         return updated_state  # return something or None
+
+
+    user_data = get_user_data(sender)
+    customer_number = sender
+    state = user_data.get('step')
+
     
     if state == 'waiting_for_human_agent_response':
         prompt_time = user_data.get('agent_prompt_time', 0)
