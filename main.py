@@ -1076,6 +1076,8 @@ action_mapping = {
     "welcome": handle_welcome,
     "select_language": handle_select_language,
     "main_menu": handle_main_menu,
+    "enter_location_for_quote": handle_enter_location_for_quote,  
+    "select_service_quote": handle_select_service_quote, 
     "select_service": handle_select_service,
     "get_pricing_for_location": handle_get_pricing_for_location,
     "collect_quote_details": handle_collect_quote_details,
@@ -1093,8 +1095,7 @@ action_mapping = {
     "custom_question": custom_question,
     "custom_question_followup": custom_question_followup,
     "human_agent": human_agent,
-    "human_agent_followup": human_agent_followup,
-    'select_service': handle_select_service_quote,
+    "human_agent_followup": human_agent_followup,   
     "human_agent": lambda prompt, user_data, phone_id: (
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
