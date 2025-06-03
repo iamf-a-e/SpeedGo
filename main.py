@@ -104,18 +104,6 @@ def handle_select_language(prompt, user_data, phone_id):
             'step': 'main_menu',
             'user': user.to_dict()
         })
-        send(
-            "Thank you!\n"
-            "How can we help you today?\n\n"
-            "1. Request a quote\n"
-            "2. Search Price Using Location\n"
-            "3. Check Project Status\n"
-            "4. FAQs or Learn About Borehole Drilling\n"
-            "5. FAQs or Learn About Borehole Drilling\n"
-            "6. Talk to a Human Agent\n\n"
-            "Please reply with a number (e.g., 1)",
-            user_data['sender'], phone_id            
-        )
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
         send("Please reply 1 to continue in English.", user_data['sender'], phone_id)
@@ -130,11 +118,14 @@ def handle_main_menu(prompt, user_data, phone_id):
         })
         send(
             "Thank you!\n"
-            "Select the service:\n"
-            "1. Borehole drilling\n"
-            "2. Borehole pump installation\n"
-            "3. Water pond construction\n"
-            "4. Weir dam construction",
+            "How can we help you today?\n\n"
+            "1. Request a quote\n"
+            "2. Search Price Using Location\n"
+            "3. Check Project Status\n"
+            "4. FAQs or Learn About Borehole Drilling\n"
+            "5. FAQs or Learn About Borehole Drilling\n"
+            "6. Talk to a Human Agent\n\n"
+            "Please reply with a number (e.g., 1)",
             user_data['sender'], phone_id
         )
         return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
