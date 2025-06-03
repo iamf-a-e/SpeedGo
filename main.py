@@ -195,14 +195,31 @@ def handle_check_project_status_menu(prompt, user_data, phone_id):
             'step': 'drilling_status_info_request',
             'user': user.to_dict()
         })
-        send(
-            "To check your drilling project status, please provide the following:\n\n"
-            "- Full Name used during booking\n"
-            "- Project Reference Number or Phone Number\n"
-            "- Location of the project (optional)",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'drilling_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+        # Split input lines
+        lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
+        
+        if len(lines) < 2:
+            send(
+                "Please provide at least your full name and reference number/phone number, each on a new line.\n\n"
+                "Example:\n"
+                "John Doe\nREF123456 or 0771234567\nOptional Location",
+                user_data['sender'], phone_id
+            )
+            return {'step': 'drilling_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+        # Assign to named variables
+        full_name = lines[0]
+        reference = lines[1]
+        location = lines[2] if len(lines) >= 3 else "Not Provided"
+    
+        # Store structured info
+        user.project_status_request = {
+            'type': 'pump',
+            'full_name': full_name,
+            'reference': reference,
+            'location': location
+        }
 
     elif prompt == "2":
         update_user_state(user_data['sender'], {
@@ -248,7 +265,7 @@ def handle_drilling_status_info_request(prompt, user_data, phone_id):
     # Dummy project status response
     send(
         "Here is your drilling project status:\n\n"
-        "Project Name: Borehole Alpha\n"
+        "Project Name: Borehole {full_name}\n"
         "Current Stage: Drilling In Progress\n"
         "Next Step: Casing\n"
         "Estimated Completion Date: 10/06/2025\n\n"
