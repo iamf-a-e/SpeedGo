@@ -867,6 +867,7 @@ def webhook():
 
 
 def message_handler(prompt, sender, phone_id, user_data):
+    user_data = get_user_data(sender)
     text = prompt.strip().lower()
     customer_number = sender
     state = user_data.get('step')
