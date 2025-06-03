@@ -353,9 +353,7 @@ def faq_menu(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send("Please hold while I connect you to a representative…", user_data['sender'], phone_id)
-        time.sleep(5)
-        send("You can also call us directly at [Phone Number].", user_data['sender'], phone_id)
-        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "5":  # Back to Main Menu
         return handle_select_language("1", user_data, phone_id)
