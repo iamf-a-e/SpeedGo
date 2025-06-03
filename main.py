@@ -195,6 +195,10 @@ def handle_check_project_status_menu(prompt, user_data, phone_id):
             'step': 'drilling_status_info_request',
             'user': user.to_dict()
         })
+        send(
+            "To check your pump installation status, please provide the following:\n\n",
+            user_data['sender'], phone_id
+        )
         return {'step': 'drilling_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
@@ -203,10 +207,7 @@ def handle_check_project_status_menu(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            "To check your pump installation status, please provide the following:\n\n"
-            "- Full Name used during booking\n"
-            "- Project Reference Number or Phone Number\n"
-            "- Installation Site Location (optional)",
+            "To check your pump installation status, please provide the following:\n\n",
             user_data['sender'], phone_id
         )
         return {'step': 'pump_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -236,7 +237,7 @@ def handle_drilling_status_info_request(prompt, user_data, phone_id):
     
     if len(lines) < 2:
         send(
-            "Please provide at least your full name and reference number/phone number, each on a new line.\n\n"
+            "At least your full name and reference number/phone number, each on a new line.\n\n"
             "Example:\n"
             "John Doe\nREF123456 or 0771234567\nOptional Location",
             user_data['sender'], phone_id
@@ -289,7 +290,7 @@ def handle_pump_status_info_request(prompt, user_data, phone_id):
     
     if len(lines) < 2:
         send(
-            "Please provide at least your full name and reference number/phone number, each on a new line.\n\n"
+            "At least your full name and reference number/phone number, each on a new line.\n\n"
             "Example:\n"
             "John Doe\nREF123456 or 0771234567\nOptional Location",
             user_data['sender'], phone_id
