@@ -204,7 +204,15 @@ def faq_menu(prompt, user_data, phone_id):
             "8. Back to FAQ Menu",
             user_data['sender'], phone_id
         )
-        return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
+        send(
+            "Would you like to:\n"
+            "1. Ask another question from Borehole Drilling FAQs\n"
+            "2. Return to Main Menu",
+            user_data['sender'], phone_id
+        )
+
+        return {'step': 'faq_borehole_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
 
     elif prompt == "2":  # Pump Installation FAQs
         update_user_state(user_data['sender'], {
@@ -251,6 +259,25 @@ def faq_menu(prompt, user_data, phone_id):
     else:
         send("Please select a valid option (1–5).", user_data['sender'], phone_id)
         return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def faq_borehole_followup(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt == "1":
+        send(
+            "Please choose a question:\n\n",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        return handle_select_language("1", user_data, phone_id)
+
+    else:
+        send("Please choose 1 to ask another question or 2 to return to the main menu.", user_data['sender'], phone_id)
+        return {'step': 'faq_borehole_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
 
 def faq_borehole(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
