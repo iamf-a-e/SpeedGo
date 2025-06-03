@@ -216,19 +216,19 @@ def handle_main_menu(prompt, user_data, phone_id):
 
 
     elif prompt == "5":  # Other Services
-    update_user_state(user_data['sender'], {
-        'step': 'other_services_menu',
-        'user': user.to_dict()
-    })
-    send(
-        "Welcome to Other Borehole Services. What service do you need?\n"
-        "1. Borehole Deepening\n"
-        "2. Borehole Flushing\n"
-        "3. PVC Casing Pipe Selection\n"
-        "4. Back to Main Menu",
-        user_data['sender'], phone_id
-    )
-    return {'step': 'other_services_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+        update_user_state(user_data['sender'], {
+            'step': 'other_services_menu',
+            'user': user.to_dict()
+        })
+        send(
+            "Welcome to Other Borehole Services. What service do you need?\n"
+            "1. Borehole Deepening\n"
+            "2. Borehole Flushing\n"
+            "3. PVC Casing Pipe Selection\n"
+            "4. Back to Main Menu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'other_services_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 else:
     send("Please select a valid option (1-5).", user_data['sender'], phone_id)
     return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
