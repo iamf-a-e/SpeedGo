@@ -215,44 +215,44 @@ def handle_main_menu(prompt, user_data, phone_id):
 
 
     if user_data.get("step") == "faq_borehole":
-    responses = {
-        "1": "The cost depends on your location, depth, and soil conditions. Please send us your location and site access details for a personalized quote.",
-        "2": "Typically 4–6 hours or up to several days, depending on site conditions, rock type, and accessibility.",
-        "3": "Depth varies by area. The standard depth is around 40 meters, but boreholes can range from 40 to 150 meters depending on the underground water table.",
-        "4": "In some areas, a water permit may be required. We can assist you with the application if necessary.",
-        "5": "Yes, we offer both as a combined package or separately, depending on your preference.",
-        "6": "If the client wishes to drill at a second point, we offer a discount.\n\nNote: Survey machines detect underground water-bearing fractures or convergence points of underground streams. However, they do not measure the volume or flow rate of water. Therefore, borehole drilling carries no 100% guarantee of hitting water, as the fractures could be dry, moist, or wet.",
-        "7": "We use professional-grade rotary and percussion drilling rigs, GPS tools, and geological survey equipment.",
-        "8": None
-    }
+        responses = {
+            "1": "The cost depends on your location, depth, and soil conditions. Please send us your location and site access details for a personalized quote.",
+            "2": "Typically 4–6 hours or up to several days, depending on site conditions, rock type, and accessibility.",
+            "3": "Depth varies by area. The standard depth is around 40 meters, but boreholes can range from 40 to 150 meters depending on the underground water table.",
+            "4": "In some areas, a water permit may be required. We can assist you with the application if necessary.",
+            "5": "Yes, we offer both as a combined package or separately, depending on your preference.",
+            "6": "If the client wishes to drill at a second point, we offer a discount.\n\nNote: Survey machines detect underground water-bearing fractures or convergence points of underground streams. However, they do not measure the volume or flow rate of water. Therefore, borehole drilling carries no 100% guarantee of hitting water, as the fractures could be dry, moist, or wet.",
+            "7": "We use professional-grade rotary and percussion drilling rigs, GPS tools, and geological survey equipment.",
+            "8": None
+        }
 
-    if prompt in responses:
-        if prompt == "8":
-            return handle_select_language("1", user_data, phone_id)  # Reopen FAQ menu
-        send(responses[prompt], user_data['sender'], phone_id)
-    else:
-        send("Please choose a valid option (1–8).", user_data['sender'], phone_id)
-    return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
+        if prompt in responses:
+            if prompt == "8":
+                return handle_select_language("1", user_data, phone_id)  # Reopen FAQ menu
+            send(responses[prompt], user_data['sender'], phone_id)
+        else:
+            send("Please choose a valid option (1–8).", user_data['sender'], phone_id)
+        return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
     elif user_data.get("step") == "faq_pump":
-    responses = {
-        "1": "Solar pumps use energy from solar panels and are ideal for off-grid or remote areas. Electric pumps rely on the power grid and are typically more affordable upfront but depend on electricity availability.",
-        "2": "Yes! We offer labor-only packages if you already have the necessary materials.",
-        "3": "Installation usually takes one day, provided materials are ready and site access is clear.",
-        "4": "Pump size depends on your water needs and borehole depth. We can assess your site and recommend the best option.",
-        "5": "Yes, we supply complete packages including water tanks, tank stands, and all necessary plumbing fittings.",
-        "6": None
-    }
-
-    if prompt in responses:
-        if prompt == "6":
-            return handle_select_language("1", user_data, phone_id)  # Back to FAQ menu
-        send(responses[prompt], user_data['sender'], phone_id)
-    else:
-        send("Please choose a valid option (1–6).", user_data['sender'], phone_id)
-    return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
-
+        responses = {
+            "1": "Solar pumps use energy from solar panels and are ideal for off-grid or remote areas. Electric pumps rely on the power grid and are typically more affordable upfront but depend on electricity availability.",
+            "2": "Yes! We offer labor-only packages if you already have the necessary materials.",
+            "3": "Installation usually takes one day, provided materials are ready and site access is clear.",
+            "4": "Pump size depends on your water needs and borehole depth. We can assess your site and recommend the best option.",
+            "5": "Yes, we supply complete packages including water tanks, tank stands, and all necessary plumbing fittings.",
+            "6": None
+        }
+    
+        if prompt in responses:
+            if prompt == "6":
+                return handle_select_language("1", user_data, phone_id)  # Back to FAQ menu
+            send(responses[prompt], user_data['sender'], phone_id)
+        else:
+            send("Please choose a valid option (1–6).", user_data['sender'], phone_id)
+        return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
 
     
 
