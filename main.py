@@ -1837,46 +1837,7 @@ action_mapping = {
     "human_agent": human_agent,
     "human_agent_followup": human_agent_followup,  
     # Other services menu flow
-    "other_services_menu": handle_other_services_menu,
-    
-    # Borehole Drilling
-    "borehole_drilling_menu": handle_borehole_drilling_menu,
-    "borehole_drilling_depth": handle_borehole_drilling_depth,
-    "borehole_drilling_diameter": handle_borehole_drilling_diameter,
-    "borehole_drilling_location": handle_borehole_drilling_location,
-    "borehole_drilling_booking_confirm": handle_borehole_drilling_booking_confirm,
-    
-    # Pump Installation
-    "pump_installation_menu": handle_pump_installation_menu,
-    "pump_installation_type": handle_pump_installation_type,
-    "pump_installation_power": handle_pump_installation_power,
-    "pump_installation_location": handle_pump_installation_location,
-    "pump_installation_booking_confirm": handle_pump_installation_booking_confirm,
-    
-    # Water Tank Installation
-    "water_tank_installation_menu": handle_water_tank_installation_menu,
-    "water_tank_installation_capacity": handle_water_tank_installation_capacity,
-    "water_tank_installation_location": handle_water_tank_installation_location,
-    "water_tank_installation_booking_confirm": handle_water_tank_installation_booking_confirm,
-    
-    # Flushing
-    "flushing_menu": handle_flushing_menu,
-    "flushing_type": handle_flushing_type,
-    "flushing_diameter": handle_flushing_diameter,
-    "flushing_location": handle_flushing_location,
-    "flushing_booking_confirm": handle_flushing_booking_confirm,
-    
-    # PVC Casing
-    "pvc_casing_selection": handle_pvc_casing_selection,
-    "pvc_casing_location": handle_pvc_casing_location,
-    "pvc_casing_booking_confirm": handle_pvc_casing_booking_confirm,
-    
-    # Booking details collection
-    "booking_full_name": handle_booking_full_name,
-    "booking_phone": handle_booking_phone,
-    "booking_location": handle_booking_location,
-    "booking_date": handle_booking_date,
-    "booking_notes": handle_booking_notes,
+    "other_services_menu": handle_other_services_menu,   
     "human_agent": lambda prompt, user_data, phone_id: (
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
