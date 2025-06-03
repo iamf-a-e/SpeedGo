@@ -128,20 +128,12 @@ def handle_main_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     if prompt == "1":  # Request a quote
         update_user_state(user_data['sender'], {
-            'step': 'select_service',
+            'step': 'enter_location_for_quote',
             'user': user.to_dict()
         })
-        send(
-            "Thank you!\n"
-            "Select the service:\n"
-            "1. Water survey\n"
-            "2. Borehole drilling\n"
-            "3. Pump installation\n"
-            "4. Commercial hole drilling\n"
-            "5. Borehole Deepening",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
+        send("Please enter your location to get started.", user_data['sender'], phone_id)
+        return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+
     elif prompt == "2":  # Search Price Using Location
         update_user_state(user_data['sender'], {
             'step': 'get_pricing_for_location',
@@ -186,6 +178,43 @@ def handle_main_menu(prompt, user_data, phone_id):
     else:
         send("Please select a valid option (1-5).", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_enter_location_for_quote(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    # Save location
+    user.quote_data['location'] = prompt.strip().lower()
+
+    # Update state to select service
+    update_user_state(user_data['sender'], {
+        'step': 'select_service',
+        'user': user.to_dict()
+    })
+
+    send(
+        "Thanks! Now select the service:\n"
+        "1. Water survey\n"
+        "2. Borehole drilling\n"
+        "3. Pump installation\n"
+        "4. Commercial hole drilling\n"
+        "5. Borehole Deepening",
+        user_data['sender'], phone_id
+    )
+
+    return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def message_handler(prompt, sender, phone_id):
+    user_data = get_user_data(sender)
+    step = user_data.get('step')
+
+    if step == 'main_menu':
+        return handle_main_menu(prompt, user_data, phone_id)
+    elif step == 'enter_location_for_quote':
+        return handle_enter_location_for_quote(prompt, user_data, phone_id)
+    elif step == 'select_service':
+        return handle_select_service_quote(prompt, user_data, phone_id)
+
 
 
 def human_agent(prompt, user_data, phone_id):
