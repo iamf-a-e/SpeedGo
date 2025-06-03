@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 # Environment variables
 wa_token = os.environ.get("WA_TOKEN")
 phone_id = os.environ.get("PHONE_ID")
-gen_api = os.environ.get("GEN_API")
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 owner_phone = os.environ.get("OWNER_PHONE")
 
 # Upstash Redis setup
