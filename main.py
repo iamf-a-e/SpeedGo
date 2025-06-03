@@ -214,7 +214,7 @@ def handle_main_menu(prompt, user_data, phone_id):
         return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
-    elif user_data.get("step") == "faq_borehole":
+    if user_data.get("step") == "faq_borehole":
     responses = {
         "1": "The cost depends on your location, depth, and soil conditions. Please send us your location and site access details for a personalized quote.",
         "2": "Typically 4–6 hours or up to several days, depending on site conditions, rock type, and accessibility.",
