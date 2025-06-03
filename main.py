@@ -209,18 +209,44 @@ def human_agent(prompt, user_data, phone_id):
     )
     send(agent_message, agent_number, phone_id)
 
-    # After 10 seconds, send fallback if no agent has responded
+    # After 10 seconds, send fallback + menu return prompt
     def send_fallback():
         time.sleep(10)
         send(
             "Alternatively, you can message or call us directly at +263719835124.",
             customer_number, phone_id
         )
+        send(
+            "Would you like to return to the main menu?\n1. Yes\n2. No",
+            customer_number, phone_id
+        )
 
-    # Start background thread (non-blocking)
+        # Update user state after fallback prompt
+        update_user_state(customer_number, {
+            'step': 'human_agent_followup',
+            'user': user.to_dict(),
+            'sender': customer_number
+        })
+
     threading.Thread(target=send_fallback).start()
 
-    return {'step': 'main_menu', 'user': user.to_dict(), 'sender': customer_number}
+    # Temporarily set state while waiting
+    return {'step': 'human_agent', 'user': user.to_dict(), 'sender': customer_number}
+
+
+def human_agent_followup(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt == "1":
+        return handle_select_language("1", user_data, phone_id)
+
+    elif prompt == "2":
+        send("Okay. Feel free to ask if you need anything else.", user_data['sender'], phone_id)
+        return {'step': 'human_agent_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Please reply with 1 for Main Menu or 2 to stay here.", user_data['sender'], phone_id)
+        return {'step': 'human_agent_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
 def faq_menu(prompt, user_data, phone_id):
@@ -894,6 +920,7 @@ action_mapping = {
     "custom_question": custom_question,
     "custom_question_followup": custom_question_followup,
     "human_agent": human_agent,
+    "human_agent_followup": human_agent_followup,
     "human_agent": lambda prompt, user_data, phone_id: (
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
