@@ -141,7 +141,7 @@ def handle_main_menu(prompt, user_data, phone_id):
             "5. Borehole Deepening",
             user_data['sender'], phone_id
         )
-        return {'step': 'handle_select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "2":  # Search Price Using Location
         update_user_state(user_data['sender'], {
             'step': 'get_pricing_for_location',
@@ -550,7 +550,7 @@ def handle_select_service(prompt, user_data, phone_id):
             "1. Your location (City/Town or GPS):\n",            
             user_data['sender'], phone_id
         )
-        return {'step': 'get_pricing_for_location_quotes', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'handle_select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
         send("Please select a valid service (1-4).", user_data['sender'], phone_id)
         return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
