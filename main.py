@@ -439,6 +439,7 @@ def handle_collect_offer_details(prompt, user_data, phone_id):
 def handle_offer_response(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     quote_id = user.quote_data.get('quote_id')
+
     if prompt == "1":  # Offer accepted (simulated)
         user.offer_data['status'] = 'accepted'
         if quote_id:
@@ -461,9 +462,11 @@ def handle_offer_response(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'booking_details', 'user': user.to_dict(), 'sender': user_data['sender']}
+
     elif prompt == "2":
         send("Connecting you to a human agent...", user_data['sender'], phone_id)
         return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
+
     elif prompt == "3":
         update_user_state(user_data['sender'], {
             'step': 'collect_offer_details',
@@ -476,24 +479,34 @@ def handle_offer_response(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'collect_offer_details', 'user': user.to_dict(), 'sender': user_data['sender']}
+
     else:
         send("Please select a valid option (1-3).", user_data['sender'], phone_id)
         return {'step': 'offer_response', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-    elif user_data.get("step") == "project_status_menu":
-        if prompt == "1":
-            send(
-                "Great! To proceed with installation, please provide the following details:\n\n"
-                "1. Tank Capacity (in liters)\n"
-                "2. Pump Type (Solar or Electric)\n"
-                "3. Installation Site (Location or GPS coordinates)\n"
-                "4. Preferred installation time (Morning or Afternoon)",
-                user_data['sender'],
-                phone_id
-            )
-            return {'step': 'collect_info_1', 'user': user.to_dict(), 'sender': user_data['sender']}
-    
-        elif prompt == "2":
+
+    def handle_project_status_menu(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt == "1":
+        send(
+            "Great! To proceed with installation, please provide the following details:\n\n"
+            "1. Tank Capacity (in liters)\n"
+            "2. Pump Type (Solar or Electric)\n"
+            "3. Installation Site (Location or GPS coordinates)\n"
+            "4. Preferred installation time (Morning or Afternoon)",
+            user_data['sender'],
+            phone_id
+        )
+        return {'step': 'collect_info_1', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Please select a valid option (e.g., 1).", user_data['sender'], phone_id)
+        return {'step': 'project_status_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+        
+    elif prompt == "2":
             send(
                 "No worries! We can supply the tank and tank stand. Please provide the following details:\n\n"
                 "1. Desired Tank Capacity (in liters)\n"
