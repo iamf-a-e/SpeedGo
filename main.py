@@ -10,8 +10,13 @@ from upstash_redis import Redis
 
 logging.basicConfig(level=logging.INFO)
 
+# Environment variables
 wa_token = os.environ.get("WA_TOKEN")
 phone_id = os.environ.get("PHONE_ID")
+gen_api = os.environ.get("GEN_API")
+owner_phone = os.environ.get("OWNER_PHONE")
+
+# Upstash Redis setup
 redis = Redis(
     url=os.environ["UPSTASH_REDIS_REST_URL"],
     token=os.environ["UPSTASH_REDIS_REST_TOKEN"]
@@ -77,6 +82,19 @@ def send(answer, sender, phone_id):
     except requests.exceptions.RequestException as e:
         logging.error(f"Failed to send message: {e}")
 
+# State handlers (English flow only)
+def handle_welcome(prompt, user_data, phone_id):
+    send(
+        "Hi there! Welcome to SpeedGo Services for borehole drilling in Zimbabwe. "
+        "We provide reliable borehole drilling and water solutions across Zimbabwe.\n\n"
+        "Choose your preferred language:\n"
+        "1. English\n"
+        "2. Shona\n"
+        "3. Ndebele",
+        user_data['sender'], phone_id
+    )
+    update_user_state(user_data['sender'], {'step': 'select_language'})
+    return {'step': 'select_language', 'sender': user_data['sender']}
 
 def handle_select_language(prompt, user_data, phone_id):
     user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
@@ -99,12 +117,12 @@ def handle_select_language(prompt, user_data, phone_id):
         )
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Please select a valid language option (1, 2, or 3)", user_data['sender'], phone_id)
+        send("Please reply 1 to continue in English.", user_data['sender'], phone_id)
         return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 def handle_main_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    if prompt == "1":
+    if prompt == "1":  # Request a quote
         update_user_state(user_data['sender'], {
             'step': 'select_service',
             'user': user.to_dict()
@@ -119,7 +137,7 @@ def handle_main_menu(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "2":
+    elif prompt == "2":  # Book site visit
         update_user_state(user_data['sender'], {
             'step': 'collect_booking_info',
             'user': user.to_dict()
@@ -135,10 +153,10 @@ def handle_main_menu(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'collect_booking_info', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "3":
+    elif prompt == "3":  # Check Project Status
         send("This feature is coming soon. Please contact your agent for updates.", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "4":
+    elif prompt == "4":  # Learn About Borehole Drilling
         send(
             "We offer:\n"
             "- Borehole drilling\n"
@@ -147,7 +165,7 @@ def handle_main_menu(prompt, user_data, phone_id):
             "Contact us for more info!", user_data['sender'], phone_id
         )
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "5":
+    elif prompt == "5":  # Human agent
         send("Connecting you to a human agent...", user_data['sender'], phone_id)
         return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
@@ -197,6 +215,7 @@ def handle_collect_quote_details(prompt, user_data, phone_id):
         })
         quote_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
         user.quote_data['quote_id'] = quote_id
+        # Save quote to Redis (simulate DB)
         redis.set(f"quote:{quote_id}", json.dumps({
             'quote_id': quote_id,
             'user_data': user.to_dict(),
@@ -226,7 +245,7 @@ def handle_collect_quote_details(prompt, user_data, phone_id):
 
 def handle_quote_response(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    if prompt == "1":
+    if prompt == "1":  # Offer price
         update_user_state(user_data['sender'], {
             'step': 'collect_offer_details',
             'user': user.to_dict()
@@ -239,7 +258,7 @@ def handle_quote_response(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'collect_offer_details', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "2":
+    elif prompt == "2":  # Book site survey
         update_user_state(user_data['sender'], {
             'step': 'collect_booking_info',
             'user': user.to_dict()
@@ -255,10 +274,10 @@ def handle_quote_response(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'collect_booking_info', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "3":
+    elif prompt == "3":  # Book for a Drilling
         send("Our agent will contact you to finalize the drilling booking.", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "4":
+    elif prompt == "4":  # Human Agent
         send("Connecting you to a human agent...", user_data['sender'], phone_id)
         return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
@@ -296,7 +315,7 @@ def handle_collect_offer_details(prompt, user_data, phone_id):
 def handle_offer_response(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     quote_id = user.quote_data.get('quote_id')
-    if prompt == "1":
+    if prompt == "1":  # Offer accepted (simulated)
         user.offer_data['status'] = 'accepted'
         if quote_id:
             q = redis.get(f"quote:{quote_id}")
@@ -339,7 +358,7 @@ def handle_offer_response(prompt, user_data, phone_id):
 
 def handle_booking_details(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    if prompt == "1":
+    if prompt == "1":  # Book site survey
         update_user_state(user_data['sender'], {
             'step': 'collect_booking_info',
             'user': user.to_dict()
@@ -355,10 +374,10 @@ def handle_booking_details(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'collect_booking_info', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "2":
+    elif prompt == "2":  # Pay Deposit
         send("Please contact our office at 077xxxxxxx to arrange deposit payment.", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "3":
+    elif prompt == "3":  # Confirm Drilling Date
         send("Our agent will contact you to confirm the drilling date.", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
@@ -402,7 +421,7 @@ def handle_collect_booking_info(prompt, user_data, phone_id):
 
 def handle_booking_confirmation(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    if prompt == "2":
+    if prompt == "2":  # No reschedule needed
         send(
             "Great! Your borehole drilling appointment is now booked.\n\n"
             "Date: Thursday, 23 May 2025\n"
@@ -417,7 +436,10 @@ def handle_booking_confirmation(prompt, user_data, phone_id):
         send("Please contact our support team to reschedule.", user_data['sender'], phone_id)
         return {'step': 'booking_confirmation', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+# Action mapping
 action_mapping = {
+    "welcome": handle_welcome,
+    "select_language": handle_select_language,
     "main_menu": handle_main_menu,
     "select_service": handle_select_service,
     "collect_quote_details": handle_collect_quote_details,
@@ -434,5 +456,53 @@ action_mapping = {
 }
 
 def get_action(current_state, prompt, user_data, phone_id):
-    handler = action_mapping.get(current_state, handle_main_menu)
+    handler = action_mapping.get(current_state, handle_welcome)
     return handler(prompt, user_data, phone_id)
+
+# Flask app
+app = Flask(__name__)
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    return render_template("connected.html")
+
+@app.route("/webhook", methods=["GET", "POST"])
+def webhook():
+    if request.method == "GET":
+        mode = request.args.get("hub.mode")
+        token = request.args.get("hub.verify_token")
+        challenge = request.args.get("hub.challenge")
+        if mode == "subscribe" and token == "BOT":
+            return challenge, 200
+        return "Failed", 403
+
+    elif request.method == "POST":
+        data = request.get_json()
+        logging.info(f"Incoming webhook data: {data}")
+        try:
+            entry = data["entry"][0]
+            changes = entry["changes"][0]
+            value = changes["value"]
+            phone_id = value["metadata"]["phone_number_id"]
+            messages = value.get("messages", [])
+            if messages:
+                message = messages[0]
+                sender = message["from"]
+                if "text" in message:
+                    prompt = message["text"]["body"].strip()
+                    message_handler(prompt, sender, phone_id)
+                else:
+                    send("Please send a text message", sender, phone_id)
+        except Exception as e:
+            logging.error(f"Error processing webhook: {e}", exc_info=True)
+        return jsonify({"status": "ok"}), 200
+
+def message_handler(prompt, sender, phone_id):
+    user_state = get_user_state(sender)
+    user_state['sender'] = sender
+    # Ensure we always run the handler for the current step
+    next_state = get_action(user_state['step'], prompt, user_state, phone_id)
+    update_user_state(sender, next_state)
+
+if __name__ == "__main__":
+    app.run(debug=True, port=8000)
