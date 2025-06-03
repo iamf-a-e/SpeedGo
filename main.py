@@ -866,7 +866,8 @@ def webhook():
         return jsonify({"status": "ok"}), 200
 
 
-def message_handler(prompt, sender, phone_id, user_data):
+def message_handler(prompt, sender, phone_id):
+    # Load existing user state inside handler
     user_data = get_user_data(sender)
     text = prompt.strip().lower()
     customer_number = sender
@@ -935,17 +936,12 @@ def message_handler(prompt, sender, phone_id, user_data):
             return user_data
 
     # Default fallback or if state is unknown
-    # You can handle other states here or return user_data unchanged
-    return user_data
+    # You can handle other states here or continue flow
 
-    # Load existing user state
-    user_state = get_user_state(sender)
-    user_state['sender'] = sender
-
-    # Default step handler 
-    updated_state = get_action(user_state.get('step', 'welcome'), prompt, user_state, phone_id)
+    # If no special condition matched, run default step handler:
+    updated_state = get_action(state or 'welcome', prompt, user_data, phone_id)
     update_user_state(sender, updated_state)
-
+    return updated_state
 
 
 # Action mapping
