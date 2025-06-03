@@ -284,18 +284,41 @@ def handle_pump_status_info_request(prompt, user_data, phone_id):
         'type': 'pump'
     }
 
-    # Simulate fetching pump status
-    send("Thank you. Please hold on while we check the installation status...", user_data['sender'], phone_id)
+    # Parse multiline input
+    lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
+    
+    if len(lines) < 2:
+        send(
+            "Please provide at least your full name and reference number/phone number, each on a new line.\n\n"
+            "Example:\n"
+            "John Doe\nREF123456 or 0771234567\nOptional Location",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'drilling_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-    # Dummy pump status response
+    full_name = lines[0]
+    reference = lines[1]
+    location = lines[2] if len(lines) >= 3 else "Not Provided"
+
+    # Store structured info
+    user.project_status_request = {
+        'type': 'pump',
+        'full_name': full_name,
+        'reference': reference,
+        'location': location
+    }
+
+    # Simulate fetching status
+    send("Thank you. Please wait while we retrieve your project status...", user_data['sender'], phone_id)
+
+    # Use full_name dynamically in response
     send(
-        "Here is your installation project status:\n\n"
-        "Project Name: Pump Zulu\n"
-        "Pump Type: Solar\n"
-        "Current Stage: Installation Scheduled\n"
-        "Next Step: Equipment Delivery\n"
-        "Estimated Completion Date: 15/06/2025\n\n"
-        "Would you like to receive status updates via WhatsApp?\nOptions: Yes / No",
+        f"Here is your drilling project status:\n\n"
+        f"Project Name: Pump {full_name}\n"
+        f"Current Stage: Drilling In Progress\n"
+        f"Next Step: Casing\n"
+        f"Estimated Completion Date: 10/06/2025\n\n"
+        "Would you like updates via WhatsApp when the status changes?\nOptions: Yes / No",
         user_data['sender'], phone_id
     )
 
@@ -311,14 +334,29 @@ def handle_pump_status_updates_opt_in(prompt, user_data, phone_id):
     response = prompt.strip().lower()
 
     if response in ['yes', 'y']:
-        send("Great! You'll now receive WhatsApp updates whenever your pump installation status changes.", user_data['sender'], phone_id)
+        send(
+            "Great! You'll now receive WhatsApp updates whenever your borehole drilling status changes.\n\n"
+            "Thank you for using our service.",
+            user_data['sender'], phone_id
+        )
     elif response in ['no', 'n']:
-        send("No problem. You can always check the status again later if needed.", user_data['sender'], phone_id)
+        send(
+            "No problem. You can always check the status again later if needed.\n\n"
+            "Thank you for using our service.",
+            user_data['sender'], phone_id
+        )
     else:
         send("Sorry, I didn't understand that. Please reply with Yes or No.", user_data['sender'], phone_id)
-        return {'step': 'pump_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'drilling_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-    return handle_main_menu("", user_data, phone_id)
+    # No further step – end the flow
+    update_user_state(user_data['sender'], {
+        'step': None,
+        'user': user.to_dict()
+    })
+
+    return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
+
 
 
 def handle_drilling_status_updates_opt_in(prompt, user_data, phone_id):
