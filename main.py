@@ -677,7 +677,6 @@ def webhook():
             logging.error(f"Error processing webhook: {e}", exc_info=True)
         return jsonify({"status": "ok"}), 200
 
-
 def message_handler(prompt, sender, phone_id):
     text = prompt.strip().lower()
 
@@ -692,21 +691,11 @@ def message_handler(prompt, sender, phone_id):
     user_state = get_user_state(sender)
     user_state['sender'] = sender
 
-    # Handle 'more' to show next category
-    if text == "more" and user_state.get('step') == 'choose_product':
-        updated_state = handle_next_category(user_state, phone_id)
-        update_user_state(sender, updated_state)
-        return
-
-    # Default step handler
-    updated_state = get_action(user_state['step'], prompt, user_state, phone_id)
+    # Default step handler (only once!)
+    updated_state = get_action(user_state.get('step', 'welcome'), prompt, user_state, phone_id)
     update_user_state(sender, updated_state)
-    user_state = get_user_state(sender)
-    user_state['sender'] = sender
-    # Ensure we always run the handler for the current step
-    next_state = get_action(user_state['step'], prompt, user_state, phone_id)
-    update_user_state(sender, next_state)
-    
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
