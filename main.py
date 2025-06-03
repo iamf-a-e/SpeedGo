@@ -164,20 +164,20 @@ def handle_main_menu(prompt, user_data, phone_id):
         return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif user_data.get("step") == "faq_menu":
-    if prompt == "1":
-        send(
-            "Here are the most common questions about borehole drilling:\n\n"
-            "1. How much does borehole drilling cost?\n"
-            "2. How long does it take to drill a borehole?\n"
-            "3. How deep will my borehole be?\n"
-            "4. Do I need permission to drill a borehole?\n"
-            "5. Do you do a water survey and drilling at the same time?\n"
-            "6. What if you do a water survey and find no water?\n"
-            "7. What equipment do you use?\n"
-            "8. Back to FAQ Menu",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
+        if prompt == "1":
+            send(
+                "Here are the most common questions about borehole drilling:\n\n"
+                "1. How much does borehole drilling cost?\n"
+                "2. How long does it take to drill a borehole?\n"
+                "3. How deep will my borehole be?\n"
+                "4. Do I need permission to drill a borehole?\n"
+                "5. Do you do a water survey and drilling at the same time?\n"
+                "6. What if you do a water survey and find no water?\n"
+                "7. What equipment do you use?\n"
+                "8. Back to FAQ Menu",
+                user_data['sender'], phone_id
+            )
+            return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
         send(
