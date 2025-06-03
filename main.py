@@ -235,6 +235,78 @@ def handle_check_project_status_menu(prompt, user_data, phone_id):
 
 
 
+def handle_drilling_status_info_request(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    user.project_status_request = {
+        'details': prompt.strip(),
+        'type': 'drilling'
+    }
+
+    # Simulate fetching project status
+    send("Thank you. Please wait while we retrieve your project status...", user_data['sender'], phone_id)
+
+    # Dummy project status response
+    send(
+        "Here is your drilling project status:\n\n"
+        "Project Name: Borehole Alpha\n"
+        "Current Stage: Drilling In Progress\n"
+        "Next Step: Casing\n"
+        "Estimated Completion Date: 10/06/2025\n\n"
+        "Would you like updates via WhatsApp when the status changes?\nOptions: Yes / No",
+        user_data['sender'], phone_id
+    )
+
+    update_user_state(user_data['sender'], {
+        'step': 'drilling_status_updates_opt_in',
+        'user': user.to_dict()
+    })
+    return {'step': 'drilling_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_pump_status_info_request(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    user.project_status_request = {
+        'details': prompt.strip(),
+        'type': 'pump'
+    }
+
+    # Simulate fetching pump status
+    send("Thank you. Please hold on while we check the installation status...", user_data['sender'], phone_id)
+
+    # Dummy pump status response
+    send(
+        "Here is your installation project status:\n\n"
+        "Project Name: Pump Zulu\n"
+        "Pump Type: Solar\n"
+        "Current Stage: Installation Scheduled\n"
+        "Next Step: Equipment Delivery\n"
+        "Estimated Completion Date: 15/06/2025\n\n"
+        "Would you like to receive status updates via WhatsApp?\nOptions: Yes / No",
+        user_data['sender'], phone_id
+    )
+
+    update_user_state(user_data['sender'], {
+        'step': 'pump_status_updates_opt_in',
+        'user': user.to_dict()
+    })
+    return {'step': 'pump_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_pump_status_updates_opt_in(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    response = prompt.strip().lower()
+
+    if response in ['yes', 'y']:
+        send("Great! You'll now receive WhatsApp updates whenever your pump installation status changes.", user_data['sender'], phone_id)
+    elif response in ['no', 'n']:
+        send("No problem. You can always check the status again later if needed.", user_data['sender'], phone_id)
+    else:
+        send("Sorry, I didn't understand that. Please reply with Yes or No.", user_data['sender'], phone_id)
+        return {'step': 'pump_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    return handle_main_menu("", user_data, phone_id)
+
+
 def handle_enter_location_for_quote(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
