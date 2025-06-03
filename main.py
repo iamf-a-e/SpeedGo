@@ -104,18 +104,6 @@ def handle_select_language(prompt, user_data, phone_id):
             'step': 'main_menu',
             'user': user.to_dict()
         })
-        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    else:
-        send("Please reply 1 to continue in English.", user_data['sender'], phone_id)
-        return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-def handle_main_menu(prompt, user_data, phone_id):
-    user = User.from_dict(user_data['user'])
-    if user_data.get("step") == "main_menu" and prompt == "1":  # Request a quote
-        update_user_state(user_data['sender'], {
-            'step': 'select_service',
-            'user': user.to_dict()
-        })
         send(
             "Thank you!\n"
             "How can we help you today?\n\n"
@@ -128,8 +116,31 @@ def handle_main_menu(prompt, user_data, phone_id):
             "Please reply with a number (e.g., 1)",
             user_data['sender'], phone_id
         )
+
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Please reply 1 to continue in English.", user_data['sender'], phone_id)
+        return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_main_menu(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    if prompt == "1":  # Request a quote
+        update_user_state(user_data['sender'], {
+            'step': 'select_service',
+            'user': user.to_dict()
+        })
+        send(
+            "Thank you!\n"
+            "Select the service:\n"
+            "1. Water survey\n"
+            "2. Borehole drilling\n"
+            "3. Pump installation\n"
+            "4. Commercial hole drilling\n"
+            "5. Borehole Deepening",
+            user_data['sender'], phone_id
+        )
         return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif user_data.get("step") == "main_menu" and prompt == "2":  # Search Price Using Location
+    elif prompt == "2":  # Search Price Using Location
         update_user_state(user_data['sender'], {
             'step': 'get_pricing_for_location',
             'user': user.to_dict()
@@ -139,10 +150,10 @@ def handle_main_menu(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'get_pricing_for_location', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif user_data.get("step") == "main_menu" and prompt == "3":  # Check Project Status
+    elif prompt == "3":  # Check Project Status
         send("This feature is coming soon. Please contact your agent for updates.", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif user_data.get("step") == "main_menu" and prompt == "4":
+    elif prompt == "4":
         send(
             "Welcome to SpeedGo – How can we assist you today? Please choose an FAQ category:\n\n"
             "1. Borehole Drilling FAQs\n"
@@ -258,10 +269,11 @@ def handle_main_menu(prompt, user_data, phone_id):
 def handle_select_service(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     services = {
-        "1": "Borehole drilling",
-        "2": "Borehole pump installation",
-        "3": "Water pond construction",
-        "4": "Weir dam construction"
+        "1": "Water survey",
+        "2": "Borehole drilling",
+        "3": "Pump installation",
+        "4": "Commercial hole drilling",
+        "5": "Borehole Deepening",
     }
     if prompt in services:
         user.quote_data['service'] = services[prompt]
@@ -271,16 +283,10 @@ def handle_select_service(prompt, user_data, phone_id):
         })
         send(
             "To give you a quick estimate, please answer the following:\n\n"
-            "1. Your location (City/Town or GPS):\n"
-            "2. Desired borehole depth (if known):\n"
-            "3. Purpose (Domestic / Agricultural / Industrial):\n"
-            "4. Did you conduct a water survey? (Yes or No)\n"
-            "5. If you need borehole Deepening, type 'Deepening'\n"
-            "6. PVC pipe casing: Class 6 or Class 9 or Class 10\n\n"
-            "Reply with your answers, each on a new line.",
+            "1. Your location (City/Town or GPS):\n",            
             user_data['sender'], phone_id
         )
-        return {'step': 'collect_quote_details', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'get_pricing_for_location', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
         send("Please select a valid service (1-4).", user_data['sender'], phone_id)
         return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
