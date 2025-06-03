@@ -204,13 +204,6 @@ def faq_menu(prompt, user_data, phone_id):
             "8. Back to FAQ Menu",
             user_data['sender'], phone_id
         )
-        send(
-            "Would you like to:\n"
-            "1. Ask another question from Borehole Drilling FAQs\n"
-            "2. Return to Main Menu",
-            user_data['sender'], phone_id
-        )
-
         return {'step': 'faq_borehole_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -263,6 +256,12 @@ def faq_menu(prompt, user_data, phone_id):
 
 def faq_borehole_followup(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
+    send(
+            "Would you like to:\n"
+            "1. Ask another question from Borehole Drilling FAQs\n"
+            "2. Return to Main Menu",
+            user_data['sender'], phone_id
+    )
 
     if prompt == "1":
         send(
@@ -330,7 +329,32 @@ def faq_pump(prompt, user_data, phone_id):
     else:
         send("Please choose a valid option (1–6).", user_data['sender'], phone_id)
 
-    return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
+    return {'step': 'faq_pump_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def faq_pump_followup(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    send(
+            "Would you like to:\n"
+            "1. Ask another question from Borehole Drilling FAQs\n"
+            "2. Return to Main Menu",
+            user_data['sender'], phone_id
+    )
+
+    if prompt == "1":
+        send(
+            "Please choose a question:\n\n",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        return handle_select_language("1", user_data, phone_id)
+
+    else:
+        send("Please choose 1 to ask another question or 2 to return to the main menu.", user_data['sender'], phone_id)
+        return {'step': 'faq_pump_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
 
 
 def handle_select_service(prompt, user_data, phone_id):
