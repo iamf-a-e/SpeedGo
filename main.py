@@ -229,9 +229,9 @@ def handle_main_menu(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'other_services_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-else:
-    send("Please select a valid option (1-5).", user_data['sender'], phone_id)
-    return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Please select a valid option (1-5).", user_data['sender'], phone_id)
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
 
