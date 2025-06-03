@@ -154,7 +154,7 @@ def handle_main_menu(prompt, user_data, phone_id):
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "4":
         send(
-            "Welcome to SpeedGo – How can we assist you today? Please choose an FAQ category:\n\n"
+            "Please choose an FAQ category:\n\n"
             "1. Borehole Drilling FAQs\n"
             "2. Pump Installation FAQs\n"
             "3. Ask a different question\n"
@@ -165,7 +165,7 @@ def handle_main_menu(prompt, user_data, phone_id):
         return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
-    elif user_data.get("step") == "main_menu" and prompt == "5":  # Human agent
+    elif prompt == "5":  # Human agent
         send("Connecting you to a human agent...", user_data['sender'], phone_id)
         return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
