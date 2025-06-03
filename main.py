@@ -187,7 +187,6 @@ def handle_main_menu(prompt, user_data, phone_id):
         send("Please select a valid option (1-5).", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-import time
 
 def human_agent(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
@@ -350,7 +349,8 @@ def faq_menu(prompt, user_data, phone_id):
     elif prompt == "4":  # Human agent
         update_user_state(user_data['sender'], {
             'step': 'human_agent',
-            'user': user.to_dict()
+            'user': user.to_dict(),
+            'sender': user_data['sender']
         })
         send("Please hold while I connect you to a representative…", user_data['sender'], phone_id)
         return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
