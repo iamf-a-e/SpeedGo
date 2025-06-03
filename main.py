@@ -1840,6 +1840,7 @@ action_mapping = {
     "borehole_deepening_casing": handle_borehole_deepening_casing,
     "borehole_flushing_problem": handle_borehole_flushing_problem,
     "pvc_casing_selection": handle_pvc_casing_selection,
+    "deepening_location": handle_deepening_location,
     "human_agent": lambda prompt, user_data, phone_id: (
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
