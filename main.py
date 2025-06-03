@@ -195,11 +195,19 @@ def handle_check_project_status_menu(prompt, user_data, phone_id):
             'step': 'drilling_status_info_request',
             'user': user.to_dict()
         })
+    
         send(
-            "To check your pump installation status, please provide the following:\n\n",
+            "To check your borehole drilling status, please provide the following:\n\n"
+            "- Full Name used during booking\n"
+            "- Project Reference Number or Phone Number\n"
+            "- Drilling Site Location (optional)",
             user_data['sender'], phone_id
         )
-        return {'step': 'drilling_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {
+            'step': 'drilling_status_info_request',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
 
     elif prompt == "2":
         update_user_state(user_data['sender'], {
@@ -207,10 +215,18 @@ def handle_check_project_status_menu(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            "To check your pump installation status, please provide the following:\n\n",
+            "To check your pump installation status, please provide the following:\n\n"
+            "- Full Name used during booking\n"
+            "- Project Reference Number or Phone Number\n"
+            "- Installation Site Location (optional)",
             user_data['sender'], phone_id
         )
-        return {'step': 'pump_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {
+            'step': 'pump_status_info_request',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
 
     elif prompt == "3":
         update_user_state(user_data['sender'], {
@@ -232,23 +248,27 @@ def handle_check_project_status_menu(prompt, user_data, phone_id):
 def handle_drilling_status_info_request(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
-    # Parse multiline input
     lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
-    
+
     if len(lines) < 2:
+        # 👇 Only send this if the user's input is incomplete
         send(
-            "At least your full name and reference number/phone number, each on a new line.\n\n"
+            "Please provide at least your full name and reference number or phone number, each on a new line.\n\n"
             "Example:\n"
-            "John Doe\nREF123456 or 0771234567\nOptional Location",
+            "John Doe\nREF789123 or 0779876543\nOptional: Bulawayo",
             user_data['sender'], phone_id
         )
-        return {'step': 'drilling_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {
+            'step': 'drilling_status_info_request',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
 
+    # ✅ Valid input: store and proceed
     full_name = lines[0]
     reference = lines[1]
     location = lines[2] if len(lines) >= 3 else "Not Provided"
 
-    # Store structured info
     user.project_status_request = {
         'type': 'drilling',
         'full_name': full_name,
@@ -256,17 +276,15 @@ def handle_drilling_status_info_request(prompt, user_data, phone_id):
         'location': location
     }
 
-    # Simulate fetching status
     send("Thank you. Please wait while we retrieve your project status...", user_data['sender'], phone_id)
 
-    # Use full_name dynamically in response
     send(
-        f"Here is your drilling project status:\n\n"
-        f"Project Name: Borehole {full_name}\n"
+        f"Here is your borehole drilling project status:\n\n"
+        f"Project Name: Borehole - {full_name}\n"
         f"Current Stage: Drilling In Progress\n"
         f"Next Step: Casing\n"
         f"Estimated Completion Date: 10/06/2025\n\n"
-        "Would you like updates via WhatsApp when the status changes?\nOptions: Yes / No",
+        "Would you like WhatsApp updates when the status changes?\nOptions: Yes / No",
         user_data['sender'], phone_id
     )
 
@@ -275,33 +293,37 @@ def handle_drilling_status_info_request(prompt, user_data, phone_id):
         'user': user.to_dict()
     })
 
-    return {'step': 'drilling_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
+    return {
+        'step': 'drilling_status_updates_opt_in',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
 
 
 def handle_pump_status_info_request(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    user.project_status_request = {
-        'details': prompt.strip(),
-        'type': 'pump'
-    }
 
-    # Parse multiline input
     lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
-    
+
     if len(lines) < 2:
+        # 👇 Only send this error message if the user input is incomplete
         send(
-            "At least your full name and reference number/phone number, each on a new line.\n\n"
+            "Please provide at least your full name and reference number or phone number, each on a new line.\n\n"
             "Example:\n"
-            "John Doe\nREF123456 or 0771234567\nOptional Location",
+            "Jane Doe\nREF123456\nOptional: Harare",
             user_data['sender'], phone_id
         )
-        return {'step': 'pump_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {
+            'step': 'pump_status_info_request',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
 
+    # Parse input
     full_name = lines[0]
     reference = lines[1]
     location = lines[2] if len(lines) >= 3 else "Not Provided"
 
-    # Store structured info
     user.project_status_request = {
         'type': 'pump',
         'full_name': full_name,
@@ -309,17 +331,16 @@ def handle_pump_status_info_request(prompt, user_data, phone_id):
         'location': location
     }
 
-    # Simulate fetching status
+    # ✅ Proceed normally if input is valid
     send("Thank you. Please wait while we retrieve your project status...", user_data['sender'], phone_id)
 
-    # Use full_name dynamically in response
     send(
-        f"Here is your drilling project status:\n\n"
-        f"Project Name: Pump {full_name}\n"
-        f"Current Stage: Drilling In Progress\n"
-        f"Next Step: Casing\n"
-        f"Estimated Completion Date: 10/06/2025\n\n"
-        "Would you like updates via WhatsApp when the status changes?\nOptions: Yes / No",
+        f"Here is your pump installation project status:\n\n"
+        f"Project Name: Pump - {full_name}\n"
+        f"Current Stage: Installation Completed\n"
+        f"Next Step: Final Inspection\n"
+        f"Estimated Hand-Over: 12/06/2025\n\n"
+        "Would you like WhatsApp updates when your status changes?\nOptions: Yes / No",
         user_data['sender'], phone_id
     )
 
@@ -327,8 +348,12 @@ def handle_pump_status_info_request(prompt, user_data, phone_id):
         'step': 'pump_status_updates_opt_in',
         'user': user.to_dict()
     })
-    return {'step': 'pump_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+    return {
+        'step': 'pump_status_updates_opt_in',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
 
 def handle_pump_status_updates_opt_in(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
