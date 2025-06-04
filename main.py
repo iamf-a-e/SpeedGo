@@ -182,14 +182,14 @@ def handle_main_menu(prompt, user_data, phone_id):
 
     elif prompt == "2":  # Search Price Using Location
         update_user_state(user_data['sender'], {
-            'step': 'get_pricing_for_location',
+            'step': 'enter_location_for_quote',
             'user': user.to_dict()
         })
         send(
            "To get you pricing, please enter your location (City/Town or GPS coordinates):",
             user_data['sender'], phone_id
         )
-        return {'step': 'get_pricing_for_location', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "3":  # Check Project Status
         update_user_state(user_data['sender'], {
             'step': 'check_project_status_menu',
@@ -1556,12 +1556,12 @@ location_pricing = {
             "class 6": 1000,
             "class 9": 1125,
             "class 10": 1250,
-            "included_depth_m": 40,
-            "extra_per_m": 25
+            "for": 40,
+            "per m": 25
         },
         "Pump Installation": 0,
-        "Commercial Hole Drilling": 80,
-        "Borehole Deepening": 30
+        "Commercial Hole Drilling per m": 80,
+        "Borehole Deepening per m": 30
     },
     "harare": {
         "Water Survey": 150,
@@ -1569,12 +1569,12 @@ location_pricing = {
             "class 6": 2000,
             "class 9": 2300,
             "class 10": 2800,
-            "included_depth_m": 40,
-            "extra_per_m": 30
+            "for": 40 ,
+            "per m": 30
         },
         "Pump Installation": 0,
-        "Commercial Hole Drilling": 80,
-        "Borehole Deepening": 30
+        "Commercial Hole Drilling per m": 80,
+        "Borehole Deepening per m": 30
     },
     
 }
