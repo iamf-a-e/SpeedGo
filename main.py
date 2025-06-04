@@ -383,57 +383,51 @@ def handle_deepening_location(prompt, user_data, phone_id):
 
 
 
-
 def reverse_geocode_location(gps_coords):
     """
-    Converts GPS coordinates (latitude,longitude) to a city using Google Maps API.
-    Example input: "−17.8292,31.0522"
+    Converts GPS coordinates (latitude,longitude) to a city using local logic first,
+    then Google Maps API if not matched.
     """
-    
-        if isinstance(gps_coords, str) and ',' in gps_coords:
-        lat, lng = gps_coords.split(',')
-        lat, lng = float(lat), float(lng)
-
-       
-        if -21.1 < lat < -20.0 and 28.4 < lng < 29.0:
-            return "Bulawayo"
-        elif -22.22 < lat < -22.21 and 29.99 < lng < 30.01:
-            return "Beitbridge Town"
-        elif -20.01 < lat < -20.00 and 31.59 < lng < 31.60:
-            return "Nyika Growth Point"
-        elif -17.31 < lat < -17.30 and 31.33 < lng < 31.34:
-            return "Bindura Town"
-        elif -17.63 < lat < -17.62 and 27.34 < lng < 27.35:
-            return "Binga Town"
-        elif -19.53 < lat < -19.52 and 28.67 < lng < 28.68:
-            return "Bubi Town/Centre"
-        elif -19.28 < lat < -19.27 and 31.64 < lng < 31.65:
-            return "Murambinda Town"
-        elif -19.34 < lat < -19.33 and 31.43 < lng < 31.44:
-            return "Buhera"
-        elif -20.15 < lat < -20.14 and 28.56 < lng < 28.57:
-            return "Bulawayo City/Town"
-        elif -19.641 < lat < -19.640 and 31.153 < lng < 31.154:
-            return "Gutu"
-        elif -20.94 < lat < -20.93 and 29.00 < lng < 29.01:
-            return "Gwanda"
-        elif -19.45 < lat < -19.44 and 29.81 < lng < 29.82:
-            return "Gweru"
-        elif -17.83 < lat < -17.82 and 31.05 < lng < 31.06:
-            return "Harare"
-
-        else:
-            return None
-    return None
-
     if not gps_coords or ',' not in gps_coords:
         return None
 
-    lat, lng = gps_coords.strip().split(',')
-    lat = lat.strip()
-    lng = lng.strip()
+    try:
+        lat_str, lng_str = gps_coords.strip().split(',')
+        lat = float(lat_str.strip())
+        lng = float(lng_str.strip())
+    except ValueError:
+        return None
 
-    url = f"https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lng}&key={GOOGLE_MAPS_API_KEY}"
+    # Local fallback mapping
+    if -21.1 < lat < -20.0 and 28.4 < lng < 29.0:
+        return "Bulawayo"
+    elif -22.22 < lat < -22.21 and 29.99 < lng < 30.01:
+        return "Beitbridge Town"
+    elif -20.01 < lat < -20.00 and 31.59 < lng < 31.60:
+        return "Nyika Growth Point"
+    elif -17.31 < lat < -17.30 and 31.33 < lng < 31.34:
+        return "Bindura Town"
+    elif -17.63 < lat < -17.62 and 27.34 < lng < 27.35:
+        return "Binga Town"
+    elif -19.53 < lat < -19.52 and 28.67 < lng < 28.68:
+        return "Bubi Town/Centre"
+    elif -19.28 < lat < -19.27 and 31.64 < lng < 31.65:
+        return "Murambinda Town"
+    elif -19.34 < lat < -19.33 and 31.43 < lng < 31.44:
+        return "Buhera"
+    elif -20.15 < lat < -20.14 and 28.56 < lng < 28.57:
+        return "Bulawayo City/Town"
+    elif -19.641 < lat < -19.640 and 31.153 < lng < 31.154:
+        return "Gutu"
+    elif -20.94 < lat < -20.93 and 29.00 < lng < 29.01:
+        return "Gwanda"
+    elif -19.45 < lat < -19.44 and 29.81 < lng < 29.82:
+        return "Gweru"
+    elif -17.83 < lat < -17.82 and 31.05 < lng < 31.06:
+        return "Harare"
+
+    # If not found locally, use Google Maps API
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lng}&key={AlzaSyCXDMMhg7FzP|ElKmrlkv1TqtD3HgHwW50}"
 
     try:
         response = requests.get(url)
@@ -442,13 +436,11 @@ def reverse_geocode_location(gps_coords):
         if data['status'] != 'OK':
             return None
 
-        # Look for locality or administrative_area_level_1 in address components
         for result in data['results']:
             for component in result['address_components']:
                 if 'locality' in component['types'] or 'administrative_area_level_1' in component['types']:
                     return component['long_name'].lower()
 
-        # Fallback to formatted address
         return data['results'][0]['formatted_address'].lower()
 
     except Exception as e:
