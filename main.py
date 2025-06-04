@@ -10,7 +10,7 @@ from upstash_redis import Redis
 import google.generativeai as genai
 import threading
 import time
-import ndebele
+
 
 logging.basicConfig(level=logging.INFO)
 
