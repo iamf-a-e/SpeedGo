@@ -1750,7 +1750,7 @@ pump_installation_options = {
 }
 
 
-def get_pricing_for_location(location_input, pricing_data):
+def get_pricing_for_location(location_input, pricing_data, pump_installation_options):
     location = location_input.strip().lower()
     pricing = pricing_data.get(location)
 
@@ -1773,18 +1773,19 @@ def get_pricing_for_location(location_input, pricing_data):
                 message_lines.append(f"- Includes depth up to {included_depth}m")
                 message_lines.append(f"- Extra charge: ${extra_rate}/m beyond included depth\n")
 
-            elif service == "Pump Installation":
-                message_lines.append("💧 Pump Installation Options:")
-                for key, option in pump_installation_options.items():
-                    message_lines.append(f"{key}. {option['description']} - ${option['price']}")
-                message_lines.append("\nPlease choose a Pump Installation option (e.g., 1, 2, 3...)")
-                return "\n".join(message_lines)  # Return immediately so you can handle the follow-up separately
-
             else:
                 message_lines.append(f"🔧 {service} Pricing: {price}")
         else:
-            unit = "per meter" if service in ["Commercial Hole Drilling", "Borehole Deepening"] else "flat rate"
-            message_lines.append(f"🔹 {service}: ${price} {unit}\n")
+            if service == "Pump Installation":
+                # Refer to pump_installation_options instead of price dict
+                message_lines.append("💧 Pump Installation Options:")
+                for key, option in pump_installation_options.items():
+                    message_lines.append(f"{key}. {option['label']} - ${option['price']}")
+                message_lines.append("\nPlease choose a Pump Installation option (e.g., 1, 2, 3...)")
+                return "\n".join(message_lines)  # Return early to handle selection step
+            else:
+                unit = "per meter" if service in ["Commercial Hole Drilling", "Borehole Deepening"] else "flat rate"
+                message_lines.append(f"🔹 {service}: ${price} {unit}\n")
 
     message_lines.append("Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu")
     return "\n".join(message_lines)
