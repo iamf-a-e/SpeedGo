@@ -351,19 +351,18 @@ def handle_deepening_no_deepening_options(prompt, user_data, phone_id):
 
 def get_pricing_for_location_quotes(location, service_type):
     location_key = location.strip().lower()
-    service_key = service_type.strip().title()  # e.g., "Borehole Drilling"
+    service_key = service_type.strip().title()  # Normalize e.g. "Pump Installation"
 
-    # First, handle Pump Installation separately
+    # Handle Pump Installation separately
     if service_key == "Pump Installation":
-        # Format Pump Installation options from the separate dictionary
-        message_lines = [f"Pump Installation Options Pricing:\n"]
+        message_lines = [f"💧 Pump Installation Options Pricing:\n"]
         for key, option in pump_installation_options.items():
             desc = option.get('description', 'No description')
             price = option.get('price', 'N/A')
             message_lines.append(f"{key}. {desc} - ${price}")
         return "\n".join(message_lines)
 
-    # For other services, look inside location_pricing
+    # For other services
     loc_data = location_pricing.get(location_key)
     if not loc_data:
         return "Sorry, pricing not available for this location."
@@ -372,20 +371,20 @@ def get_pricing_for_location_quotes(location, service_type):
     if not price:
         return f"Sorry, pricing for {service_key} not found in {location.title()}."
 
-    # If price is a dict, format it nicely
+    # Format complex pricing dicts nicely
     if isinstance(price, dict):
-        base_meters = price.get("included_depth_m", "N/A")
+        included_depth = price.get("included_depth_m", "N/A")
         extra_rate = price.get("extra_per_m", "N/A")
 
         classes = {k: v for k, v in price.items() if k.startswith("class")}
         message_lines = [f"{service_key} Pricing in {location.title()}:"]
         for cls, amt in classes.items():
             message_lines.append(f"- {cls.title()}: ${amt}")
-        message_lines.append(f"- Includes depth up to {base_meters}m")
+        message_lines.append(f"- Includes depth up to {included_depth}m")
         message_lines.append(f"- Extra charge: ${extra_rate}/m beyond included depth\n")
         return "\n".join(message_lines)
 
-    # Otherwise, price is just a number, show price per meter or flat rate
+    # Flat rate or per meter pricing
     unit = "per meter" if service_key in ["Commercial Hole Drilling", "Borehole Deepening"] else "flat rate"
     return f"{service_key} in {location.title()}: ${price} {unit}\n\n"
 
