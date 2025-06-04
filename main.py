@@ -1560,8 +1560,8 @@ location_pricing = {
             "per m": 25
         },
         "Pump Installation": 0,
-        "Commercial Hole Drilling per m": 80,
-        "Borehole Deepening per m": 30
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
     },
     "harare": {
         "Water Survey": 150,
@@ -1573,8 +1573,8 @@ location_pricing = {
             "per m": 30
         },
         "Pump Installation": 0,
-        "Commercial Hole Drilling per m": 80,
-        "Borehole Deepening per m": 30
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
     },
     
 }
@@ -1636,35 +1636,29 @@ def handle_get_pricing_for_location(prompt, user_data, phone_id):
 
 
 
-def get_pricing_for_location_quotes(location_input, service_name):
-    location = normalize_location(location_input)
-    services = location_pricing.get(location)
+def get_pricing_for_location(location, pricing_data):
+    pricing = pricing_data.get(location.lower())
+    if not pricing:
+        return "Pricing not available for this location."
 
-    if not services:
-        return f"Sorry, we don't have pricing for {location.title()} yet."
+    message = f"💧 Pricing for {location.title()}:\n"
 
-    service_name = service_name.strip().lower()
+    for service, value in pricing.items():
+        if isinstance(value, dict):
+            if service == "Borehole Drilling":
+                base_meters = value.get("for", 0)
+                extra_rate = value.get("per m", 0)
+                classes = {k: v for k, v in value.items() if k.startswith("class")}
+                message += f"\n📌 {service}:\n"
+                for cls, amount in classes.items():
+                    message += f"  - {cls.title()}: USD {amount} for {base_meters}m\n"
+                if extra_rate:
+                    message += f"  - USD {extra_rate} per extra meter\n"
+        else:
+            unit = "per meter" if service in ["Commercial Hole Drilling", "Borehole Deepening"] else "flat rate"
+            message += f"\n📌 {service}: USD {value} {unit}\n"
 
-    for service, price in services.items():
-        if service.lower() == service_name:
-            if isinstance(price, dict):  # Handle Borehole Drilling (nested)
-                class_6 = price.get("class 6", "N/A")
-                class_9 = price.get("class 9", "N/A")
-                class_10 = price.get("class 10", "N/A")
-                included_depth = price.get("included_depth_m", "N/A")
-                extra_per_m = price.get("extra_per_m", "N/A")
-                return (
-                    f"{service} Pricing in {location.title()}:\n"
-                    f"- Class 6: ${class_6}\n"
-                    f"- Class 9: ${class_9}\n"
-                    f"- Class 10: ${class_10}\n"
-                    f"- Includes depth up to {included_depth}m\n"
-                    f"- Extra charge: ${extra_per_m}/m beyond included depth"
-                )
-            else:  # Flat price service
-                return f"The price for {service} in {location.title()} is ${price}."
-
-    return f"Sorry, we don't have pricing for '{service_name}' in {location.title()}."
+    return message
 
 
 def handle_get_pricing_for_location_quotes(prompt, user_data, phone_id):
