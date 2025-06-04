@@ -3627,7 +3627,7 @@ def message_handler(prompt, sender, phone_id):
         return updated_state  # return something or None
 
     location_data = message.get('location')
-    elif location_data:
+    if location_data:
         user_data['location'] = {
             'latitude': location_data['latitude'],
             'longitude': location_data['longitude']
