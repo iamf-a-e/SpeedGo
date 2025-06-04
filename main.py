@@ -353,6 +353,17 @@ def get_pricing_for_location_quotes(location, service_type):
     location_key = location.strip().lower()
     service_key = service_type.strip().title()  # e.g., "Borehole Drilling"
 
+    # First, handle Pump Installation separately
+    if service_key == "Pump Installation":
+        # Format Pump Installation options from the separate dictionary
+        message_lines = [f"Pump Installation Options Pricing:\n"]
+        for key, option in pump_installation_options.items():
+            desc = option.get('description', 'No description')
+            price = option.get('price', 'N/A')
+            message_lines.append(f"{key}. {desc} - ${price}")
+        return "\n".join(message_lines)
+
+    # For other services, look inside location_pricing
     loc_data = location_pricing.get(location_key)
     if not loc_data:
         return "Sorry, pricing not available for this location."
@@ -363,8 +374,8 @@ def get_pricing_for_location_quotes(location, service_type):
 
     # If price is a dict, format it nicely
     if isinstance(price, dict):
-        base_meters = price.get("for", "N/A")
-        extra_rate = price.get("per m", "N/A")
+        base_meters = price.get("included_depth_m", "N/A")
+        extra_rate = price.get("extra_per_m", "N/A")
 
         classes = {k: v for k, v in price.items() if k.startswith("class")}
         message_lines = [f"{service_key} Pricing in {location.title()}:"]
@@ -377,8 +388,6 @@ def get_pricing_for_location_quotes(location, service_type):
     # Otherwise, price is just a number, show price per meter or flat rate
     unit = "per meter" if service_key in ["Commercial Hole Drilling", "Borehole Deepening"] else "flat rate"
     return f"{service_key} in {location.title()}: ${price} {unit}\n\n"
-
-
 
 
 def handle_deepening_location(prompt, user_data, phone_id):
