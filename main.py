@@ -1650,30 +1650,30 @@ def handle_get_pricing_for_location(prompt, user_data, phone_id):
     }
 
 
-
 def get_pricing_for_location(location, pricing_data):
     pricing = pricing_data.get(location.lower())
     if not pricing:
         return "Pricing not available for this location."
 
-    message = f"💧 Pricing for {location.title()}:\n"
+    message = f"📍 Borehole Drilling Pricing in {location.title()}:\n"
 
-    for service, value in pricing.items():
-        if isinstance(value, dict):
-            if service == "Borehole Drilling":
-                base_meters = value.get("for", 0)
-                extra_rate = value.get("per m", 0)
-                classes = {k: v for k, v in value.items() if k.startswith("class")}
-                message += f"\n📌 {service}:\n"
-                for cls, amount in classes.items():
-                    message += f"  - {cls.title()}: USD {amount} for {base_meters}m\n"
-                if extra_rate:
-                    message += f"  - USD {extra_rate} per extra meter\n"
-        else:
-            unit = "per meter" if service in ["Commercial Hole Drilling", "Borehole Deepening"] else "flat rate"
-            message += f"\n📌 {service}: USD {value} {unit}\n"
+    drilling = pricing.get("Borehole Drilling", {})
+    base_meters = drilling.get("for", "N/A")
+    extra_rate = drilling.get("per m", "N/A")
+    classes = {k: v for k, v in drilling.items() if k.startswith("class")}
+
+    for cls, amount in classes.items():
+        message += f"- {cls.title()}: ${amount}\n"
+
+    message += f"- Includes depth up to {base_meters}m\n"
+    message += f"- Extra charge: ${extra_rate}/m beyond included depth\n\n"
+
+    message += "Would you like to:\n"
+    message += "1. Ask pricing for another service\n"
+    message += "2. Return to Main Menu"
 
     return message
+
 
 
 def handle_get_pricing_for_location_quotes(prompt, user_data, phone_id):
