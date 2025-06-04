@@ -3296,6 +3296,7 @@ def handle_quote_followup2(prompt, user_data, phone_id):
 def get_action(current_state, prompt, user_data, phone_id):
     handler = action_mapping.get(current_state, handle_welcome)
     return handler(prompt, user_data, phone_id)
+    
 
 # Flask app
 app = Flask(__name__)
@@ -3317,24 +3318,38 @@ def webhook():
     elif request.method == "POST":
         data = request.get_json()
         logging.info(f"Incoming webhook data: {data}")
+
         try:
             entry = data["entry"][0]
             changes = entry["changes"][0]
             value = changes["value"]
             phone_id = value["metadata"]["phone_number_id"]
             messages = value.get("messages", [])
+
             if messages:
                 message = messages[0]
                 sender = message["from"]
+
                 if "text" in message:
+                    # Standard text message
                     prompt = message["text"]["body"].strip()
                     message_handler(prompt, sender, phone_id)
+
+                elif "location" in message:
+                    # Handle shared location
+                    latitude = message["location"]["latitude"]
+                    longitude = message["location"]["longitude"]
+                    gps_coords = f"{latitude},{longitude}"
+                    logging.info(f"Received location: {gps_coords}")
+                    message_handler(gps_coords, sender, phone_id)
+
                 else:
-                    send("Please send a text message", sender, phone_id)
+                    send("Please send a text or share your location using the 📍 button.", sender, phone_id)
+
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
-        return jsonify({"status": "ok"}), 200
 
+        return jsonify({"status": "ok"}), 200
 
 def message_handler(prompt, sender, phone_id):      
     text = prompt.strip().lower()
