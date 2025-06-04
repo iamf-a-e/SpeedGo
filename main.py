@@ -392,10 +392,17 @@ def get_pricing_for_location_quotes(location, service_type):
 def handle_deepening_location(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
-    # Attempt to get GPS coordinates (either from prompt or user_data)
-    gps_coords = user_data.get('gps') or prompt.strip()
+    # Extract GPS coordinates from location object (sent by WhatsApp)
+    gps_coords = None
+    if 'location' in user_data and 'latitude' in user_data['location'] and 'longitude' in user_data['location']:
+        lat = user_data['location']['latitude']
+        lng = user_data['location']['longitude']
+        gps_coords = f"{lat},{lng}"
+    else:
+        # Fallback to manual text input (maybe user typed coordinates)
+        gps_coords = prompt.strip()
 
-    # Convert GPS to location name using a mocked reverse geocoder
+    # Convert GPS to location name
     location = reverse_geocode_location(gps_coords)
 
     if not location:
@@ -409,7 +416,7 @@ def handle_deepening_location(prompt, user_data, phone_id):
     # Fetch price
     price = get_pricing_for_location_quotes(location, "borehole_deepening")
 
-    # Send price & ask for next step
+    # Respond to user
     send(
         f"Deepening cost in {location.title()} starts from USD {price} per meter.\n"
         "Would you like to:\n"
@@ -420,7 +427,6 @@ def handle_deepening_location(prompt, user_data, phone_id):
 
     update_user_state(user_data['sender'], {'step': 'deepening_booking_confirm', 'user': user.to_dict()})
     return {'step': 'deepening_booking_confirm', 'user': user.to_dict(), 'sender': user_data['sender']}
-
 
 
 def reverse_geocode_location(gps_coords):
@@ -467,7 +473,7 @@ def reverse_geocode_location(gps_coords):
         return "Harare"
 
     # If not found locally, use Google Maps API
-    url = f"https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lng}&key={AlzaSyCXDMMhg7FzP|ElKmrlkv1TqtD3HgHwW50}"
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lng}&key={GOOGLE_MAPS_API_KEY}"
 
     try:
         response = requests.get(url)
@@ -3558,45 +3564,51 @@ def webhook():
         mode = request.args.get("hub.mode")
         token = request.args.get("hub.verify_token")
         challenge = request.args.get("hub.challenge")
+
         if mode == "subscribe" and token == "BOT":
             return challenge, 200
         return "Failed", 403
 
     elif request.method == "POST":
         data = request.get_json()
-        logging.info(f"Incoming webhook data: {data}")
+        logging.info(f"Incoming webhook data: {json.dumps(data, indent=2)}")
 
         try:
-            entry = data["entry"][0]
-            changes = entry["changes"][0]
-            value = changes["value"]
-            phone_id = value["metadata"]["phone_number_id"]
+            entry = data.get("entry", [])[0]
+            changes = entry.get("changes", [])[0]
+            value = changes.get("value", {})
+            phone_id = value.get("metadata", {}).get("phone_number_id")
             messages = value.get("messages", [])
 
             if messages:
                 message = messages[0]
-                sender = message["from"]
+                sender = message.get("from")
+                msg_type = message.get("type")
 
-                if "text" in message:
-                    # Standard text message
+                if msg_type == "text":
+                    # Text message
                     prompt = message["text"]["body"].strip()
+                    logging.info(f"Text message from {sender}: {prompt}")
                     message_handler(prompt, sender, phone_id)
 
-                elif "location" in message:
-                    # Handle shared location
+                elif msg_type == "location":
+                    # Location message
                     latitude = message["location"]["latitude"]
                     longitude = message["location"]["longitude"]
                     gps_coords = f"{latitude},{longitude}"
-                    logging.info(f"Received location: {gps_coords}")
+                    logging.info(f"Location from {sender}: {gps_coords}")
                     message_handler(gps_coords, sender, phone_id)
 
                 else:
-                    send("Please send a text or share your location using the 📍 button.", sender, phone_id)
+                    # Unsupported message type
+                    logging.warning(f"Unsupported message type: {msg_type}")
+                    send("Please send a text message or share your location using the 📍 button.", sender, phone_id)
 
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
 
         return jsonify({"status": "ok"}), 200
+
 
 def message_handler(prompt, sender, phone_id):      
     text = prompt.strip().lower()
@@ -3613,6 +3625,15 @@ def message_handler(prompt, sender, phone_id):
         updated_state = get_action('handle_welcome2', prompt, user_state, phone_id)
         update_user_state(sender, updated_state)
         return updated_state  # return something or None
+
+    location_data = message.get('location')
+    elif location_data:
+        user_data['location'] = {
+            'latitude': location_data['latitude'],
+            'longitude': location_data['longitude']
+        }
+        return handle_deepening_location('', user_data, phone_id)
+
 
 
     elif session["step"] == "start":
