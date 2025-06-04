@@ -2067,20 +2067,16 @@ def webhook():
                 message = messages[0]
                 sender = message.get("from")
                 msg_type = message.get("type")
-
+                
                 if msg_type == "text":
-                    # Text message
                     prompt = message["text"]["body"].strip()
                     logging.info(f"Text message from {sender}: {prompt}")
-                    message_handler(prompt, sender, phone_id)
-
+                    message_handler(prompt, sender, phone_id, message)
+                
                 elif msg_type == "location":
-                    # Location message
-                    latitude = message["location"]["latitude"]
-                    longitude = message["location"]["longitude"]
-                    gps_coords = f"{latitude},{longitude}"
+                    gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
                     logging.info(f"Location from {sender}: {gps_coords}")
-                    message_handler(gps_coords, sender, phone_id)
+                    message_handler(gps_coords, sender, phone_id, message)
 
                 else:
                     # Unsupported message type
@@ -2093,7 +2089,7 @@ def webhook():
         return jsonify({"status": "ok"}), 200
 
 
-def message_handler(prompt, sender, phone_id):      
+def message_handler(prompt, sender, phone_id, message):      
     text = prompt.strip().lower()
 
    
@@ -2222,7 +2218,18 @@ def message_handler(prompt, sender, phone_id):
     next_state = get_action(user_state['step'], prompt, user_state, phone_id)
     update_user_state(sender, next_state)
 
+    if 'location' in message:
+        location_data = message['location']
+        user_data = {
+            'sender': sender,
+            'location': {
+                'latitude': location_data.get('latitude'),
+                'longitude': location_data.get('longitude')
+            }
+        }
+        return handle_deepening_location('', user_data, phone_id)
 
+    text = prompt.strip().lower()
     
 # Action mapping
 action_mapping = {
