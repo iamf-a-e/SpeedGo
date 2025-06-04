@@ -1073,7 +1073,7 @@ def human_agent_followup(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
     if prompt == "1":
-        return handle_select_language("1", user_data, phone_id)
+        return handle_select_language(prompt, user_data, phone_id)
 
     elif prompt == "2":
         send("Okay. Feel free to ask if you need anything else.", user_data['sender'], phone_id)
@@ -1145,7 +1145,7 @@ def faq_menu(prompt, user_data, phone_id):
         return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "5":  # Back to Main Menu
-        return handle_select_language("1", user_data, phone_id)
+        return handle_select_language(prompt, user_data, phone_id)
 
     else:
         send("Please select a valid option (1–5).", user_data['sender'], phone_id)
@@ -1197,7 +1197,7 @@ def custom_question_followup(prompt, user_data, phone_id):
         return {'step': 'custom_question', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
-        return handle_select_language("1", user_data, phone_id)
+        return handle_select_language(prompt, user_data, phone_id)
 
     else:
         send("Please reply 1 to ask another question or 2 to return to the main menu.", user_data['sender'], phone_id)
@@ -1256,7 +1256,7 @@ def faq_borehole_followup(prompt, user_data, phone_id):
         return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
-        return handle_select_language("1", user_data, phone_id)
+        return handle_select_language(prompt, user_data, phone_id)
 
     else:
         send("Please choose 1 to ask another question or 2 to return to the main menu.", user_data['sender'], phone_id)
@@ -1312,7 +1312,7 @@ def faq_pump_followup(prompt, user_data, phone_id):
         return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
-        return handle_select_language("1", user_data, phone_id)
+        return handle_select_language(prompt, user_data, phone_id)
 
     else:
         send("Please choose 1 to ask another question or 2 to return to the main menu.", user_data['sender'], phone_id)
@@ -1939,7 +1939,7 @@ def handle_quote_followup(prompt, user_data, phone_id):
             'step': 'main_menu',
             'user': user.to_dict()
         })
-        return handle_select_language(user_data, phone_id)
+        return handle_select_language(prompt, user_data, phone_id)
 
     elif prompt.strip() == "3":
         # Offer price
@@ -2731,7 +2731,7 @@ def human_agent_followup2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
     if prompt == "1":
-        return handle_select_language2("1", user_data, phone_id)
+        return handle_select_language2(prompt, user_data, phone_id)
 
     elif prompt == "2":
         send("Zvakanaka. Unogona kubvunza chero chaunoda.", user_data['sender'], phone_id)
@@ -2803,7 +2803,7 @@ def faq_menu2(prompt, user_data, phone_id):
         return {'step': 'human_agent2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "5":  # Back to Main Menu
-        return handle_select_language2("1", user_data, phone_id)
+        return handle_select_language2(prompt, user_data, phone_id)
 
     else:
         send("Ndapota sarudza sarudzo iri pakati pe (1–5).", user_data['sender'], phone_id)
@@ -2855,7 +2855,7 @@ def custom_question_followup2(prompt, user_data, phone_id):
         return {'step': 'custom_question2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
-        return handle_select_language2("1", user_data, phone_id)
+        return handle_select_language2(prompt, user_data, phone_id)
 
     else:
         send("Ndapota pindura ne 1 kuti ubvunze imwe mibvunzo kana 2 kuti udzokere kumenu huru.", user_data['sender'], phone_id)
@@ -2913,7 +2913,7 @@ def faq_borehole_followup2(prompt, user_data, phone_id):
         return {'step': 'faq_borehole2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
-        return handle_select_language2("1", user_data, phone_id)
+        return handle_select_language2(prompt, user_data, phone_id)
 
     else:
         send("Ndapota sarudza 1 kubvunza imwe mibvunzo kana 2 kudzokera kuMain Menu.", user_data['sender'], phone_id)
@@ -2967,7 +2967,7 @@ def faq_pump_followup2(prompt, user_data, phone_id):
         return {'step': 'faq_pump2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
-        return handle_select_language2("1", user_data, phone_id)
+        return handle_select_language2(prompt, user_data, phone_id)
 
     else:
         send("Ndapota sarudza 1 kubvunza imwe mibvunzo kana 2 kudzokera kuMain Menu.", user_data['sender'], phone_id)
@@ -3460,7 +3460,7 @@ def handle_quote_followup2(prompt, user_data, phone_id):
             'step': 'main_menu2',
             'user': user.to_dict()
         })
-        return handle_select_language2("0", user_data, phone_id)
+        return handle_select_language2(prompt, user_data, phone_id)
 
     else:
         send(
