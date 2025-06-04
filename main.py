@@ -10,6 +10,7 @@ from upstash_redis import Redis
 import google.generativeai as genai
 import threading
 import time
+import requests
 
 
 logging.basicConfig(level=logging.INFO)
@@ -19,6 +20,8 @@ wa_token = os.environ.get("WA_TOKEN")
 phone_id = os.environ.get("PHONE_ID")
 gen_api = os.environ.get("GEN_API")
 owner_phone = os.environ.get("OWNER_PHONE")
+GOOGLE_MAPS_API_KEY = "AlzaSyCXDMMhg7FzP|ElKmrlkv1TqtD3HgHwW50"
+
 
 # Upstash Redis setup
 redis = Redis(
@@ -348,23 +351,109 @@ def handle_deepening_no_deepening_options(prompt, user_data, phone_id):
 
 def handle_deepening_location(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    location = prompt.strip()
 
-    # Save location for deepening request
+    # Attempt to get GPS coordinates (either from prompt or user_data)
+    gps_coords = user_data.get('gps') or prompt.strip()
+
+    # Convert GPS to location name using a mocked reverse geocoder
+    location = reverse_geocode_location(gps_coords)
+
+    if not location:
+        send("Sorry, we couldn't detect your location. Please type your city name manually.", user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'deepening_location_manual', 'user': user.to_dict()})
+        return {'step': 'deepening_location_manual', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    # Save detected location
     user.quote_data['location'] = location
 
-    # Fetch pricing from backend (you must implement this function)
+    # Fetch price
     price = get_pricing_for_location_quotes(location, "borehole_deepening")
 
+    # Send price & ask for next step
     send(
-        f"Deepening cost in {location} starts from USD {price} per meter.\n"
+        f"Deepening cost in {location.title()} starts from USD {price} per meter.\n"
         "Would you like to:\n"
         "1. Confirm & Book Job\n"
         "2. Back to Other Services",
         user_data['sender'], phone_id
     )
+
     update_user_state(user_data['sender'], {'step': 'deepening_booking_confirm', 'user': user.to_dict()})
     return {'step': 'deepening_booking_confirm', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
+
+def reverse_geocode_location(gps_coords):
+    """
+    Converts GPS coordinates (latitude,longitude) to a city using Google Maps API.
+    Example input: "−17.8292,31.0522"
+    """
+    
+        if isinstance(gps_coords, str) and ',' in gps_coords:
+        lat, lng = gps_coords.split(',')
+        lat, lng = float(lat), float(lng)
+
+       
+        if -21.1 < lat < -20.0 and 28.4 < lng < 29.0:
+            return "Bulawayo"
+        elif -22.22 < lat < -22.21 and 29.99 < lng < 30.01:
+            return "Beitbridge Town"
+        elif -20.01 < lat < -20.00 and 31.59 < lng < 31.60:
+            return "Nyika Growth Point"
+        elif -17.31 < lat < -17.30 and 31.33 < lng < 31.34:
+            return "Bindura Town"
+        elif -17.63 < lat < -17.62 and 27.34 < lng < 27.35:
+            return "Binga Town"
+        elif -19.53 < lat < -19.52 and 28.67 < lng < 28.68:
+            return "Bubi Town/Centre"
+        elif -19.28 < lat < -19.27 and 31.64 < lng < 31.65:
+            return "Murambinda Town"
+        elif -19.34 < lat < -19.33 and 31.43 < lng < 31.44:
+            return "Buhera"
+        elif -20.15 < lat < -20.14 and 28.56 < lng < 28.57:
+            return "Bulawayo City/Town"
+        elif -19.641 < lat < -19.640 and 31.153 < lng < 31.154:
+            return "Gutu"
+        elif -20.94 < lat < -20.93 and 29.00 < lng < 29.01:
+            return "Gwanda"
+        elif -19.45 < lat < -19.44 and 29.81 < lng < 29.82:
+            return "Gweru"
+        elif -17.83 < lat < -17.82 and 31.05 < lng < 31.06:
+            return "Harare"
+
+        else:
+            return None
+    return None
+
+    if not gps_coords or ',' not in gps_coords:
+        return None
+
+    lat, lng = gps_coords.strip().split(',')
+    lat = lat.strip()
+    lng = lng.strip()
+
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lng}&key={GOOGLE_MAPS_API_KEY}"
+
+    try:
+        response = requests.get(url)
+        data = response.json()
+
+        if data['status'] != 'OK':
+            return None
+
+        # Look for locality or administrative_area_level_1 in address components
+        for result in data['results']:
+            for component in result['address_components']:
+                if 'locality' in component['types'] or 'administrative_area_level_1' in component['types']:
+                    return component['long_name'].lower()
+
+        # Fallback to formatted address
+        return data['results'][0]['formatted_address'].lower()
+
+    except Exception as e:
+        print("Geocoding error:", e)
+        return None
 
 
 def handle_deepening_booking_confirm(prompt, user_data, phone_id):
