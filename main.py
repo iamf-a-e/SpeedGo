@@ -1631,32 +1631,35 @@ def normalize_location(location_text):
     return location_text.strip().lower()
 
 
-def get_pricing_for_location(location_input):
-    location = normalize_location(location_input)
-    services = location_pricing.get(location)
+def get_pricing_for_location(location_input, pricing_data):
+    location = location_input.strip().lower()
+    pricing = pricing_data.get(location)
 
-    if not services:
+    if not pricing:
         return "Sorry, we don't have pricing for your location yet."
 
-    message_lines = [f"Pricing for {location.title()}:\n"]
+    message_lines = [f"📍 Pricing in {location.title()}:\n"]
 
-    for service, price in services.items():
+    for service, price in pricing.items():
         if isinstance(price, dict):
-            # Handle nested dict pricing, e.g. Borehole Drilling
-            message_lines.append(f"{service} Pricing:")
-            base_meters = price.get("for", "N/A")
-            extra_rate = price.get("per m", "N/A")
+            if service == "Borehole Drilling":
+                message_lines.append(f"🔧 {service} Pricing:")
+                base_meters = price.get("for", "N/A")
+                extra_rate = price.get("per m", "N/A")
 
-            classes = {k: v for k, v in price.items() if k.startswith("class")}
-            for cls, amt in classes.items():
-                message_lines.append(f"- {cls.title()}: ${amt}")
+                classes = {k: v for k, v in price.items() if k.startswith("class")}
+                for cls, amt in classes.items():
+                    message_lines.append(f"- {cls.title()}: ${amt}")
 
-            message_lines.append(f"- Includes depth up to {base_meters}m")
-            message_lines.append(f"- Extra charge: ${extra_rate}/m beyond included depth\n")
+                message_lines.append(f"- Includes depth up to {base_meters}m")
+                message_lines.append(f"- Extra charge: ${extra_rate}/m beyond included depth\n")
+            else:
+                # Handle any other service with nested structure
+                message_lines.append(f"🔧 {service} Pricing: {price}")
         else:
-            # For flat or per meter pricing
+            # Flat or per meter services
             unit = "per meter" if service in ["Commercial Hole Drilling", "Borehole Deepening"] else "flat rate"
-            message_lines.append(f"{service}: ${price} {unit}\n")
+            message_lines.append(f"🔹 {service}: ${price} {unit}\n")
 
     message_lines.append("Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu")
     return "\n".join(message_lines)
@@ -1685,31 +1688,6 @@ def handle_get_pricing_for_location(prompt, user_data, phone_id):
         'user': user.to_dict(),
         'sender': user_data['sender']
     }
-
-
-def get_pricing_for_location(location, pricing_data):
-    pricing = pricing_data.get(location.lower())
-    if not pricing:
-        return "Pricing not available for this location."
-
-    message = f"📍 Borehole Drilling Pricing in {location.title()}:\n"
-
-    drilling = pricing.get("Borehole Drilling", {})
-    base_meters = drilling.get("for", "N/A")
-    extra_rate = drilling.get("per m", "N/A")
-    classes = {k: v for k, v in drilling.items() if k.startswith("class")}
-
-    for cls, amount in classes.items():
-        message += f"- {cls.title()}: ${amount}\n"
-
-    message += f"- Includes depth up to {base_meters}m\n"
-    message += f"- Extra charge: ${extra_rate}/m beyond included depth\n\n"
-
-    message += "Would you like to:\n"
-    message += "1. Ask pricing for another service\n"
-    message += "2. Return to Main Menu"
-
-    return message
 
 
 
