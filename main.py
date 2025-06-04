@@ -372,7 +372,6 @@ def get_pricing_for_location_quotes(location, service_type):
             message_lines.append(f"- {cls.title()}: ${amt}")
         message_lines.append(f"- Includes depth up to {base_meters}m")
         message_lines.append(f"- Extra charge: ${extra_rate}/m beyond included depth\n")
-        message_lines.append("Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu")
         return "\n".join(message_lines)
 
     # Otherwise, price is just a number, show price per meter or flat rate
