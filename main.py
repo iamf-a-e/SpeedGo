@@ -1579,33 +1579,127 @@ def handle_booking_confirmation(prompt, user_data, phone_id):
 
 
 location_pricing = {
+    "beitbridge": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,  # 180mm PVC class 10
+        "Borehole Deepening": 30
+    },
+    "nyika": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1050,
+            "class 9": 1181.25,
+            "class 10": 1312.5,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "bindura": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "binga": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1300,
+            "class 9": 1462.5,
+            "class 10": 1625,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "bubi": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1200,
+            "class 9": 1350,
+            "class 10": 1500,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "murambinda": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1050,
+            "class 9": 1181.25,
+            "class 10": 1312.5,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "buhera": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1150,
+            "class 9": 1293.75,
+            "class 10": 1437.5,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
     "bulawayo": {
         "Water Survey": 150,
         "Borehole Drilling": {
             "class 6": 1000,
             "class 9": 1125,
             "class 10": 1250,
-            "for": 40,
-            "per m": 25
+            "included_depth_m": 40,
+            "extra_per_m": 27
         },
-        "Pump Installation": 0,
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
-    },
-    "harare": {
+    }
+    "bulilimamangwe": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "class 6": 2000,
-            "class 9": 2300,
-            "class 10": 2800,
-            "for": 40 ,
-            "per m": 30
+            "class 6": 1150,
+            "class 9": 1293.75,
+            "class 10": 1437.5,
+            "included_depth_m": 40,
+            "extra_per_m": 27
         },
-        "Pump Installation": 0,
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
-    
+    "chegutu": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+ 
 }
 
 
@@ -1628,6 +1722,34 @@ def normalize_location(location_text):
     return location_text.strip().lower()
 
 
+pump_installation_options = {
+    "1": {
+        "description": "D.C solar (direct solar NO inverter) - I have tank and tank stand",
+        "price": 1640
+    },
+    "2": {
+        "description": "D.C solar (direct solar NO inverter) - I don’t have anything",
+        "price": 2550
+    },
+    "3": {
+        "description": "D.C solar (direct solar NO inverter) - Labour only",
+        "price": 200
+    },
+    "4": {
+        "description": "A.C electric (ZESA or solar inverter) - Fix and supply",
+        "price": 1900
+    },
+    "5": {
+        "description": "A.C electric (ZESA or solar inverter) - Labour only",
+        "price": 170
+    },
+    "6": {
+        "description": "A.C electric (ZESA or solar inverter) - I have tank and tank stand",
+        "price": 950
+    }
+}
+
+
 def get_pricing_for_location(location_input, pricing_data):
     location = location_input.strip().lower()
     pricing = pricing_data.get(location)
@@ -1641,25 +1763,50 @@ def get_pricing_for_location(location_input, pricing_data):
         if isinstance(price, dict):
             if service == "Borehole Drilling":
                 message_lines.append(f"🔧 {service} Pricing:")
-                base_meters = price.get("for", "N/A")
-                extra_rate = price.get("per m", "N/A")
+                included_depth = price.get("included_depth_m", "N/A")
+                extra_rate = price.get("extra_per_m", "N/A")
 
                 classes = {k: v for k, v in price.items() if k.startswith("class")}
                 for cls, amt in classes.items():
                     message_lines.append(f"- {cls.title()}: ${amt}")
 
-                message_lines.append(f"- Includes depth up to {base_meters}m")
+                message_lines.append(f"- Includes depth up to {included_depth}m")
                 message_lines.append(f"- Extra charge: ${extra_rate}/m beyond included depth\n")
+
+            elif service == "Pump Installation":
+                message_lines.append("💧 Pump Installation Options:")
+                for key, option in pump_installation_options.items():
+                    message_lines.append(f"{key}. {option['description']} - ${option['price']}")
+                message_lines.append("\nPlease choose a Pump Installation option (e.g., 1, 2, 3...)")
+                return "\n".join(message_lines)  # Return immediately so you can handle the follow-up separately
+
             else:
-                # Handle any other service with nested structure
                 message_lines.append(f"🔧 {service} Pricing: {price}")
         else:
-            # Flat or per meter services
             unit = "per meter" if service in ["Commercial Hole Drilling", "Borehole Deepening"] else "flat rate"
             message_lines.append(f"🔹 {service}: ${price} {unit}\n")
 
     message_lines.append("Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu")
     return "\n".join(message_lines)
+
+
+def handle_pump_installation_choice(prompt, user_data, phone_id):
+    option = pump_installation_options.get(prompt.strip())
+    if not option:
+        send("❌ Invalid choice. Please select a valid option number (1–6).", user_data['sender'], phone_id)
+        return
+
+    message = (
+        f"✅ Pump Installation Quote:\n"
+        f"{option['description']} - ${option['price']}\n\n"
+        "Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu"
+    )
+    send(message, user_data['sender'], phone_id)
+    update_user_state(user_data['sender'], {
+        "step": "quote_response",
+        "user": user_data["user"]
+    })
+
 
 
 def handle_get_pricing_for_location(prompt, user_data, phone_id):
@@ -3495,6 +3642,7 @@ action_mapping = {
     "deepening_location": handle_deepening_location,
     "handle_deepening_location": handle_deepening_location,
     "reverse_geocode_location": reverse_geocode_location,
+    "awaiting_pump_option": handle_pump_installation_choice,
     "human_agent": lambda prompt, user_data, phone_id: (
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
