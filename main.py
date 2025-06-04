@@ -845,6 +845,67 @@ def handle_drilling_status_info_request(prompt, user_data, phone_id):
     }
 
 
+# Assuming you keep track of user's step/state in your bot (not shown here)
+# Example: user_state = {"awaiting_pump_option": True}
+
+def get_pump_installation_options():
+    message_lines = ["💧 Pump Installation Options Pricing:\n"]
+    for key, option in pump_installation_options.items():
+        desc = option.get('description', 'No description')
+        price = option.get('price', 'N/A')
+        message_lines.append(f"{key}. {desc} - ${price}")
+    return "\n".join(message_lines)
+
+def get_pump_installation_price(option_key):
+    option = pump_installation_options.get(option_key)
+    if not option:
+        return "Sorry, invalid Pump Installation option selected."
+    desc = option.get('description', 'No description')
+    price = option.get('price', 'N/A')
+    message = f"💧 Pricing for option {option_key}:\n{desc} - ${price}\n"
+    message += "\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price"
+    return message
+
+
+def get_pricing_for_location_quotes(location, service_type, pump_option_selected=None):
+    location_key = location.strip().lower()
+    service_key = service_type.strip().title()
+
+    # If Pump Installation selected but no option chosen yet
+    if service_key == "Pump Installation" and pump_option_selected is None:
+        return get_pump_installation_options()
+
+    # If Pump Installation and option selected, return just that price info + menu
+    if service_key == "Pump Installation" and pump_option_selected:
+        return get_pump_installation_price(pump_option_selected)
+
+    # For other services, use existing logic
+    loc_data = location_pricing.get(location_key)
+    if not loc_data:
+        return "Sorry, pricing not available for this location."
+
+    price = loc_data.get(service_key)
+    if not price:
+        return f"Sorry, pricing for {service_key} not found in {location.title()}."
+
+    if isinstance(price, dict):
+        included_depth = price.get("included_depth_m", "N/A")
+        extra_rate = price.get("extra_per_m", "N/A")
+
+        classes = {k: v for k, v in price.items() if k.startswith("class")}
+        message_lines = [f"{service_key} Pricing in {location.title()}:"]
+        for cls, amt in classes.items():
+            message_lines.append(f"- {cls.title()}: ${amt}")
+        message_lines.append(f"- Includes depth up to {included_depth}m")
+        message_lines.append(f"- Extra charge: ${extra_rate}/m beyond included depth\n")
+        message_lines.append("Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
+        return "\n".join(message_lines)
+
+    unit = "per meter" if service_key in ["Commercial Hole Drilling", "Borehole Deepening"] else "flat rate"
+    return (f"{service_key} in {location.title()}: ${price} {unit}\n\n"
+            "Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
+
+
 def handle_pump_status_info_request(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
@@ -3552,6 +3613,52 @@ def message_handler(prompt, sender, phone_id):
         updated_state = get_action('handle_welcome2', prompt, user_state, phone_id)
         update_user_state(sender, updated_state)
         return updated_state  # return something or None
+
+
+    elif session["step"] == "start":
+        # Assume user sends location first
+        session["location"] = user_msg
+        session["step"] = "awaiting_service"
+        user_sessions[phone_id] = session
+        return "Please select a service: Borehole Drilling, Pump Installation, Commercial Hole Drilling, etc."
+
+    elif session["step"] == "awaiting_service":
+        service = user_message.strip().title()
+        session["service"] = service
+
+        if service == "Pump Installation":
+            # Show pump options list
+            msg = get_pricing_for_location_quotes(session["location"], service)
+            session["step"] = "awaiting_pump_option"
+            user_sessions[phone_id] = session
+            return msg
+
+        else:
+            # For other services, show pricing directly
+            msg = get_pricing_for_location_quotes(session["location"], service)
+            session["step"] = "start"  # Reset or whatever logic you prefer
+            user_sessions[phone_id] = session
+            return msg
+
+    elif session["step"] == "awaiting_pump_option":
+        # Expect a number 1-6 for pump installation option
+        option_selected = user_message.strip()
+        # Validate option
+        if option_selected not in pump_installation_options:
+            return "Invalid option. Please select a valid Pump Installation option number (1-6)."
+
+        # Get pricing for selected pump option
+        msg = get_pricing_for_location_quotes(session["location"], "Pump Installation", pump_option_selected=option_selected)
+        session["step"] = "start"  # Reset after pump option selected
+        user_sessions[phone_id] = session
+        return msg
+
+    else:
+        # fallback or reset state
+        session["step"] = "start"
+        user_sessions[phone_id] = session
+        return "Please enter your location to start pricing inquiry."
+
 
 
     user_state = get_user_state(sender)
