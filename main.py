@@ -1674,7 +1674,7 @@ location_pricing = {
         },
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
-    }
+    },
     "bulilimamangwe": {
         "Water Survey": 150,
         "Borehole Drilling": {
