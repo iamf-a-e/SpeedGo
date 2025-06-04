@@ -1799,7 +1799,7 @@ def handle_quote_followup(prompt, user_data, phone_id):
             'step': 'quote_response',
             'user': user.to_dict()    
         })
-        return handle_quote_response(user_data, phone_id)
+        return handle_quote_response(prompt, user_data, phone_id)
 
     else:
         send("Invalid option. Reply 1 to ask about another service or 2 to return to the main menu or 3 if you want to make a price offer .", user_data['sender'], phone_id)
