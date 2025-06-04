@@ -2053,7 +2053,7 @@ def webhook():
 
     elif request.method == "POST":
         data = request.get_json()
-        logging.info(f"Incoming webhook data: {json.dumps(data)}")
+        logging.info(f"Incoming webhook data: {json.dumps(data, indent=2)}")
 
         try:
             entry = data.get("entry", [])[0]
@@ -2066,29 +2066,16 @@ def webhook():
                 message = messages[0]
                 sender = message.get("from")
                 msg_type = message.get("type")
-                user_data = get_user_state(sender)
 
                 if msg_type == "text":
                     prompt = message["text"]["body"].strip()
                     logging.info(f"Text message from {sender}: {prompt}")
-                    updated_state = get_action(user_data['step'], prompt, user_data, phone_id)
-                    update_user_state(sender, updated_state)
+                    message_handler(prompt, sender, phone_id, message)
 
                 elif msg_type == "location":
-                    latitude = message["location"]["latitude"]
-                    longitude = message["location"]["longitude"]
-                    gps_coords = f"{latitude},{longitude}"
-                    logging.info(f"Received location: {gps_coords}")
-
-                    # Inject location into user_data and route based on step
-                    user_data['location'] = {"latitude": latitude, "longitude": longitude}
-                    current_step = user_data.get("step")
-
-                    if current_step == "deepening_location":
-                        updated_state = handle_deepening_location("", user_data, phone_id)
-                        update_user_state(sender, updated_state)
-                    else:
-                        send("Thank you for sharing your location. What would you like to do next?", sender, phone_id)
+                    gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
+                    logging.info(f"Location from {sender}: {gps_coords}")
+                    message_handler(gps_coords, sender, phone_id, message, is_location=True)
 
                 else:
                     send("Please send a text message or share your location using the 📍 button.", sender, phone_id)
@@ -2099,84 +2086,58 @@ def webhook():
         return jsonify({"status": "ok"}), 200
 
 
-def message_handler(prompt, sender, phone_id, message):      
-    text = prompt.strip().lower()
+def message_handler(prompt, sender, phone_id, message=None, is_location=False):
+    # Fetch user session from Redis or wherever stored
+    user_state = get_user_state(sender) or {}
+    user_state['sender'] = sender
+    user = User.from_dict(user_state.get("user", {}))
 
-   
-    if text in ["hi", "hey", "hie"]:
-        user_state = {'step': 'handle_welcome', 'sender': sender}
-        updated_state = get_action('handle_welcome', prompt, user_state, phone_id)
-        update_user_state(sender, updated_state)
-        return updated_state  # return something or None
+    step = user_state.get("step", "handle_welcome")
 
-    elif text in ["mhoro", "makadini", "maswera sei", "ko sei zvako", "hesi"]:
-        user_state = {'step': 'handle_welcome2', 'sender': sender}
-        updated_state = get_action('handle_welcome2', prompt, user_state, phone_id)
-        update_user_state(sender, updated_state)
-        return updated_state  # return something or None
+    # 🔁 If location is sent and we're expecting it
+    if is_location:
+        if step in ['enter_location_for_quote', 'deepening_location', 'location_quote']:
+            try:
+                lat = message['location']['latitude']
+                lng = message['location']['longitude']
+                gps_coords = f"{lat},{lng}"
+                location_name = reverse_geocode_location(gps_coords)
+            except Exception as e:
+                logging.error(f"Failed to parse GPS location: {e}")
+                send("Sorry, we couldn't detect your location. Please type your city or town name.", sender, phone_id)
+                return
 
-    location_data = message.get('location')
-    if location_data:
-        user_data['location'] = {
-            'latitude': location_data['latitude'],
-            'longitude': location_data['longitude']
-        }
-        return handle_deepening_location('', user_data, phone_id)
+            if not location_name:
+                send("Sorry, we couldn't recognize that location. Please try again or type it manually.", sender, phone_id)
+                return
 
+            # Save location
+            user.quote_data['location'] = location_name
+            update_user_state(sender, {
+                'step': 'select_service_quote',
+                'user': user.to_dict()
+            })
 
+            # Prompt user to choose a service
+            send(
+                f"Thanks! We've detected your location as *{location_name.title()}*.\n\n"
+                "Which service would you like a quote for?\n"
+                "1. Water Survey\n"
+                "2. Borehole Drilling\n"
+                "3. Pump Installation\n"
+                "4. Commercial Hole Drilling\n"
+                "5. Borehole Deepening",
+                sender, phone_id
+            )
+            return
 
-    elif session["step"] == "start":
-        # Assume user sends location first
-        session["location"] = user_msg
-        session["step"] = "awaiting_service"
-        user_sessions[phone_id] = session
-        return "Please select a service: Borehole Drilling, Pump Installation, Commercial Hole Drilling, etc."
-
-    elif session["step"] == "awaiting_service":
-        service = user_message.strip().title()
-        session["service"] = service
-
-        if service == "Pump Installation":
-            # Show pump options list
-            msg = get_pricing_for_location_quotes(session["location"], service)
-            session["step"] = "awaiting_pump_option"
-            user_sessions[phone_id] = session
-            return msg
-
-        else:
-            # For other services, show pricing directly
-            msg = get_pricing_for_location_quotes(session["location"], service)
-            session["step"] = "start"  # Reset or whatever logic you prefer
-            user_sessions[phone_id] = session
-            return msg
-
-    elif session["step"] == "awaiting_pump_option":
-        # Expect a number 1-6 for pump installation option
-        option_selected = user_message.strip()
-        # Validate option
-        if option_selected not in pump_installation_options:
-            return "Invalid option. Please select a valid Pump Installation option number (1-6)."
-
-        # Get pricing for selected pump option
-        msg = get_pricing_for_location_quotes(session["location"], "Pump Installation", pump_option_selected=option_selected)
-        session["step"] = "start"  # Reset after pump option selected
-        user_sessions[phone_id] = session
-        return msg
-
-    else:
-        # fallback or reset state
-        session["step"] = "start"
-        user_sessions[phone_id] = session
-        return "Please enter your location to start pricing inquiry."
-
-
-
-    user_state = get_user_state(sender)
-    user_state['sender'] = sender    
-    next_state = get_action(user_state['step'], prompt, user_state, phone_id)
-    update_user_state(sender, next_state)
-    return next_state
-
+    # ✉️ Handle normal text input based on current step
+    try:
+        next_state = get_action(step, prompt, user_state, phone_id)
+        update_user_state(sender, next_state)
+    except Exception as e:
+        logging.error(f"Error in message_handler: {e}", exc_info=True)
+        send("Something went wrong. Please try again or type 'menu' to return to the main menu.", sender, phone_id)
     
 
 def get_action(current_state, prompt, user_data, phone_id):
