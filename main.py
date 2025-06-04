@@ -1387,16 +1387,13 @@ def handle_collect_quote_details(prompt, user_data, phone_id):
 
 def handle_quote_response(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    if prompt == "1":  # Offer price
+    if prompt == "3":  # Offer price
         update_user_state(user_data['sender'], {
             'step': 'collect_offer_details',
             'user': user.to_dict()
         })
         send(
-            "Sure! You can share your proposed prices below.\n\n"
-            "Please reply with your offer in the format:\n\n"
-            "- Water Survey: $_\n"
-            "- Borehole Drilling: $_",
+            "Sure! You can share your proposed price below.\n\n",
             user_data['sender'], phone_id
         )
         return {'step': 'collect_offer_details', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -1749,7 +1746,8 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         f"{pricing_message}\n\n"
         "Would you like to:\n"
         "1. Ask pricing for another service\n"
-        "2. Return to Main Menu"
+        "2. Return to Main Menu\n"
+        "3. Offer Price"
     )
 
     # Update user state to expect follow-up choice
@@ -1795,8 +1793,16 @@ def handle_quote_followup(prompt, user_data, phone_id):
         })
         return handle_select_language("0", user_data, phone_id)
 
+    elif prompt.strip() == "3":
+        # Offer price
+        update_user_state(user_data['sender'], {
+            'step': 'quote_response',
+            'user': user.to_dict()    
+        })
+        return handle_quote_response("0", user_data, phone_id)
+
     else:
-        send("Invalid option. Reply 1 to ask about another service or 2 to return to the main menu.", user_data['sender'], phone_id)
+        send("Invalid option. Reply 1 to ask about another service or 2 to return to the main menu or 3 if you want to make a price offer .", user_data['sender'], phone_id)
         return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
