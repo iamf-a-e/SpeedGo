@@ -2047,14 +2047,13 @@ def webhook():
         mode = request.args.get("hub.mode")
         token = request.args.get("hub.verify_token")
         challenge = request.args.get("hub.challenge")
-
         if mode == "subscribe" and token == "BOT":
             return challenge, 200
         return "Failed", 403
 
     elif request.method == "POST":
         data = request.get_json()
-        logging.info(f"Incoming webhook data: {json.dumps(data, indent=2)}")
+        logging.info(f"Incoming webhook data: {json.dumps(data)}")
 
         try:
             entry = data.get("entry", [])[0]
@@ -2067,20 +2066,31 @@ def webhook():
                 message = messages[0]
                 sender = message.get("from")
                 msg_type = message.get("type")
-                
+                user_data = get_user_state(sender)
+
                 if msg_type == "text":
                     prompt = message["text"]["body"].strip()
                     logging.info(f"Text message from {sender}: {prompt}")
-                    message_handler(prompt, sender, phone_id, message)
-                
+                    updated_state = get_action(user_data['step'], prompt, user_data, phone_id)
+                    update_user_state(sender, updated_state)
+
                 elif msg_type == "location":
-                    gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
-                    logging.info(f"Location from {sender}: {gps_coords}")
-                    message_handler(gps_coords, sender, phone_id, message)
+                    latitude = message["location"]["latitude"]
+                    longitude = message["location"]["longitude"]
+                    gps_coords = f"{latitude},{longitude}"
+                    logging.info(f"Received location: {gps_coords}")
+
+                    # Inject location into user_data and route based on step
+                    user_data['location'] = {"latitude": latitude, "longitude": longitude}
+                    current_step = user_data.get("step")
+
+                    if current_step == "deepening_location":
+                        updated_state = handle_deepening_location("", user_data, phone_id)
+                        update_user_state(sender, updated_state)
+                    else:
+                        send("Thank you for sharing your location. What would you like to do next?", sender, phone_id)
 
                 else:
-                    # Unsupported message type
-                    logging.warning(f"Unsupported message type: {msg_type}")
                     send("Please send a text message or share your location using the 📍 button.", sender, phone_id)
 
         except Exception as e:
