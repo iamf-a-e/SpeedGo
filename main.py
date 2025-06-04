@@ -349,6 +349,21 @@ def handle_deepening_no_deepening_options(prompt, user_data, phone_id):
         return {'step': 'deepening_no_deepening_options', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
+def get_pricing_for_location_quotes(location, service_type):
+    location_key = location.strip().lower()
+    service_key = service_type.strip().title()  # e.g., "Borehole Deepening"
+
+    loc_data = location_pricing.get(location_key)
+    if not loc_data:
+        return "N/A"
+
+    price = loc_data.get(service_key)
+    if isinstance(price, dict):
+        return price  # return full pricing dict if needed
+    return price
+
+
+
 def handle_deepening_location(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
