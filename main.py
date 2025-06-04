@@ -376,7 +376,7 @@ def get_pricing_for_location_quotes(location, service_type):
 
     # Otherwise, price is just a number, show price per meter or flat rate
     unit = "per meter" if service_key in ["Commercial Hole Drilling", "Borehole Deepening"] else "flat rate"
-    return f"{service_key} in {location.title()}: ${price} {unit}\n\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu"
+    return f"{service_key} in {location.title()}: ${price} {unit}\n\n"
 
 
 
