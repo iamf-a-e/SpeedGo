@@ -1621,8 +1621,28 @@ def get_pricing_for_location(location_input):
     if not services:
         return "Sorry, we don't have pricing for your location yet."
 
-    pricing_lines = [f"{service}: {price}" for service, price in services.items()]
-    return "Here are the prices for your area:\n" + "\n".join(pricing_lines)
+    message_lines = [f"Pricing for {location.title()}:\n"]
+
+    for service, price in services.items():
+        if isinstance(price, dict):
+            # Handle nested dict pricing, e.g. Borehole Drilling
+            message_lines.append(f"{service} Pricing:")
+            base_meters = price.get("for", "N/A")
+            extra_rate = price.get("per m", "N/A")
+
+            classes = {k: v for k, v in price.items() if k.startswith("class")}
+            for cls, amt in classes.items():
+                message_lines.append(f"- {cls.title()}: ${amt}")
+
+            message_lines.append(f"- Includes depth up to {base_meters}m")
+            message_lines.append(f"- Extra charge: ${extra_rate}/m beyond included depth\n")
+        else:
+            # For flat or per meter pricing
+            unit = "per meter" if service in ["Commercial Hole Drilling", "Borehole Deepening"] else "flat rate"
+            message_lines.append(f"{service}: ${price} {unit}\n")
+
+    message_lines.append("Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu")
+    return "\n".join(message_lines)
 
 
 def handle_get_pricing_for_location(prompt, user_data, phone_id):
