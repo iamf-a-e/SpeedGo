@@ -501,37 +501,47 @@ def handle_main_menu(prompt, user_data, phone_id):
 def human_agent(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     customer_number = user_data['sender']
-    customer_name = user.name if hasattr(user, "name") and user.name else "Unknown"
+    
+    # Immediate response to customer
+    send("A human agent will contact you soon...", customer_number, phone_id)
+    
+    # Notify agent (in background)
     agent_number = "+263719835124"
-
-    # Notify the customer immediately
-    send(
-        "A human agent will contact you soon...",
-        customer_number, phone_id
-    )
-
-    # Notify the agent immediately
-    agent_message = (
-        f"👋 A customer would like to talk to you on WhatsApp.\n\n"
-        f"📱 Customer Number: {customer_number}\n"
-        f"🙋 Name: {customer_name}\n"
-        f"📩 Last Message: \"{prompt}\""
-    )
-    send(agent_message, agent_number, phone_id)
-
-    # Store state with timestamp to track elapsed time
+    threading.Thread(target=notify_agent, args=(customer_number, prompt, agent_number, phone_id)).start()
+    
+    # Schedule fallback message after 10 seconds
+    threading.Timer(10, send_fallback_option, args=[customer_number, phone_id]).start()
+    
+    # Update state
     update_user_state(customer_number, {
         'step': 'waiting_for_human_agent_response',
         'user': user.to_dict(),
         'sender': customer_number,
         'agent_prompt_time': time.time()
     })
-
-    # Send the alternative contact option after 10 seconds
-    threading.Timer(10, send_fallback_option, args=[customer_number, phone_id]).start()
-
-    return {'step': 'waiting_for_human_agent_response', 'user': user.to_dict(), 'sender': customer_number}
     
+    return {'step': 'waiting_for_human_agent_response', 'user': user.to_dict(), 'sender': customer_number}
+
+def notify_agent(customer_number, prompt, agent_number, phone_id):
+    agent_message = (
+        f"👋 New customer request on WhatsApp\n\n"
+        f"📱 Number: {customer_number}\n"
+        f"📩 Message: \"{prompt}\""
+    )
+    send(agent_message, agent_number, phone_id)
+
+def send_fallback_option(customer_number, phone_id):
+    # Check if still waiting
+    user_data = get_user_state(customer_number)
+    if user_data and user_data.get('step') == 'waiting_for_human_agent_response':
+        send("Alternatively, you can contact us directly at +263719835124", customer_number, phone_id)
+        send("Would you like to:\n1. Return to main menu\n2. End conversation", customer_number, phone_id)
+        update_user_state(customer_number, {
+            'step': 'human_agent_followup',
+            'user': user_data.get('user', {}),
+            'sender': customer_number
+        })
+
 
 def send_fallback_option(customer_number, phone_id):
     # Check if user is still waiting
@@ -553,31 +563,28 @@ def send_fallback_option(customer_number, phone_id):
         
 
 def handle_user_message(prompt, user_data, phone_id):
-    user = User.from_dict(user_data['user'])
-    customer_number = user_data['sender']
-    
     if user_data.get('step') == 'human_agent_followup':
-        if prompt.strip() == '1':  # Yes - return to main menu
-            update_user_state(customer_number, {
+        if prompt.strip() == '1':
+            # Return to main menu
+            update_user_state(user_data['sender'], {
                 'step': 'main_menu',
-                'user': user.to_dict()
+                'user': user_data['user']
             })
-            send_main_menu(customer_number, phone_id)
-            return {'step': 'main_menu', 'user': user.to_dict(), 'sender': customer_number}
-        elif prompt.strip() == '2':  # No - end conversation
-            send("Thank you! Have a good day.", customer_number, phone_id)
-            update_user_state(customer_number, {
+            send_main_menu(user_data['sender'], phone_id)
+            return {'step': 'main_menu', 'user': user_data['user'], 'sender': user_data['sender']}
+        elif prompt.strip() == '2':
+            # End conversation
+            send("Thank you! Have a great day.", user_data['sender'], phone_id)
+            update_user_state(user_data['sender'], {
                 'step': 'end',
-                'user': user.to_dict()
+                'user': user_data['user']
             })
-            return {'step': 'end', 'user': user.to_dict(), 'sender': customer_number}
+            return {'step': 'end', 'user': user_data['user'], 'sender': user_data['sender']}
         else:
-            send("Please reply with 1 for Yes or 2 for No.", customer_number, phone_id)
+            send("Please choose 1 or 2", user_data['sender'], phone_id)
             return user_data
-    
-    # For any other case in this state, just maintain current state
     return user_data
-
+    
 
 def human_agent_followup(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
@@ -1250,6 +1257,20 @@ def handle_other_services_menu(prompt, user_data, phone_id):
         send("Please select a valid option (1-4).", user_data['sender'], phone_id)
         return {'step': 'other_services_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
+def send_main_menu(phone_number, phone_id):
+    menu_text = (
+        "How can we help you today?\n\n"
+        "1. Request a quote\n"
+        "2. Search Price Using Location\n"
+        "3. Check Project Status\n"
+        "4. FAQs or Learn About Borehole Drilling\n"
+        "5. Other services\n"
+        "6. Talk to a Human Agent\n\n"
+        "Please reply with a number (e.g., 1)"
+    )
+    send(menu_text, phone_number, phone_id)
+    
 
 def handle_borehole_deepening_casing(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
