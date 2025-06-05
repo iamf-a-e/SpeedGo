@@ -2089,7 +2089,6 @@ def webhook():
         return jsonify({"status": "ok"}), 200
 
 
-
 def message_handler(prompt, sender, phone_id, message):
     user_data = get_user_state(sender)
     user_data['sender'] = sender
@@ -2102,6 +2101,13 @@ def message_handler(prompt, sender, phone_id, message):
                 "latitude": location["latitude"],
                 "longitude": location["longitude"]
             }
+            # override prompt with coordinates if needed
+            prompt = f"{location['latitude']},{location['longitude']}"
+        else:
+            prompt = ""
+
+    else:
+        prompt = message.get("text", {}).get("body", "").strip()
 
     # Ensure user object is present
     if 'user' not in user_data:
@@ -2111,6 +2117,7 @@ def message_handler(prompt, sender, phone_id, message):
     step = user_data.get('step', 'welcome')
     next_state = get_action(step, prompt, user_data, phone_id)
     update_user_state(sender, next_state)
+
 
 def get_action(current_state, prompt, user_data, phone_id):
     handler = action_mapping.get(current_state, handle_welcome)
