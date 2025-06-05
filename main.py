@@ -294,8 +294,7 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
 
     # Handle Pump Installation separately
     if service_key == "Pump Installation":
-        if pump_option_selected is None:
-            # This case shouldn't happen anymore since we handle it in handle_select_service_quote
+        if pump_option_selected is None:            
             message_lines = [f"💧 Pump Installation Options:\n"]
             for key, option in pump_installation_options.items():
                 desc = option.get('description', 'No description')
@@ -427,7 +426,7 @@ def handle_main_menu(prompt, user_data, phone_id):
             'step': 'enter_location_for_quote',
             'user': user.to_dict()
         })
-        send("Please enter your location to get started.", user_data['sender'], phone_id)
+        send("please enter your location (City/Town or GPS coordinates) to get started.", user_data['sender'], phone_id)
         return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":  # Search Price Using Location
@@ -1928,6 +1927,7 @@ action_mapping = {
     "custom_question": custom_question,
     "custom_question_followup": custom_question_followup,
     "human_agent": human_agent,
+    "waiting_for_human_agent_response": handle_user_message,
     "human_agent_followup": human_agent_followup,   
     "other_services_menu": handle_other_services_menu,
     "borehole_deepening_casing": handle_borehole_deepening_casing,
