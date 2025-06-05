@@ -102,31 +102,32 @@ def reverse_geocode_location(gps_coords):
         return None
 
     # Local fallback mapping
-    if -21.1 < lat < -20.0 and 28.4 < lng < 29.0:
+
+    if -21.15 < lat < -21.05 and 28.45 < lng < 28.55:  # Bulawayo (~50m buffer)
         return "Bulawayo"
-    elif -22.22 < lat < -22.21 and 29.99 < lng < 30.01:
+    elif -22.25 < lat < -22.15 and 29.98 < lng < 30.02:  # Beitbridge (~50m buffer)
         return "Beitbridge Town"
-    elif -20.01 < lat < -20.00 and 31.59 < lng < 31.60:
+    elif -20.02 < lat < -19.98 and 31.58 < lng < 31.60:  # Nyika Growth Point (~50m buffer)
         return "Nyika Growth Point"
-    elif -17.31 < lat < -17.30 and 31.33 < lng < 31.34:
+    elif -17.32 < lat < -17.30 and 31.32 < lng < 31.34:  # Bindura (~50m buffer)
         return "Bindura Town"
-    elif -17.63 < lat < -17.62 and 27.34 < lng < 27.35:
+    elif -17.64 < lat < -17.62 and 27.33 < lng < 27.35:  # Binga (~50m buffer)
         return "Binga Town"
-    elif -19.53 < lat < -19.52 and 28.67 < lng < 28.68:
+    elif -19.54 < lat < -19.50 and 28.66 < lng < 28.68:  # Bubi (~50m buffer)
         return "Bubi Town/Centre"
-    elif -19.28 < lat < -19.27 and 31.64 < lng < 31.65:
+    elif -19.29 < lat < -19.27 and 31.63 < lng < 31.65:  # Murambinda (~50m buffer)
         return "Murambinda Town"
-    elif -19.34 < lat < -19.33 and 31.43 < lng < 31.44:
+    elif -19.35 < lat < -19.33 and 31.42 < lng < 31.44:  # Buhera (~50m buffer)
         return "Buhera"
-    elif -20.15 < lat < -20.14 and 28.56 < lng < 28.57:
+    elif -20.16 < lat < -20.12 and 28.55 < lng < 28.57:  # Bulawayo City (~50m buffer)
         return "Bulawayo City/Town"
-    elif -19.641 < lat < -19.640 and 31.153 < lng < 31.154:
+    elif -19.642 < lat < -19.638 and 31.152 < lng < 31.154:  # Gutu (~50m buffer)
         return "Gutu"
-    elif -20.94 < lat < -20.93 and 29.00 < lng < 29.01:
+    elif -20.95 < lat < -20.91 and 28.99 < lng < 29.01:  # Gwanda (~50m buffer)
         return "Gwanda"
-    elif -19.45 < lat < -19.44 and 29.81 < lng < 29.82:
+    elif -19.46 < lat < -19.42 and 29.80 < lng < 29.82:  # Gweru (~50m buffer)
         return "Gweru"
-    elif -17.83 < lat < -17.82 and 31.05 < lng < 31.06:
+    elif -17.84 < lat < -17.80 and 31.04 < lng < 31.06:  # Harare (~50m buffer)
         return "Harare"
 
     # If not found locally, use Google Maps API
