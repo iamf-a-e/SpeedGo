@@ -484,14 +484,19 @@ def handle_main_menu(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'other_services_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    
+        
     elif prompt == "6":  # Human agent
         update_user_state(user_data['sender'], {
             'step': 'human_agent',
-            'user': user.to_dict()
+            'user': user.to_dict(),
+            'original_prompt': prompt  # Store the original message
         })
-        send("Connecting you to a human agent...", user_data['sender'], phone_id)
-        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
+        # Immediately call the human_agent handler
+        return human_agent(prompt, {
+            'step': 'human_agent',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }, phone_id)
     
     else:
         send("Please select a valid option (1-6).", user_data['sender'], phone_id)
@@ -499,28 +504,40 @@ def handle_main_menu(prompt, user_data, phone_id):
 
 
 def human_agent(prompt, user_data, phone_id):
-    user = User.from_dict(user_data['user'])
     customer_number = user_data['sender']
     
-    # Immediate response to customer
-    send("A human agent will contact you soon...", customer_number, phone_id)
+    # 1. Immediately notify customer
+    send("Connecting you to a human agent...", customer_number, phone_id)
     
-    # Notify agent (in background)
+    # 2. Notify agent in background
     agent_number = "+263719835124"
-    threading.Thread(target=notify_agent, args=(customer_number, prompt, agent_number, phone_id)).start()
+    agent_message = f"New customer request from {customer_number}\nMessage: {prompt}"
+    threading.Thread(target=send, args=(agent_message, agent_number, phone_id)).start()
     
-    # Schedule fallback message after 10 seconds
-    threading.Timer(10, send_fallback_option, args=[customer_number, phone_id]).start()
+    # 3. After 10 seconds, send fallback options
+    def send_fallback():
+        user_data = get_user_state(customer_number)
+        if user_data and user_data.get('step') in ['human_agent', 'waiting_for_human_agent_response']:
+            send("If you haven't been contacted yet, you can call us directly at +263719835124", customer_number, phone_id)
+            send("Would you like to:\n1. Return to main menu\n2. Keep waiting", customer_number, phone_id)
+            update_user_state(customer_number, {
+                'step': 'human_agent_followup',
+                'user': user_data.get('user', {}),
+                'sender': customer_number
+            })
     
-    # Update state
+    threading.Timer(10, send_fallback).start()
+    
+    # 4. Update state to waiting
     update_user_state(customer_number, {
         'step': 'waiting_for_human_agent_response',
-        'user': user.to_dict(),
+        'user': user_data.get('user', {}),
         'sender': customer_number,
-        'agent_prompt_time': time.time()
+        'waiting_since': time.time()
     })
     
-    return {'step': 'waiting_for_human_agent_response', 'user': user.to_dict(), 'sender': customer_number}
+    return {'step': 'waiting_for_human_agent_response', 'user': user_data.get('user', {}), 'sender': customer_number}
+
 
 def notify_agent(customer_number, prompt, agent_number, phone_id):
     agent_message = (
@@ -571,20 +588,18 @@ def handle_user_message(prompt, user_data, phone_id):
                 'user': user_data['user']
             })
             send_main_menu(user_data['sender'], phone_id)
-            return {'step': 'main_menu', 'user': user_data['user'], 'sender': user_data['sender']}
         elif prompt.strip() == '2':
-            # End conversation
-            send("Thank you! Have a great day.", user_data['sender'], phone_id)
+            # Continue waiting
+            send("We'll keep trying to connect you. Thank you for your patience.", user_data['sender'], phone_id)
             update_user_state(user_data['sender'], {
-                'step': 'end',
+                'step': 'waiting_for_human_agent_response',
                 'user': user_data['user']
             })
-            return {'step': 'end', 'user': user_data['user'], 'sender': user_data['sender']}
         else:
             send("Please choose 1 or 2", user_data['sender'], phone_id)
-            return user_data
-    return user_data
     
+    return user_data
+
 
 def human_agent_followup(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
