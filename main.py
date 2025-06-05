@@ -2198,59 +2198,60 @@ def message_handler(prompt, sender, phone_id, message):
 
 
 # Action mapping
-action_mapping = {
-        'welcome': handle_welcome,
-        'select_language': handle_select_language,
-        'main_menu': handle_main_menu,
-        'main_menu2': handle_main_menu,  # Shona fallback
-        'main_menu3': handle_main_menu,  # Ndebele fallback
-        'enter_location_for_quote': handle_enter_location_for_quote,
-        'select_service_quote': handle_select_service,
-        'collect_quote_details': handle_collect_quote_details,
-        'quote_response': handle_quote_response,
-        'collect_offer_details': handle_collect_offer_details,
-        'offer_response': handle_offer_response,
-        'booking_details': handle_booking_details,
-        'collect_booking_info': handle_collect_booking_info,
-        'booking_confirmation': handle_booking_confirmation,
-        'booking_full_name': handle_booking_full_name,
-        'booking_phone': handle_booking_phone,
-        'booking_location': handle_booking_location,
-        'booking_date': handle_booking_date,
-        'booking_notes': handle_booking_notes,
-        'check_project_status_menu': handle_check_project_status_menu,
-        'drilling_status_info_request': handle_drilling_status_info_request,
-        'pump_status_info_request': handle_pump_status_info_request,
-        'drilling_status_updates_opt_in': handle_drilling_status_updates_opt_in,
-        'pump_status_updates_opt_in': handle_pump_status_updates_opt_in,
-        'human_agent': human_agent,
-        'human_agent_followup': human_agent_followup,
-        'other_services_menu': handle_other_services_menu,
-        'borehole_deepening_casing': handle_borehole_deepening_casing,
-        'deepening_location': handle_deepening_location,
-        'deepening_location_manual': handle_deepening_location,
-        'deepening_booking_confirm': handle_deepening_booking_confirm,
-        'deepening_no_deepening_options': handle_deepening_no_deepening_options,
-        'borehole_flushing_problem': handle_borehole_flushing_problem,
-        'flushing_collapsed_diameter': handle_flushing_collapsed_diameter,
-        'flushing_location': handle_flushing_location,
-        'flushing_booking_confirm': handle_flushing_booking_confirm,
-        'pvc_casing_selection': handle_pvc_casing_selection,
-        'pvc_casing_location': handle_pvc_casing_location,
-        'pvc_casing_booking_confirm': handle_pvc_casing_booking_confirm,
-        'faq_menu': faq_menu,
-        'faq_borehole': faq_borehole,
-        'faq_borehole_followup': faq_borehole_followup,
-        'faq_pump': faq_pump,
-        'faq_pump_followup': faq_pump_followup,
-        'custom_question': custom_question,
-        'custom_question_followup': custom_question_followup,
-        'handle_select_service_quote': handle_select_service,
-        'handle_user_message': handle_user_message
-    }
+def get_action(step, prompt, user_data, phone_id):
+    action_mapping = {
+            'welcome': handle_welcome,
+            'select_language': handle_select_language,
+            'main_menu': handle_main_menu,
+            'main_menu2': handle_main_menu,  # Shona fallback
+            'main_menu3': handle_main_menu,  # Ndebele fallback
+            'enter_location_for_quote': handle_enter_location_for_quote,
+            'select_service_quote': handle_select_service,
+            'collect_quote_details': handle_collect_quote_details,
+            'quote_response': handle_quote_response,
+            'collect_offer_details': handle_collect_offer_details,
+            'offer_response': handle_offer_response,
+            'booking_details': handle_booking_details,
+            'collect_booking_info': handle_collect_booking_info,
+            'booking_confirmation': handle_booking_confirmation,
+            'booking_full_name': handle_booking_full_name,
+            'booking_phone': handle_booking_phone,
+            'booking_location': handle_booking_location,
+            'booking_date': handle_booking_date,
+            'booking_notes': handle_booking_notes,
+            'check_project_status_menu': handle_check_project_status_menu,
+            'drilling_status_info_request': handle_drilling_status_info_request,
+            'pump_status_info_request': handle_pump_status_info_request,
+            'drilling_status_updates_opt_in': handle_drilling_status_updates_opt_in,
+            'pump_status_updates_opt_in': handle_pump_status_updates_opt_in,
+            'human_agent': human_agent,
+            'human_agent_followup': human_agent_followup,
+            'other_services_menu': handle_other_services_menu,
+            'borehole_deepening_casing': handle_borehole_deepening_casing,
+            'deepening_location': handle_deepening_location,
+            'deepening_location_manual': handle_deepening_location,
+            'deepening_booking_confirm': handle_deepening_booking_confirm,
+            'deepening_no_deepening_options': handle_deepening_no_deepening_options,
+            'borehole_flushing_problem': handle_borehole_flushing_problem,
+            'flushing_collapsed_diameter': handle_flushing_collapsed_diameter,
+            'flushing_location': handle_flushing_location,
+            'flushing_booking_confirm': handle_flushing_booking_confirm,
+            'pvc_casing_selection': handle_pvc_casing_selection,
+            'pvc_casing_location': handle_pvc_casing_location,
+            'pvc_casing_booking_confirm': handle_pvc_casing_booking_confirm,
+            'faq_menu': faq_menu,
+            'faq_borehole': faq_borehole,
+            'faq_borehole_followup': faq_borehole_followup,
+            'faq_pump': faq_pump,
+            'faq_pump_followup': faq_pump_followup,
+            'custom_question': custom_question,
+            'custom_question_followup': custom_question_followup,
+            'handle_select_service_quote': handle_select_service,
+            'handle_user_message': handle_user_message
+        }
 
-    handler = step_map.get(step, handle_welcome)
-    return handler(prompt, user_data, phone_id)
+        handler = step_map.get(step, handle_welcome)
+        return handler(prompt, user_data, phone_id)
 
 
 
