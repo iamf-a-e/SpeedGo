@@ -454,6 +454,7 @@ def handle_main_menu(prompt, user_data, phone_id):
         )
         return {'step': 'check_project_status_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+    
     elif prompt == "4":
         update_user_state(user_data['sender'], {
             'step': 'faq_menu',
