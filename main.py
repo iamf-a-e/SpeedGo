@@ -2161,71 +2161,99 @@ def webhook():
             logging.error(f"Error processing webhook: {e}", exc_info=True)
         return jsonify({"status": "ok"}), 200
 
-def message_handler(prompt, sender, phone_id):
-    user_state = get_user_state(sender)
-    user_state['sender'] = sender
-    # Ensure we always run the handler for the current step
-    next_state = get_action(user_state['step'], prompt, user_state, phone_id)
+
+
+def message_handler(prompt, sender, phone_id, message):
+    user_data = get_user_state(sender)
+    user_data['sender'] = sender
+
+    # If the message is a WhatsApp location pin, extract lat/lng
+    if message.get("type") == "location":
+        location = message.get("location", {})
+        if "latitude" in location and "longitude" in location:
+            user_data["location"] = {
+                "latitude": location["latitude"],
+                "longitude": location["longitude"]
+            }
+            # Use the coordinates as the prompt so downstream logic still runs
+            prompt = f"{location['latitude']},{location['longitude']}"
+        else:
+            prompt = ""
+
+    else:
+        # Standard text message handling
+        prompt = message.get("text", {}).get("body", "").strip()
+
+    # Ensure user object exists in session state
+    if 'user' not in user_data:
+        user_data['user'] = User(sender).to_dict()
+
+    # Get current step and run handler
+    step = user_data.get('step', 'welcome')
+    next_state = get_action(step, prompt, user_data, phone_id)
+
+    # Save updated state
     update_user_state(sender, next_state)
 
-    if 'location' in message:
-        location_data = message['location']
-        user_data = {
-            'sender': sender,
-            'location': {
-                'latitude': location_data.get('latitude'),
-                'longitude': location_data.get('longitude')
-            }
-        }
-        return handle_deepening_location('', user_data, phone_id)
 
-    text = prompt.strip().lower()
-    
+
 # Action mapping
 action_mapping = {
-    "welcome": handle_welcome,
-    "select_language": handle_select_language,
-    "main_menu": handle_main_menu,
-    "enter_location_for_quote": handle_enter_location_for_quote,  
-    "select_service_quote": handle_select_service_quote, 
-    "select_service": handle_select_service,
-    "get_pricing_for_location": handle_get_pricing_for_location,
-    "collect_quote_details": handle_collect_quote_details,
-    "quote_response": handle_quote_response,
-    "collect_offer_details": handle_collect_offer_details,
-    "quote_followup": handle_quote_followup,
-    "offer_response": handle_offer_response,
-    "booking_details": handle_booking_details,
-    "collect_booking_info": handle_collect_booking_info,
-    "booking_confirmation": handle_booking_confirmation,
-    "faq_menu": faq_menu,
-    "faq_borehole": faq_borehole,
-    "faq_pump": faq_pump,
-    "faq_borehole_followup": faq_borehole_followup,
-    "faq_pump_followup": faq_pump_followup,
-    "check_project_status_menu": handle_check_project_status_menu,
-    "drilling_status_info_request": handle_drilling_status_info_request,
-    "pump_status_info_request": handle_pump_status_info_request,
-    "pump_status_updates_opt_in": handle_pump_status_updates_opt_in,
-    "drilling_status_updates_opt_in": handle_drilling_status_updates_opt_in,
-    "custom_question": custom_question,
-    "custom_question_followup": custom_question_followup,
-    "human_agent": human_agent,
-    "human_agent_followup": human_agent_followup,   
-    "other_services_menu": handle_other_services_menu,
-    "borehole_deepening_casing": handle_borehole_deepening_casing,
-    "borehole_flushing_problem": handle_borehole_flushing_problem,
-    "pvc_casing_selection": handle_pvc_casing_selection,
-    "deepening_location": handle_deepening_location,
-    "handle_deepening_location": handle_deepening_location,
-    "reverse_geocode_location": reverse_geocode_location,
-    "awaiting_pump_option": handle_pump_installation_choice,
-    "human_agent": lambda prompt, user_data, phone_id: (
-        send("A human agent will contact you soon.", user_data['sender'], phone_id)
-        or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
-    ),
+        'welcome': handle_welcome,
+        'select_language': handle_select_language,
+        'main_menu': handle_main_menu,
+        'main_menu2': handle_main_menu,  # Shona fallback
+        'main_menu3': handle_main_menu,  # Ndebele fallback
+        'enter_location_for_quote': handle_enter_location_for_quote,
+        'select_service_quote': handle_select_service,
+        'collect_quote_details': handle_collect_quote_details,
+        'quote_response': handle_quote_response,
+        'collect_offer_details': handle_collect_offer_details,
+        'offer_response': handle_offer_response,
+        'booking_details': handle_booking_details,
+        'collect_booking_info': handle_collect_booking_info,
+        'booking_confirmation': handle_booking_confirmation,
+        'booking_full_name': handle_booking_full_name,
+        'booking_phone': handle_booking_phone,
+        'booking_location': handle_booking_location,
+        'booking_date': handle_booking_date,
+        'booking_notes': handle_booking_notes,
+        'check_project_status_menu': handle_check_project_status_menu,
+        'drilling_status_info_request': handle_drilling_status_info_request,
+        'pump_status_info_request': handle_pump_status_info_request,
+        'drilling_status_updates_opt_in': handle_drilling_status_updates_opt_in,
+        'pump_status_updates_opt_in': handle_pump_status_updates_opt_in,
+        'human_agent': human_agent,
+        'human_agent_followup': human_agent_followup,
+        'other_services_menu': handle_other_services_menu,
+        'borehole_deepening_casing': handle_borehole_deepening_casing,
+        'deepening_location': handle_deepening_location,
+        'deepening_location_manual': handle_deepening_location,
+        'deepening_booking_confirm': handle_deepening_booking_confirm,
+        'deepening_no_deepening_options': handle_deepening_no_deepening_options,
+        'borehole_flushing_problem': handle_borehole_flushing_problem,
+        'flushing_collapsed_diameter': handle_flushing_collapsed_diameter,
+        'flushing_location': handle_flushing_location,
+        'flushing_booking_confirm': handle_flushing_booking_confirm,
+        'pvc_casing_selection': handle_pvc_casing_selection,
+        'pvc_casing_location': handle_pvc_casing_location,
+        'pvc_casing_booking_confirm': handle_pvc_casing_booking_confirm,
+        'faq_menu': faq_menu,
+        'faq_borehole': faq_borehole,
+        'faq_borehole_followup': faq_borehole_followup,
+        'faq_pump': faq_pump,
+        'faq_pump_followup': faq_pump_followup,
+        'custom_question': custom_question,
+        'custom_question_followup': custom_question_followup,
+        'handle_select_service_quote': handle_select_service,
+        'handle_user_message': handle_user_message
+    }
 
-}
+    handler = step_map.get(step, handle_welcome)
+    return handler(prompt, user_data, phone_id)
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
