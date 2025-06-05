@@ -1953,88 +1953,6 @@ def handle_quote_followup(prompt, user_data, phone_id):
         send("Invalid option. Reply 1 to ask about another service or 2 to return to the main menu or 3 if you want to make a price offer.", user_data['sender'], phone_id)
         return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-# Action mapping
-action_mapping = {
-    "welcome": handle_welcome,
-    "select_language": handle_select_language,
-    "main_menu": handle_main_menu,
-    "enter_location_for_quote": handle_enter_location_for_quote,
-    "select_service_quote": handle_select_service_quote,
-    "select_service": handle_select_service,
-    "select_pump_option": handle_select_pump_option,
-    "quote_followup": handle_quote_followup,   
-    "collect_quote_details": handle_collect_quote_details,
-    "quote_response": handle_quote_response,
-    "collect_offer_details": handle_collect_offer_details,
-    "quote_followup": handle_quote_followup,
-    "offer_response": handle_offer_response,
-    "booking_details": handle_booking_details,
-    "collect_booking_info": handle_collect_booking_info,
-    "booking_confirmation": handle_booking_confirmation,
-    "faq_menu": faq_menu,
-    "faq_borehole": faq_borehole,
-    "faq_pump": faq_pump,
-    "faq_borehole_followup": faq_borehole_followup,
-    "faq_pump_followup": faq_pump_followup,
-    "check_project_status_menu": handle_check_project_status_menu,
-    "drilling_status_info_request": handle_drilling_status_info_request,
-    "pump_status_info_request": handle_pump_status_info_request,
-    "pump_status_updates_opt_in": handle_pump_status_updates_opt_in,
-    "drilling_status_updates_opt_in": handle_drilling_status_updates_opt_in,
-    "custom_question": custom_question,
-    "custom_question_followup": custom_question_followup,
-    "human_agent": human_agent,
-    "waiting_for_human_agent_response": handle_user_message,
-    "human_agent_followup": handle_user_message,   
-    "other_services_menu": handle_other_services_menu,
-    "borehole_deepening_casing": handle_borehole_deepening_casing,
-    "borehole_flushing_problem": handle_borehole_flushing_problem,
-    "pvc_casing_selection": handle_pvc_casing_selection,
-    "deepening_location": handle_deepening_location,
-    "human_agent": lambda prompt, user_data, phone_id: (
-        send("A human agent will contact you soon.", user_data['sender'], phone_id)
-        or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
-    ),
-        "main_menu2": handle_main_menu2,
-    "enter_location_for_quote2": handle_enter_location_for_quote2,
-    "select_service_quote2": handle_select_service_quote2,
-    "select_service2": handle_select_service2,
-    "select_pump_option2": handle_select_pump_option2,
-    "quote_followup2": handle_quote_followup2,   
-    "collect_quote_details2": handle_collect_quote_details2,
-    "quote_response2": handle_quote_response2,
-    "collect_offer_details2": handle_collect_offer_details2,
-    "quote_followup2": handle_quote_followup2,
-    "offer_response2": handle_offer_response2,
-    "booking_details2": handle_booking_details2,
-    "collect_booking_info2": handle_collect_booking_info2,
-    "booking_confirmation2": handle_booking_confirmation2,
-    "faq_menu2": faq_menu2,
-    "faq_borehole2": faq_borehole2,
-    "faq_pump2": faq_pump2,
-    "faq_borehole_followup2": faq_borehole_followup2,
-    "faq_pump_followup2": faq_pump_followup2,
-    "check_project_status_menu2": handle_check_project_status_menu2,
-    "drilling_status_info_request2": handle_drilling_status_info_request2,
-    "pump_status_info_request2": handle_pump_status_info_request2,
-    "pump_status_updates_opt_in2": handle_pump_status_updates_opt_in2,
-    "drilling_status_updates_opt_in2": handle_drilling_status_updates_opt_in2,
-    "custom_question2": custom_question2,
-    "custom_question_followup2": custom_question_followup2,
-    "human_agent2": human_agent2,
-    "waiting_for_human_agent_response2": handle_user_message2,
-    "human_agent_followup2": handle_user_message2,   
-    "other_services_menu2": handle_other_services_menu2,
-    "borehole_deepening_casing2": handle_borehole_deepening_casing2,
-    "borehole_flushing_problem2": handle_borehole_flushing_problem2,
-    "pvc_casing_selection2": handle_pvc_casing_selection2,
-    "deepening_location2": handle_deepening_location2,
-    "human_agent2": lambda prompt, user_data, phone_id: (
-        send("Maneja anoona nezvevatengi achakufonera munguva pfupi.", user_data['sender'], phone_id)
-        or {'step': 'main_menu2', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
-    ),
-}
-
 #-------------------------------------------SHONA-------------------------------------------------------------------------
 
 # User serialization helpers
@@ -4031,8 +3949,94 @@ def get_action2(current_state, prompt, user_data, phone_id):
     handler = action_mapping.get(current_state, handle_welcome)
     return handler(prompt, user_data, phone_id)
 
+
+# Action mapping
+action_mapping = {
+    "welcome": handle_welcome,
+    "select_language": handle_select_language,
+    "main_menu": handle_main_menu,
+    "enter_location_for_quote": handle_enter_location_for_quote,
+    "select_service_quote": handle_select_service_quote,
+    "select_service": handle_select_service,
+    "select_pump_option": handle_select_pump_option,
+    "quote_followup": handle_quote_followup,   
+    "collect_quote_details": handle_collect_quote_details,
+    "quote_response": handle_quote_response,
+    "collect_offer_details": handle_collect_offer_details,
+    "quote_followup": handle_quote_followup,
+    "offer_response": handle_offer_response,
+    "booking_details": handle_booking_details,
+    "collect_booking_info": handle_collect_booking_info,
+    "booking_confirmation": handle_booking_confirmation,
+    "faq_menu": faq_menu,
+    "faq_borehole": faq_borehole,
+    "faq_pump": faq_pump,
+    "faq_borehole_followup": faq_borehole_followup,
+    "faq_pump_followup": faq_pump_followup,
+    "check_project_status_menu": handle_check_project_status_menu,
+    "drilling_status_info_request": handle_drilling_status_info_request,
+    "pump_status_info_request": handle_pump_status_info_request,
+    "pump_status_updates_opt_in": handle_pump_status_updates_opt_in,
+    "drilling_status_updates_opt_in": handle_drilling_status_updates_opt_in,
+    "custom_question": custom_question,
+    "custom_question_followup": custom_question_followup,
+    "human_agent": human_agent,
+    "waiting_for_human_agent_response": handle_user_message,
+    "human_agent_followup": handle_user_message,   
+    "other_services_menu": handle_other_services_menu,
+    "borehole_deepening_casing": handle_borehole_deepening_casing,
+    "borehole_flushing_problem": handle_borehole_flushing_problem,
+    "pvc_casing_selection": handle_pvc_casing_selection,
+    "deepening_location": handle_deepening_location,
+    "human_agent": lambda prompt, user_data, phone_id: (
+        send("A human agent will contact you soon.", user_data['sender'], phone_id)
+        or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
+    ),
+        "main_menu2": handle_main_menu2,
+    "enter_location_for_quote2": handle_enter_location_for_quote2,
+    "select_service_quote2": handle_select_service_quote2,
+    "select_service2": handle_select_service2,
+    "select_pump_option2": handle_select_pump_option2,
+    "quote_followup2": handle_quote_followup2,   
+    "collect_quote_details2": handle_collect_quote_details2,
+    "quote_response2": handle_quote_response2,
+    "collect_offer_details2": handle_collect_offer_details2,
+    "quote_followup2": handle_quote_followup2,
+    "offer_response2": handle_offer_response2,
+    "booking_details2": handle_booking_details2,
+    "collect_booking_info2": handle_collect_booking_info2,
+    "booking_confirmation2": handle_booking_confirmation2,
+    "faq_menu2": faq_menu2,
+    "faq_borehole2": faq_borehole2,
+    "faq_pump2": faq_pump2,
+    "faq_borehole_followup2": faq_borehole_followup2,
+    "faq_pump_followup2": faq_pump_followup2,
+    "check_project_status_menu2": handle_check_project_status_menu2,
+    "drilling_status_info_request2": handle_drilling_status_info_request2,
+    "pump_status_info_request2": handle_pump_status_info_request2,
+    "pump_status_updates_opt_in2": handle_pump_status_updates_opt_in2,
+    "drilling_status_updates_opt_in2": handle_drilling_status_updates_opt_in2,
+    "custom_question2": custom_question2,
+    "custom_question_followup2": custom_question_followup2,
+    "human_agent2": human_agent2,
+    "waiting_for_human_agent_response2": handle_user_message2,
+    "human_agent_followup2": handle_user_message2,   
+    "other_services_menu2": handle_other_services_menu2,
+    "borehole_deepening_casing2": handle_borehole_deepening_casing2,
+    "borehole_flushing_problem2": handle_borehole_flushing_problem2,
+    "pvc_casing_selection2": handle_pvc_casing_selection2,
+    "deepening_location2": handle_deepening_location2,
+    "human_agent2": lambda prompt, user_data, phone_id: (
+        send("Maneja anoona nezvevatengi achakufonera munguva pfupi.", user_data['sender'], phone_id)
+        or {'step': 'main_menu2', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
+    ),
+}
+
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
+    
 # Flask app
 app = Flask(__name__)
 
