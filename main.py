@@ -283,11 +283,11 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
     # Handle Pump Installation separately
     if service_key == "Pump Installation":
         if pump_option_selected is None:
-            message_lines = [f"💧 Pump Installation Options Pricing:\n"]
+            # This case shouldn't happen anymore since we handle it in handle_select_service_quote
+            message_lines = [f"💧 Pump Installation Options:\n"]
             for key, option in pump_installation_options.items():
                 desc = option.get('description', 'No description')
-                price = option.get('price', 'N/A')
-                message_lines.append(f"{key}. {desc} - ${price}")
+                message_lines.append(f"{key}. {desc}")
             return "\n".join(message_lines)
         else:
             option = pump_installation_options.get(pump_option_selected)
@@ -295,11 +295,11 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
                 return "Sorry, invalid Pump Installation option selected."
             desc = option.get('description', 'No description')
             price = option.get('price', 'N/A')
-            message = f"💧 Pricing for option {pump_option_selected}:\n{desc} - ${price}\n"
+            message = f"💧 Pricing for option {pump_option_selected}:\n{desc}\nPrice: ${price}\n"
             message += "\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price"
             return message
 
-    # For other services
+    # Rest of the function remains the same...
     loc_data = location_pricing.get(location_key)
     if not loc_data:
         return "Sorry, pricing not available for this location."
@@ -326,6 +326,7 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
     unit = "per meter" if service_key in ["Commercial Hole Drilling", "Borehole Deepening"] else "flat rate"
     return (f"{service_key} in {location.title()}: ${price} {unit}\n\n"
             "Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
+
 
 # State handlers
 def handle_welcome(prompt, user_data, phone_id):
@@ -567,11 +568,10 @@ def handle_select_service_quote(prompt, user_data, phone_id):
             'step': 'select_pump_option',
             'user': user.to_dict()
         })
-        message_lines = [f"💧 Pump Installation Options Pricing:\n"]
+        message_lines = [f"💧 Pump Installation Options:\n"]
         for key, option in pump_installation_options.items():
             desc = option.get('description', 'No description')
-            price = option.get('price', 'N/A')
-            message_lines.append(f"{key}. {desc} - ${price}")
+            message_lines.append(f"{key}. {desc}")
         send("\n".join(message_lines), user_data['sender'], phone_id)
         return {'step': 'select_pump_option', 'user': user.to_dict(), 'sender': user_data['sender']}
 
@@ -590,6 +590,7 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         'user': user.to_dict(),
         'sender': user_data['sender']
     }
+
 
 def handle_select_pump_option(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
