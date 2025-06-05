@@ -341,7 +341,7 @@ def get_pricing_for_location_quotes2(location, service_type, pump_option_selecte
 
 
 # State handlers
-def handle_welcome2(prompt, user_data, phone_id):
+def handle_welcome(prompt, user_data, phone_id):
     send(
         "Mhoro! Mauya kuSpeedGo Services – nyanzvi dzekuchera chibhorani muZimbabwe. "
         "Tinopa mabasa akavimbika ekuchera chibhorani nemhinduro dzemvura munyika yese yeZimbabwe.\n\n"
