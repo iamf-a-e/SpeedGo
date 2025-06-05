@@ -103,7 +103,7 @@ def reverse_geocode_location(gps_coords):
 
     # Local fallback mapping
     
-    elif -22.27 < lat < -22.16 and 29.94 < lng < 30.06:
+    if -22.27 < lat < -22.16 and 29.94 < lng < 30.06:
         return "Beitbridge Town"
     elif -20.06 < lat < -19.95 and 31.54 < lng < 31.65:
         return "Nyika Growth Point"
