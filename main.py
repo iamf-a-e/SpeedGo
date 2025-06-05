@@ -487,7 +487,7 @@ def handle_main_menu(prompt, user_data, phone_id):
         
     elif prompt == "6":  # Human agent
         update_user_state(user_data['sender'], {
-            'step': 'select_service',
+            'step': 'human_agent',
             'user': user.to_dict()
         })
         send("Connecting you to a human agent...", user_data['sender'], phone_id)
