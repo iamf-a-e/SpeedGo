@@ -235,6 +235,18 @@ location_pricing = {
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
+    "harare": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 30
+        },       
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
     "bulawayo": {
         "Water Survey": 150,
         "Borehole Drilling": {
