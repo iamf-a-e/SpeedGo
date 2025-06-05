@@ -426,7 +426,7 @@ def handle_main_menu(prompt, user_data, phone_id):
             'step': 'enter_location_for_quote',
             'user': user.to_dict()
         })
-        send("please enter your location (City/Town or GPS coordinates) to get started.", user_data['sender'], phone_id)
+        send("Please enter your location (City/Town or GPS coordinates) to get started.", user_data['sender'], phone_id)
         return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":  # Search Price Using Location
@@ -487,16 +487,11 @@ def handle_main_menu(prompt, user_data, phone_id):
         
     elif prompt == "6":  # Human agent
         update_user_state(user_data['sender'], {
-            'step': 'human_agent',
-            'user': user.to_dict(),
-            'original_prompt': prompt  # Store the original message
+            'step': 'select_service',
+            'user': user.to_dict()
         })
-        # Immediately call the human_agent handler
-        return human_agent(prompt, {
-            'step': 'human_agent',
-            'user': user.to_dict(),
-            'sender': user_data['sender']
-        }, phone_id)
+        send("Connecting you to a human agent...", user_data['sender'], phone_id)
+        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
     
     else:
         send("Please select a valid option (1-6).", user_data['sender'], phone_id)
@@ -504,39 +499,35 @@ def handle_main_menu(prompt, user_data, phone_id):
 
 
 def human_agent(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
     customer_number = user_data['sender']
-    
-    # 1. Immediately notify customer
-    send("Connecting you to a human agent...", customer_number, phone_id)
-    
-    # 2. Notify agent in background
+    customer_name = user.name if hasattr(user, "name") and user.name else "Unknown"
     agent_number = "+263719835124"
-    agent_message = f"New customer request from {customer_number}\nMessage: {prompt}"
-    threading.Thread(target=send, args=(agent_message, agent_number, phone_id)).start()
-    
-    # 3. After 10 seconds, send fallback options
-    def send_fallback():
-        user_data = get_user_state(customer_number)
-        if user_data and user_data.get('step') in ['human_agent', 'waiting_for_human_agent_response']:
-            send("If you haven't been contacted yet, you can call us directly at +263719835124", customer_number, phone_id)
-            send("Would you like to:\n1. Return to main menu\n2. Keep waiting", customer_number, phone_id)
-            update_user_state(customer_number, {
-                'step': 'human_agent_followup',
-                'user': user_data.get('user', {}),
-                'sender': customer_number
-            })
-    
-    threading.Timer(10, send_fallback).start()
-    
-    # 4. Update state to waiting
+
+    # Notify the customer immediately
+    send(
+        "Thank you. Please hold while I connect you to a SpeedGo representative...",
+        customer_number, phone_id
+    )
+
+    # Notify the agent immediately
+    agent_message = (
+        f"👋 A customer would like to talk to you on WhatsApp.\n\n"
+        f"📱 Customer Number: {customer_number}\n"
+        f"🙋 Name: {customer_name}\n"
+        f"📩 Last Message: \"{prompt}\""
+    )
+    send(agent_message, agent_number, phone_id)
+
+    # Store state with timestamp to track elapsed time
     update_user_state(customer_number, {
         'step': 'waiting_for_human_agent_response',
-        'user': user_data.get('user', {}),
+        'user': user.to_dict(),
         'sender': customer_number,
-        'waiting_since': time.time()
+        'agent_prompt_time': time.time()
     })
-    
-    return {'step': 'waiting_for_human_agent_response', 'user': user_data.get('user', {}), 'sender': customer_number}
+
+    return {'step': 'handle_user_message', 'user': user.to_dict(), 'sender': customer_number}
 
 
 def notify_agent(customer_number, prompt, agent_number, phone_id):
@@ -579,26 +570,64 @@ def send_fallback_option(customer_number, phone_id):
         })
         
 
-def handle_user_message(prompt, user_data, phone_id):
-    if user_data.get('step') == 'human_agent_followup':
-        if prompt.strip() == '1':
-            # Return to main menu
-            update_user_state(user_data['sender'], {
-                'step': 'main_menu',
-                'user': user_data['user']
+def handle_user_message(message, user_data, phone_id):
+    state = user_data.get('step')
+    customer_number = user_data['sender']
+
+    if state == 'waiting_for_human_agent_response':
+        prompt_time = user_data.get('agent_prompt_time', 0)
+        elapsed = time.time() - prompt_time
+
+        if elapsed >= 10:
+            # Send fallback prompt
+            send(
+                "Alternatively, you can message or call us directly at {agent_number}}.",
+                customer_number, phone_id
+            )
+            send(
+                "Would you like to return to the main menu?\n1. Yes\n2. No",
+                customer_number, phone_id
+            )
+
+            # Update state to wait for user's Yes/No reply
+            update_user_state(customer_number, {
+                'step': 'human_agent_followup',
+                'user': user_data['user'],
+                'sender': customer_number
             })
-            send_main_menu(user_data['sender'], phone_id)
-        elif prompt.strip() == '2':
-            # Continue waiting
-            send("We'll keep trying to connect you. Thank you for your patience.", user_data['sender'], phone_id)
-            update_user_state(user_data['sender'], {
-                'step': 'waiting_for_human_agent_response',
-                'user': user_data['user']
-            })
+
+            return {'step': 'human_agent_followup', 'user': user_data['user'], 'sender': customer_number}
         else:
-            send("Please choose 1 or 2", user_data['sender'], phone_id)
-    
-    return user_data
+            # Still waiting, do not send fallback yet
+            # Optionally, you can just wait or remind user to hold on
+            return user_data  # or send "Please hold..." message
+
+    elif state == 'human_agent_followup':
+        # Handle user's Yes/No answer here
+        if message.strip() == '1':  # User wants main menu
+            send("Returning you to the main menu...", customer_number, phone_id)
+            # Reset state to main menu step (example)
+            update_user_state(customer_number, {
+                'step': 'main_menu',
+                'user': user_data['user'],
+                'sender': customer_number
+            })
+            # Show main menu
+            send_main_menu(customer_number, phone_id)
+            return {'step': 'main_menu', 'user': user_data['user'], 'sender': customer_number}
+
+        elif message.strip() == '2':  # User says No
+            send("Thank you! Have a good day.", customer_number, phone_id)
+            # Optionally clear or end session
+            update_user_state(customer_number, {
+                'step': 'end',
+                'user': user_data['user'],
+                'sender': customer_number
+            })
+            return {'step': 'end', 'user': user_data['user'], 'sender': customer_number}
+        else:
+            send("Please reply with 1 for Yes or 2 for No.", customer_number, phone_id)
+            return user_data
 
 
 def human_agent_followup(prompt, user_data, phone_id):
