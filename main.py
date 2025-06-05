@@ -2,8 +2,7 @@ import os
 from flask import Flask, request, jsonify, render_template
 import logging
 from english import handle_main_menu as english_main_menu
-from shona import handle_main_menu2 as shona_main_menu
-from ndebele import handle_main_menu3 as ndebele_main_menu
+
 
 logging.basicConfig(level=logging.INFO)
 
