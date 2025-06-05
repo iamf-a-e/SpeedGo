@@ -1995,9 +1995,442 @@ action_mapping = {
         send("A human agent will contact you soon.", user_data['sender'], phone_id)
         or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
     ),
+        "main_menu2": handle_main_menu2,
+    "enter_location_for_quote2": handle_enter_location_for_quote2,
+    "select_service_quote2": handle_select_service_quote2,
+    "select_service2": handle_select_service2,
+    "select_pump_option2": handle_select_pump_option2,
+    "quote_followup2": handle_quote_followup2,   
+    "collect_quote_details2": handle_collect_quote_details2,
+    "quote_response2": handle_quote_response2,
+    "collect_offer_details2": handle_collect_offer_details2,
+    "quote_followup2": handle_quote_followup2,
+    "offer_response2": handle_offer_response2,
+    "booking_details2": handle_booking_details2,
+    "collect_booking_info2": handle_collect_booking_info2,
+    "booking_confirmation2": handle_booking_confirmation2,
+    "faq_menu2": faq_menu2,
+    "faq_borehole2": faq_borehole2,
+    "faq_pump2": faq_pump2,
+    "faq_borehole_followup2": faq_borehole_followup2,
+    "faq_pump_followup2": faq_pump_followup2,
+    "check_project_status_menu2": handle_check_project_status_menu2,
+    "drilling_status_info_request2": handle_drilling_status_info_request2,
+    "pump_status_info_request2": handle_pump_status_info_request2,
+    "pump_status_updates_opt_in2": handle_pump_status_updates_opt_in2,
+    "drilling_status_updates_opt_in2": handle_drilling_status_updates_opt_in2,
+    "custom_question2": custom_question2,
+    "custom_question_followup2": custom_question_followup2,
+    "human_agent2": human_agent2,
+    "waiting_for_human_agent_response2": handle_user_message2,
+    "human_agent_followup2": handle_user_message2,   
+    "other_services_menu2": handle_other_services_menu2,
+    "borehole_deepening_casing2": handle_borehole_deepening_casing2,
+    "borehole_flushing_problem2": handle_borehole_flushing_problem2,
+    "pvc_casing_selection2": handle_pvc_casing_selection2,
+    "deepening_location2": handle_deepening_location2,
+    "human_agent2": lambda prompt, user_data, phone_id: (
+        send("Maneja anoona nezvevatengi achakufonera munguva pfupi.", user_data['sender'], phone_id)
+        or {'step': 'main_menu2', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
+    ),
 }
 
 #-------------------------------------------SHONA-------------------------------------------------------------------------
+
+# User serialization helpers
+class User2:
+    def __init__(self, phone_number):
+        self.phone_number = phone_number
+        self.language = "Shona"
+        self.quote_data = {}
+        self.booking_data = {}
+        self.offer_data = {}
+
+    def to_dict2(self):
+        return {
+            "phone_number": self.phone_number,
+            "language": self.language,
+            "quote_data": self.quote_data,
+            "booking_data": self.booking_data,
+            "offer_data": self.offer_data
+        }
+
+    @classmethod
+    def from_dict2(cls, data):
+        user = cls(data.get("phone_number"))
+        user.language = data.get("language", "English")
+        user.quote_data = data.get("quote_data", {})
+        user.booking_data = data.get("booking_data", {})
+        user.offer_data = data.get("offer_data", {})
+        return user
+
+# State helpers
+def get_user_state2(phone_number):
+    state = redis.get(phone_number)
+    if state is None:
+        return {"step": "welcome", "sender": phone_number}
+    if isinstance(state, str):
+        return json.loads(state)
+    return state
+
+def update_user_state2(phone_number, updates, ttl_seconds=60):
+    updates['phone_number'] = phone_number
+    if 'sender' not in updates:
+        updates['sender'] = phone_number
+    redis.set(phone_number, json.dumps(updates), ex=ttl_seconds)
+
+def send2(answer, sender, phone_id):
+    url = f"https://graph.facebook.com/v19.0/{phone_id}/messages"
+    headers = {
+        'Authorization': f'Bearer {wa_token}',
+        'Content-Type': 'application/json'
+    }
+    data = {
+        "messaging_product": "whatsapp",
+        "to": sender,
+        "type": "text",
+        "text": {"body": answer}
+    }
+    try:
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Failed to send message: {e}")
+
+def reverse_geocode_location2(gps_coords):
+    """
+    Converts GPS coordinates (latitude,longitude) to a city using local logic first,
+    then Google Maps API if not matched.
+    """
+    if not gps_coords or ',' not in gps_coords:
+        return None
+
+    try:
+        lat_str, lng_str = gps_coords.strip().split(',')
+        lat = float(lat_str.strip())
+        lng = float(lng_str.strip())
+    except ValueError:
+        return None
+
+    # Local fallback mapping
+    
+    if -22.27 < lat < -22.16 and 29.94 < lng < 30.06:
+        return "Beitbridge Town"
+    elif -20.06 < lat < -19.95 and 31.54 < lng < 31.65:
+        return "Nyika Growth Point"
+    elif -17.36 < lat < -17.25 and 31.28 < lng < 31.39:
+        return "Bindura Town"
+    elif -17.68 < lat < -17.57 and 27.29 < lng < 27.40:
+        return "Binga Town"
+    elif -19.58 < lat < -19.47 and 28.62 < lng < 28.73:
+        return "Bubi Town/Centre"
+    elif -19.33 < lat < -19.22 and 31.59 < lng < 31.70:
+        return "Murambinda Town"
+    elif -19.39 < lat < -19.28 and 31.38 < lng < 31.49:
+        return "Buhera"
+    elif -20.20 < lat < -20.09 and 28.51 < lng < 28.62:
+        return "Bulawayo City/Town"
+    elif -19.691 < lat < -19.590 and 31.103 < lng < 31.204:
+        return "Gutu"
+    elif -20.99 < lat < -20.88 and 28.95 < lng < 29.06:
+        return "Gwanda"
+    elif -19.50 < lat < -19.39 and 29.76 < lng < 29.87:
+        return "Gweru"
+    elif -17.88 < lat < -17.77 and 31.00 < lng < 31.11:
+        return "Harare"
+
+    # If not found locally, use Google Maps API
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lng}&key={GOOGLE_MAPS_API_KEY}"
+
+    try:
+        response = requests.get(url)
+        data = response.json()
+
+        if data['status'] != 'OK':
+            return None
+
+        for result in data['results']:
+            for component in result['address_components']:
+                if 'locality' in component['types'] or 'administrative_area_level_1' in component['types']:
+                    return component['long_name'].lower()
+
+        return data['results'][0]['formatted_address'].lower()
+
+    except Exception as e:
+        print("Geocoding error:", e)
+        return None
+
+# Pricing dictionaries
+location_pricing2 = {
+    "beitbridge": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "nyika": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1050,
+            "kirasi 9": 1181.25,
+            "kirasi 10": 1312.5,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "bindura": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "binga": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1300,
+            "kirasi 9": 1462.5,
+            "kirasi 10": 1625,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "bubi": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1200,
+            "kirasi 9": 1350,
+            "kirasi 10": 1500,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "murambinda": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1050,
+            "kirasi 9": 1181.25,
+            "kirasi 10": 1312.5,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "buhera": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1150,
+            "kirasi 9": 1293.75,
+            "kirasi 10": 1437.5,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "harare": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 30
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "bulawayo": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    }
+}
+
+pump_installation_options2 = {
+    "1": {
+        "description": "D.C solar (inoshanda nezuva chete, hapana inverter) - Ndine tangi netangi stand",
+        "price": 1640
+    },
+    "2": {
+        "description": "D.C solar (inoshanda nezuva chete, hapana inverter) - Handina chinhu zvachose",
+        "price": 2550
+    },
+    "3": {
+        "description": "D.C solar (inoshanda nezuva chete, hapana inverter) - Basa chete (labour)",
+        "price": 200
+    },
+    "4": {
+        "description": "A.C yemagetsi (ZESA kana solar inverter) - Kugadzirisa nekuunza zvinhu",
+        "price": 1900
+    },
+    "5": {
+        "description": "A.C yemagetsi (ZESA kana solar inverter) - Basa chete (labour)",
+        "price": 170
+    },
+    "6": {
+        "description": "A.C yemagetsi (ZESA kana solar inverter) - Ndine tangi netangi stand",
+        "price": 950
+    }
+}
+
+
+def get_pricing_for_location_quotes2(location, service_type, pump_option_selected=None):
+    location_key = location.strip().lower()
+    service_key = service_type.strip().title()  # Normalize e.g. "Pump Installation"
+
+    # Handle Pump Installation separately
+    if service_key == "Pump Installation":
+        if pump_option_selected is None:            
+            message_lines = [f"💧 Zvingasarudzwa zvekuisa pombi:\n"]
+            for key, option in pump_installation_options.items():
+                desc = option.get('description', 'Hapana tsananguro')
+                message_lines.append(f"{key}. {desc}")
+            return "\n".join(message_lines)
+        else:
+            option = pump_installation_options.get(pump_option_selected)
+            if not option:
+                return "Ndine urombo, sarudzo yamakasarudza yekuisa pombi haisi kushanda."
+            desc = option.get('description', 'Hapana tsananguro')
+            price = option.get('price', 'N/A')
+            message = f"💧 Mutengo wesarudzo {pump_option_selected}:\n{desc}\nMutengo: ${price}\n"
+            message += "\nMungadei kuita sei:\n1. Kubvunza mutengo webasa rimwe\n2. Dzokera kuMain Menu\n3. Taura mutengo wenyu"
+            return message
+
+    # Rest of the function remains the same...
+    loc_data = location_pricing2.get(location_key)
+    if not loc_data:
+        return "Ndine urombo, hatina mitengo yenzvimbo iyi."
+
+    price = loc_data2.get(service_key)
+    if not price:
+        return f"Ndine urombo, mutengo we{service_key} hauna kuwanikwa mu{location.title()}."
+
+    # Format complex pricing dicts nicely
+    if isinstance(price, dict):
+        included_depth = price.get("included_depth_m", "N/A")
+        extra_rate = price.get("extra_per_m", "N/A")
+
+        classes = {k: v for k, v in price.items() if k.startswith("class")}
+        message_lines = [f"Mitengo ye{service_key} mu{location.title()}:"]
+        for cls, amt in classes.items():
+            message_lines.append(f"- {cls.title()}: ${amt}")
+        message_lines.append(f"- Inosanganisira kudzika kusvika pa{included_depth}m")
+        message_lines.append(f"- Mari yekuwedzera: ${extra_rate}/m pakupfuura")
+        message_lines.append("\nMungadei kuita sei:\n1. Kubvunza mutengo webasa rimwe\n2. Dzokera kuMain Menu\n3. Taura mutengo wenyu")
+        return "\n".join(message_lines)
+
+    # Flat rate or per meter pricing
+    unit = "pamita imwe neimwe" if service_key in ["Commercial Hole Drilling", "Borehole Deepening"] else "mutengo wakazara"
+    return (f"{service_key} mu{location.title()}: ${price} ({unit})\n\n"
+            "Mungadei kuita sei:\n1. Kubvunza mutengo webasa rimwe\n2. Dzokera kuMain Menu\n3. Taura mutengo wenyu")
+
+
+# State handlers
+def handle_welcome2(prompt, user_data, phone_id):
+    send(
+        "Mhoro! Mauya kuSpeedGo Services – nyanzvi dzekuchera chibhorani muZimbabwe. "
+        "Tinopa mabasa akavimbika ekuchera chibhorani nemhinduro dzemvura munyika yese yeZimbabwe.\n\n"
+        "Sarudza mutauro waunoda kushandisa:\n"
+        "1. English\n"
+        "2. Shona\n"
+        "3. Ndebele",
+        user_data['sender'], phone_id
+    )
+    update_user_state(user_data['sender'], {'step': 'select_language'})
+    return {'step': 'select_language', 'sender': user_data['sender']}
+
+
+def handle_select_language2(prompt, user_data, phone_id):
+    user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
+    if prompt == "1":
+        user.language = "English"
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu',
+            'user': user.to_dict()
+        })
+        send(
+            "Tatenda!\n"
+            "Tingakubatsirei nhasi?\n\n"
+            "1. Kukumbira mutengo\n"
+            "2. Tsvaga mutengo zvichienderana nenzvimbo\n"
+            "3. Tarisa mamiriro epurojekiti\n"
+            "4. Mibvunzo inowanzo bvunzwa kana kudzidza nezvekuchera chibhorani\n"
+            "5. Mamwe mabasa atinoita\n"
+            "6. Taura nemumiriri wedu\n\n"
+            "Pindura nenhamba (semuenzaniso: 1)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        user.language = "Shona"
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu2',
+            'user': user.to_dict()
+        })
+        send(
+            "Tatenda!\n"
+            "Tingakubatsirei sei nhasi?\n\n"
+            "1. Kukumbira quotation\n"
+            "2. Tsvaga mutengo zvichienderana nenzvimbo\n"
+            "3. Tarisa mamiriro epurojekiti\n"
+            "4. Mibvunzo inowanzo bvunzwa kana kudzidza nezvekuchera chibhorani\n"
+            "5. Mamwe mabasa atinoita\n"
+            "6. Taura nemumiriri\n\n"
+            "Pindura nenhamba (semuenzaniso: 1)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'main_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "3":
+        user.language = "Ndebele"
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu3',
+            'user': user.to_dict()
+        })
+        send(
+            "Siyabonga!\n"
+            "Singakusiza njani lamuhla?\n\n"
+            "1. Cela isiphakamiso\n"
+            "2. Phanda Intengo Ngokusebenzisa Indawo\n"
+            "3. Bheka Isimo Sephrojekthi\n"
+            "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
+            "5. Eminye Imisebenzi\n"
+            "6. Khuluma Nomuntu\n\n"
+            "Phendula ngenombolo (umzekeliso: 1)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'main_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Ndapota sarudza mutauro wakakodzera (1 English, 2 Shona, 3 Ndebele).", user_data['sender'], phone_id)
+        return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
 def handle_main_menu2(prompt, user_data, phone_id):
@@ -2291,146 +2724,6 @@ def faq_menu2(prompt, user_data, phone_id):
     else:
         send("Ndapota sarudza chisarudzo chiri pakati pe 1 kusvika ku 5.", user_data['sender'], phone_id)
         return {'step': 'faq_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-
-# Pricing dictionaries
-location_pricing2 = {
-    "beitbridge": {
-        "Ongororo Yemvura": 150,
-        "Kuchera Chibhorani": {
-            "kirasi 6": 1000,
-            "kirasi 9": 1125,
-            "kirasi 10": 1250,
-            "hudzamu huri mubhadharo_m": 40,
-            "wedzera pamita imwe_m": 27
-        },
-        "Kuchera Chibhorani cheBhizinesi": 80,
-        "Kuwedzera Kudzika kweChibhorani": 30
-    },
-    "nyika": {
-        "Ongororo Yemvura": 150,
-        "Kuchera Chibhorani": {
-            "kirasi 6": 1050,
-            "kirasi 9": 1181.25,
-            "kirasi 10": 1312.5,
-            "hudzamu huri mubhadharo_m": 40,
-            "wedzera pamita imwe_m": 27
-        },
-        "Kuchera Chibhorani cheBhizinesi": 80,
-        "Kuwedzera Kudzika kweChibhorani": 30
-    },
-    "bindura": {
-        "Ongororo Yemvura": 150,
-        "Kuchera Chibhorani": {
-            "kirasi 6": 1000,
-            "kirasi 9": 1125,
-            "kirasi 10": 1250,
-            "hudzamu huri mubhadharo_m": 40,
-            "wedzera pamita imwe_m": 27
-        },
-        "Kuchera Chibhorani cheBhizinesi": 80,
-        "Kuwedzera Kudzika kweChibhorani": 30
-    },
-    "binga": {
-        "Ongororo Yemvura": 150,
-        "Kuchera Chibhorani": {
-            "kirasi 6": 1300,
-            "kirasi 9": 1462.5,
-            "kirasi 10": 1625,
-            "hudzamu huri mubhadharo_m": 40,
-            "wedzera pamita imwe_m": 27
-        },
-        "Kuchera Chibhorani cheBhizinesi": 80,
-        "Kuwedzera Kudzika kweChibhorani": 30
-    },
-    "bubi": {
-        "Ongororo Yemvura": 150,
-        "Kuchera Chibhorani": {
-            "kirasi 6": 1200,
-            "kirasi 9": 1350,
-            "kirasi 10": 1500,
-            "hudzamu huri mubhadharo_m": 40,
-            "wedzera pamita imwe_m": 27
-        },
-        "Kuchera Chibhorani cheBhizinesi": 80,
-        "Kuwedzera Kudzika kweChibhorani": 30
-    },
-    "murambinda": {
-        "Ongororo Yemvura": 150,
-        "Kuchera Chibhorani": {
-            "kirasi 6": 1050,
-            "kirasi 9": 1181.25,
-            "kirasi 10": 1312.5,
-            "hudzamu huri mubhadharo_m": 40,
-            "wedzera pamita imwe_m": 27
-        },
-        "Kuchera Chibhorani cheBhizinesi": 80,
-        "Kuwedzera Kudzika kweChibhorani": 30
-    },
-    "buhera": {
-        "Ongororo Yemvura": 150,
-        "Kuchera Chibhorani": {
-            "kirasi 6": 1150,
-            "kirasi 9": 1293.75,
-            "kirasi 10": 1437.5,
-            "hudzamu huri mubhadharo_m": 40,
-            "wedzera pamita imwe_m": 27
-        },
-        "Kuchera Chibhorani cheBhizinesi": 80,
-        "Kuwedzera Kudzika kweChibhorani": 30
-    },
-    "harare": {
-        "Ongororo Yemvura": 150,
-        "Kuchera Chibhorani": {
-            "kirasi 6": 1000,
-            "kirasi 9": 1125,
-            "kirasi 10": 1250,
-            "hudzamu huri mubhadharo_m": 40,
-            "wedzera pamita imwe_m": 30
-        },
-        "Kuchera Chibhorani cheBhizinesi": 80,
-        "Kuwedzera Kudzika kweChibhorani": 30
-    },
-    "bulawayo": {
-        "Ongororo Yemvura": 150,
-        "Kuchera Chibhorani": {
-            "kirasi 6": 1000,
-            "kirasi 9": 1125,
-            "kirasi 10": 1250,
-            "hudzamu huri mubhadharo_m": 40,
-            "wedzera pamita imwe_m": 27
-        },
-        "Kuchera Chibhorani cheBhizinesi": 80,
-        "Kuwedzera Kudzika kweChibhorani": 30
-    }
-}
-
-pump_installation_options2 = {
-    "1": {
-        "description": "D.C solar (inoshanda nezuva chete, hapana inverter) - Ndine tangi netangi stand",
-        "price": 1640
-    },
-    "2": {
-        "description": "D.C solar (inoshanda nezuva chete, hapana inverter) - Handina chinhu zvachose",
-        "price": 2550
-    },
-    "3": {
-        "description": "D.C solar (inoshanda nezuva chete, hapana inverter) - Basa chete (labour)",
-        "price": 200
-    },
-    "4": {
-        "description": "A.C yemagetsi (ZESA kana solar inverter) - Kugadzirisa nekuunza zvinhu",
-        "price": 1900
-    },
-    "5": {
-        "description": "A.C yemagetsi (ZESA kana solar inverter) - Basa chete (labour)",
-        "price": 170
-    },
-    "6": {
-        "description": "A.C yemagetsi (ZESA kana solar inverter) - Ndine tangi netangi stand",
-        "price": 950
-    }
-}
 
 
 def custom_question2(prompt, user_data, phone_id):
@@ -2943,7 +3236,7 @@ def handle_select_service_quote2(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         message_lines = [f"💧 Sarudzo dzeKuisa Pampu:\n"]
-        for key, option in pump_installation_options2.items():
+        for key, option in pump_installation_options.items():
             desc = option.get('description', 'Hapana tsananguro')
             message_lines.append(f"{key}. {desc}")
         send("\n".join(message_lines), user_data['sender'], phone_id)
@@ -3577,7 +3870,7 @@ def handle_select_pump_option2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     location = user.quote_data.get('location')
     
-    if prompt.strip() not in pump_installation_options2:
+    if prompt.strip() not in pump_installation_options:
         send("Sarudzo isiriyo. Ndokumbira usarudze sarudzo yemhando yepombi yekuisa (1-6).", user_data['sender'], phone_id)
         return {'step': 'select_pump_option2', 'user': user.to_dict(), 'sender': user_data['sender']}
     
@@ -3654,50 +3947,92 @@ def handle_quote_followup2(prompt, user_data, phone_id):
         return {'step': 'quote_followup2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
-# Action mapping
-action_mapping = {
-    "welcome": handle_welcome,
-    "select_language": handle_select_language,
-    "main_menu2": handle_main_menu2,
-    "enter_location_for_quote2": handle_enter_location_for_quote2,
-    "select_service_quote2": handle_select_service_quote2,
-    "select_service2": handle_select_service2,
-    "select_pump_option2": handle_select_pump_option2,
-    "quote_followup2": handle_quote_followup2,   
-    "collect_quote_details2": handle_collect_quote_details2,
-    "quote_response2": handle_quote_response2,
-    "collect_offer_details2": handle_collect_offer_details2,
-    "quote_followup2": handle_quote_followup2,
-    "offer_response2": handle_offer_response2,
-    "booking_details2": handle_booking_details2,
-    "collect_booking_info2": handle_collect_booking_info2,
-    "booking_confirmation2": handle_booking_confirmation2,
-    "faq_menu2": faq_menu2,
-    "faq_borehole2": faq_borehole2,
-    "faq_pump2": faq_pump2,
-    "faq_borehole_followup2": faq_borehole_followup2,
-    "faq_pump_followup2": faq_pump_followup2,
-    "check_project_status_menu2": handle_check_project_status_menu2,
-    "drilling_status_info_request2": handle_drilling_status_info_request2,
-    "pump_status_info_request2": handle_pump_status_info_request2,
-    "pump_status_updates_opt_in2": handle_pump_status_updates_opt_in2,
-    "drilling_status_updates_opt_in2": handle_drilling_status_updates_opt_in2,
-    "custom_question2": custom_question2,
-    "custom_question_followup2": custom_question_followup2,
-    "human_agent2": human_agent2,
-    "waiting_for_human_agent_response2": handle_user_message2,
-    "human_agent_followup2": handle_user_message2,   
-    "other_services_menu2": handle_other_services_menu2,
-    "borehole_deepening_casing2": handle_borehole_deepening_casing2,
-    "borehole_flushing_problem2": handle_borehole_flushing_problem2,
-    "pvc_casing_selection2": handle_pvc_casing_selection2,
-    "deepening_location2": handle_deepening_location2,
-    "human_agent2": lambda prompt, user_data, phone_id: (
-        send("Maneja anoona nezvevatengi achakufonera munguva pfupi.", user_data['sender'], phone_id)
-        or {'step': 'main_menu2', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
-    ),
-}
+# Flask app
+app = Flask(__name__)
 
+@app.route("/", methods=["GET", "POST"])
+def index():
+    return render_template("connected.html")
+
+@app.route("/webhook", methods=["GET", "POST"])
+def webhook():
+    if request.method == "GET":
+        mode = request.args.get("hub.mode")
+        token = request.args.get("hub.verify_token")
+        challenge = request.args.get("hub.challenge")
+
+        if mode == "subscribe" and token == "BOT":
+            return challenge, 200
+        return "Failed", 403
+
+    elif request.method == "POST":
+        data = request.get_json()
+        logging.info(f"Incoming webhook data: {json.dumps(data, indent=2)}")
+
+        try:
+            entry = data.get("entry", [])[0]
+            changes = entry.get("changes", [])[0]
+            value = changes.get("value", {})
+            phone_id = value.get("metadata", {}).get("phone_number_id")
+            messages = value.get("messages", [])
+
+            if messages:
+                message = messages[0]
+                sender = message.get("from")
+                msg_type = message.get("type")
+                
+                if msg_type == "text":
+                    prompt = message["text"]["body"].strip()
+                    logging.info(f"Text message from {sender}: {prompt}")
+                    message_handler(prompt, sender, phone_id, message)
+                
+                elif msg_type == "location":
+                    gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
+                    logging.info(f"Location from {sender}: {gps_coords}")
+                    message_handler(gps_coords, sender, phone_id, message)
+
+                else:
+                    # Unsupported message type
+                    logging.warning(f"Unsupported message type: {msg_type}")
+                    send("Please send a text message or share your location using the 📍 button.", sender, phone_id)
+
+        except Exception as e:
+            logging.error(f"Error processing webhook: {e}", exc_info=True)
+
+        return jsonify({"status": "ok"}), 200
+
+def message_handler2(prompt, sender, phone_id, message):
+    user_data = get_user_state(sender)
+    user_data['sender'] = sender
+
+    # If this is a location message, inject location into user_data
+    if message.get("type") == "location":
+        location = message.get("location", {})
+        if "latitude" in location and "longitude" in location:
+            user_data["location"] = {
+                "latitude": location["latitude"],
+                "longitude": location["longitude"]
+            }
+            # override prompt with coordinates if needed
+            prompt = f"{location['latitude']},{location['longitude']}"
+        else:
+            prompt = ""
+
+    # Ensure user object is present
+    if 'user' not in user_data:
+        user_data['user'] = User(sender).to_dict()
+
+    # Dispatch to the correct step
+    step = user_data.get('step', 'welcome')
+    next_state = get_action(step, prompt, user_data, phone_id)
+    update_user_state(sender, next_state)
+
+def get_action2(current_state, prompt, user_data, phone_id):
+    handler = action_mapping.get(current_state, handle_welcome)
+    return handler(prompt, user_data, phone_id)
+
+if __name__ == "__main__":
+    app.run(debug=True, port=8000)
 # Flask app
 app = Flask(__name__)
 
