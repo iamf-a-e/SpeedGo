@@ -2089,85 +2089,28 @@ def webhook():
         return jsonify({"status": "ok"}), 200
 
 
-def message_handler(prompt, sender, phone_id, message):      
-    text = prompt.strip().lower()
 
-   
-    if text in ["hi", "hey", "hie"]:
-        user_state = {'step': 'handle_welcome', 'sender': sender}
-        updated_state = get_action('handle_welcome', prompt, user_state, phone_id)
-        update_user_state(sender, updated_state)
-        return updated_state  # return something or None
+def message_handler(prompt, sender, phone_id, message):
+    user_data = get_user_state(sender)
+    user_data['sender'] = sender
 
-    elif text in ["mhoro", "makadini", "maswera sei", "ko sei zvako", "hesi"]:
-        user_state = {'step': 'handle_welcome2', 'sender': sender}
-        updated_state = get_action('handle_welcome2', prompt, user_state, phone_id)
-        update_user_state(sender, updated_state)
-        return updated_state  # return something or None
+    # If this is a location message, inject location into user_data
+    if message.get("type") == "location":
+        location = message.get("location", {})
+        if "latitude" in location and "longitude" in location:
+            user_data["location"] = {
+                "latitude": location["latitude"],
+                "longitude": location["longitude"]
+            }
 
-    location_data = message.get('location')
-    if location_data:
-        user_data['location'] = {
-            'latitude': location_data['latitude'],
-            'longitude': location_data['longitude']
-        }
-        return handle_deepening_location('', user_data, phone_id)
+    # Ensure user object is present
+    if 'user' not in user_data:
+        user_data['user'] = User(sender).to_dict()
 
-
-
-    elif session["step"] == "start":
-        # Assume user sends location first
-        session["location"] = user_msg
-        session["step"] = "awaiting_service"
-        user_sessions[phone_id] = session
-        return "Please select a service: Borehole Drilling, Pump Installation, Commercial Hole Drilling, etc."
-
-    elif session["step"] == "awaiting_service":
-        service = user_message.strip().title()
-        session["service"] = service
-
-        if service == "Pump Installation":
-            # Show pump options list
-            msg = get_pricing_for_location_quotes(session["location"], service)
-            session["step"] = "awaiting_pump_option"
-            user_sessions[phone_id] = session
-            return msg
-
-        else:
-            # For other services, show pricing directly
-            msg = get_pricing_for_location_quotes(session["location"], service)
-            session["step"] = "start"  # Reset or whatever logic you prefer
-            user_sessions[phone_id] = session
-            return msg
-
-    elif session["step"] == "awaiting_pump_option":
-        # Expect a number 1-6 for pump installation option
-        option_selected = user_message.strip()
-        # Validate option
-        if option_selected not in pump_installation_options:
-            return "Invalid option. Please select a valid Pump Installation option number (1-6)."
-
-        # Get pricing for selected pump option
-        msg = get_pricing_for_location_quotes(session["location"], "Pump Installation", pump_option_selected=option_selected)
-        session["step"] = "start"  # Reset after pump option selected
-        user_sessions[phone_id] = session
-        return msg
-
-    else:
-        # fallback or reset state
-        session["step"] = "start"
-        user_sessions[phone_id] = session
-        return "Please enter your location to start pricing inquiry."
-
-
-
-    user_state = get_user_state(sender)
-    user_state['sender'] = sender    
-    next_state = get_action(user_state['step'], prompt, user_state, phone_id)
+    # Dispatch to the correct step
+    step = user_data.get('step', 'welcome')
+    next_state = get_action(step, prompt, user_data, phone_id)
     update_user_state(sender, next_state)
-    return next_state
-
-    
 
 def get_action(current_state, prompt, user_data, phone_id):
     handler = action_mapping.get(current_state, handle_welcome)
