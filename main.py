@@ -2293,6 +2293,146 @@ def faq_menu2(prompt, user_data, phone_id):
         return {'step': 'faq_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
+# Pricing dictionaries
+location_pricing2 = {
+    "beitbridge": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "nyika": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1050,
+            "kirasi 9": 1181.25,
+            "kirasi 10": 1312.5,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "bindura": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "binga": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1300,
+            "kirasi 9": 1462.5,
+            "kirasi 10": 1625,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "bubi": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1200,
+            "kirasi 9": 1350,
+            "kirasi 10": 1500,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "murambinda": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1050,
+            "kirasi 9": 1181.25,
+            "kirasi 10": 1312.5,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "buhera": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1150,
+            "kirasi 9": 1293.75,
+            "kirasi 10": 1437.5,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "harare": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 30
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    },
+    "bulawayo": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Chibhorani": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "hudzamu huri mubhadharo_m": 40,
+            "wedzera pamita imwe_m": 27
+        },
+        "Kuchera Chibhorani cheBhizinesi": 80,
+        "Kuwedzera Kudzika kweChibhorani": 30
+    }
+}
+
+pump_installation_options2 = {
+    "1": {
+        "description": "D.C solar (inoshanda nezuva chete, hapana inverter) - Ndine tangi netangi stand",
+        "price": 1640
+    },
+    "2": {
+        "description": "D.C solar (inoshanda nezuva chete, hapana inverter) - Handina chinhu zvachose",
+        "price": 2550
+    },
+    "3": {
+        "description": "D.C solar (inoshanda nezuva chete, hapana inverter) - Basa chete (labour)",
+        "price": 200
+    },
+    "4": {
+        "description": "A.C yemagetsi (ZESA kana solar inverter) - Kugadzirisa nekuunza zvinhu",
+        "price": 1900
+    },
+    "5": {
+        "description": "A.C yemagetsi (ZESA kana solar inverter) - Basa chete (labour)",
+        "price": 170
+    },
+    "6": {
+        "description": "A.C yemagetsi (ZESA kana solar inverter) - Ndine tangi netangi stand",
+        "price": 950
+    }
+}
+
+
 def custom_question2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
@@ -2803,7 +2943,7 @@ def handle_select_service_quote2(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         message_lines = [f"💧 Sarudzo dzeKuisa Pampu:\n"]
-        for key, option in pump_installation_options.items():
+        for key, option in pump_installation_options2.items():
             desc = option.get('description', 'Hapana tsananguro')
             message_lines.append(f"{key}. {desc}")
         send("\n".join(message_lines), user_data['sender'], phone_id)
@@ -3437,7 +3577,7 @@ def handle_select_pump_option2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     location = user.quote_data.get('location')
     
-    if prompt.strip() not in pump_installation_options:
+    if prompt.strip() not in pump_installation_options2:
         send("Sarudzo isiriyo. Ndokumbira usarudze sarudzo yemhando yepombi yekuisa (1-6).", user_data['sender'], phone_id)
         return {'step': 'select_pump_option2', 'user': user.to_dict(), 'sender': user_data['sender']}
     
