@@ -11,6 +11,7 @@ import google.generativeai as genai
 import threading
 import time
 import shona
+import ndebele
 
 logging.basicConfig(level=logging.INFO)
 
