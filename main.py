@@ -1026,22 +1026,11 @@ def handle_drilling_status_updates_opt_in(prompt, user_data, phone_id):
     return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
-# Modified to support pin or text location input
 def handle_enter_location_for_quote(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
-
-    # Handle shared GPS location if present
-    gps_coords = None
-    if 'location' in user_data and 'latitude' in user_data['location'] and 'longitude' in user_data['location']:
-        lat = user_data['location']['latitude']
-        lng = user_data['location']['longitude']
-        gps_coords = f"{lat},{lng}"
-        location = reverse_geocode_location(gps_coords)
-    else:
-        location = prompt.strip().lower()
-    
-    user.quote_data['location'] = location
+    # Save location
+    user.quote_data['location'] = prompt.strip().lower()
 
     # Update state to wait for service selection
     update_user_state(user_data['sender'], {
