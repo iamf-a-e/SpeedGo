@@ -1731,6 +1731,71 @@ def handle_check_project_status_menu(prompt, user_data, phone_id):
         return {'step': 'check_project_status_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
+def handle_select_language(prompt, user_data, phone_id):
+    language = prompt.strip()
+
+    if language == "1":
+        # English selected
+        user_data['user']['language'] = 'english'
+        step = 'main_menu'
+        message = (
+            "Language set to English.\n\n"
+            "How can we help you today?\n\n"
+            "1. Request a quote\n"
+            "2. Search Price Using Location\n"
+            "3. Check Project Status\n"
+            "4. FAQs or Learn About Borehole Drilling\n"
+            "5. Other services\n"
+            "6. Talk to a Human Agent\n\n"
+            "Please reply with a number (e.g., 1)"
+        )
+
+    elif language == "2":
+        # Shona selected
+        user_data['user']['language'] = 'shona'
+        step = 'main_menu2'
+        message = (
+            "Mutauro wasarudzwa: **ChiShona**.\n\n"
+            "Tingakubatsirei nhasi?\n\n"
+            "1. Kumbira mutengo (Quote)\n"
+            "2. Tsvaga Mutengo Wenzvimbo Yako\n"
+            "3. Tarisa Zvakuitika paProject Yako\n"
+            "4. FAQs kana Dzidza nezve Borehole\n"
+            "5. Mamwe Mabasa\n"
+            "6. Taura neMumiriri\n\n"
+            "Ndapota pindura nenhamba (semuenzaniso: 1)"
+        )
+
+    elif language == "3":
+        # Ndebele selected
+        user_data['user']['language'] = 'ndebele'
+        step = 'main_menu3'
+        message = (
+            "Ulwimi olukhethiwe: **isiNdebele**.\n\n"
+            "Singakusiza ngani namuhla?\n\n"
+            "1. Cela ikhotheshini (Quote)\n"
+            "2. Hlola Intengo Ngokwendawo\n"
+            "3. Bheka Isimo Sephrojekthi\n"
+            "4. FAQs noma Funda nge Borehole\n"
+            "5. Amanye Amasevisi\n"
+            "6. Khuluma Nomuntu Ongumuntu\n\n"
+            "Sicela uphendule ngenombolo (isb. 1)"
+        )
+
+    else:
+        # Invalid input
+        send("Invalid option. Please reply with 1 for English, 2 for Shona, or 3 for Ndebele.", user_data['sender'], phone_id)
+        return {'step': 'select_language', 'user': user_data['user'], 'sender': user_data['sender']}
+
+    # Update user state
+    update_user_state(user_data['sender'], {
+        'step': step,
+        'user': user_data['user']
+    })
+
+    send(message, user_data['sender'], phone_id)
+    return {'step': step, 'user': user_data['user'], 'sender': user_data['sender']}
+
 
 def handle_drilling_status_info_request(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
