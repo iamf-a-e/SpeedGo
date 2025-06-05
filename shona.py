@@ -355,7 +355,7 @@ def handle_welcome(prompt, user_data, phone_id):
     return {'step': 'select_language', 'sender': user_data['sender']}
 
 
-def handle_select_language2(prompt, user_data, phone_id):
+def handle_select_language(prompt, user_data, phone_id):
     user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
     if prompt == "1":
         user.language = "English"
