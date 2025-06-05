@@ -8,18 +8,6 @@ logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 
-# Language selection handler
-def handle_language_selection(prompt, user_data, phone_id):
-    if prompt == "1":  # English
-        return english_main_menu("", user_data, phone_id)
-    elif prompt == "2":  # Shona
-        return shona_main_menu("", user_data, phone_id)
-    elif prompt == "3":  # Ndebele
-        return ndebele_main_menu("", user_data, phone_id)
-    else:
-        send("Please select a valid language option (1-3).", user_data['sender'], phone_id)
-        return user_data
-
 
 def handle_select_language(prompt, user_data, phone_id):
     user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
@@ -61,7 +49,7 @@ def handle_select_language(prompt, user_data, phone_id):
             "Pindura nenhamba (semuenzaniso, 1)",
             user_data['sender'], phone_id
         )
-        return shona_main_menu("", user_data, phone_id)
+        return english_main_menu("", user_data, phone_id)
 
     elif prompt == "3":
         user.language = "Ndebele"
@@ -81,7 +69,7 @@ def handle_select_language(prompt, user_data, phone_id):
             "Phendula ngenombolo (umzekeliso: 1)",
             user_data['sender'], phone_id
         )
-        return ndebele_main_menu("", user_data, phone_id)
+        return english_main_menu("", user_data, phone_id)
     
     else:
         send("Please select a valid language option (1 for English, 2 for Shona, 3 for Ndebele).", user_data['sender'], phone_id)
