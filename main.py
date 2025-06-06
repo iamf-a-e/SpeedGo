@@ -219,9 +219,8 @@ LANGUAGES = {
                     "8": "Ndiri kudzokera kuFAQ Menu..."
                 },
                 "followup": "Ungada here:\n1. Kubvunza mumwe mubvunzo kubva kuBorehole Drilling FAQs\n2. Kudzokera kuMain Menu",
-                "invalid_option": "Sarudza sarudzo inoshanda (1–8)."
-            },
-        },
+                "invalid_option": "Sarudza sarudzo inoshanda (1–8).",
+       
                 "pump": {
                 "menu": "Heano mibvunzo inowanzo bvunzwa nezvekuisa mapombi:\n\n1. Musiyano uripi pakati pemapombi ezuva nemagetsi?\n2. Munogona here kuisa kana ndine zvinhu zvacho?\n3. Zvinotora nguva yakareba sei kuisa pombi?\n4. Pombi yakakura sei yandinoda?\n5. Munopa matangi nematangi stands here?\n6. Dzokera kuFAQ Menu",
                 "responses": {
@@ -232,7 +231,16 @@ LANGUAGES = {
                     "5": "Hongu, tinopa mapakeji akazara anosanganisira matangi emvura, matangi stands, uye zvese zvinodiwa zvepombi.",
                     "6": "Ndiri kudzokera kuFAQ Menu..."
                     },
-                }
+                    "followup": "Ungada here:\n1. Kubvunza mumwe mubvunzo kubva kuPump Installation FAQs\n2. Kudzokera kuMain Menu",
+                    "invalid_option": "Sarudza sarudzo inoshanda (1–6)."
+                    },
+                    "custom_question": "Ndapota nyora mubvunzo wako pazasi, uye tichaita nepandinogona kukubatsira.\n",
+                    "menu": "Heano mibvunzo inowanzo bvunzwa:\n\n1. Borehole Drilling FAQs\n2. Pump Installation FAQs\n3. Bvunza mumwe mubvunzo\n4. Mumiriri wevanhu\n5. Dzokera kuMain Menu",
+                    "invalid_option": "Sarudza sarudzo inoshanda (1–5)."
+                    },
+                    "human_agent_connect": "Ndapota mira ndichikubatanidza nemumiriri..."
+                },
+
 
 
 
