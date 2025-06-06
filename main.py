@@ -134,7 +134,14 @@ LANGUAGES = {
         "main_menu": "Singakusiza njani lamuhla?\n\n1. Cela isiphakamiso\n2. Phanda Intengo Ngokusebenzisa Indawo\n3. Bheka Isimo Sephrojekthi\n4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n5. Eminye Imisebenzi\n6. Khuluma Nomuntu\n\nPhendula ngenombolo (umzekeliso: 1)",
         "enter_location": "Sicela ufake indawo yakho (Idolobha/Idolobhana noma i-GPS) ukuze siqale.",
         "location_detected": "Indawo etholakele: {}\n\nSicela ukhethe inkonzo ofunayo:\n1. Ukuhlolwa kwamanzi\n2. Ukumba iBorehole\n3. Ukufakwa kwepampu\n4. Ukumba umgodi wezentengiselwano\n5. Ukwelula iBorehole (Deepening)",
-        "location_not_found": "Asikwazanga ukuhlonza indawo yakho. Sicela bhala igama ledolobho/lindawo yakho ngesandla."
+        "location_not_found": "Asikwazanga ukuhlonza indawo yakho. Sicela bhala igama ledolobho/lindawo yakho ngesandla.",
+        "fallback_option": "Neimwe nzira, unogona kutibata zvakananga pa {agent_number}",
+        "followup_question": "Ungada here:\n1. Kudzokera kumenu huru\n2. Kupedza hurukuro",
+        "return_menu": "Ndiri kukudzosera kumenu huru...",
+        "goodbye": "Ndatenda! Iva nezuva rakanaka.",
+        "invalid_option": "Pindura ne1 kuti Hongu kana 2 kuti Kwete.",
+        "still_waiting": "Ndapota mira, tichiri kukubatanidza..."
+
     }
 }
 
