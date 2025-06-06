@@ -490,10 +490,10 @@ def human_agent(prompt, user_data, phone_id):
     lang = get_user_language(user_data)
 
     # Notify the customer immediately
-    send(LANGUAGE_DICT[lang]['agent_connect'], customer_number, phone_id)
+    send(LANGUAGES[lang]['agent_connect'], customer_number, phone_id)
 
     # Notify the agent immediately
-    agent_message = LANGUAGE_DICT[lang]['agent_notification'].format(
+    agent_message = LANGUAGES[lang]['agent_notification'].format(
         customer_number=customer_number,
         customer_name=customer_name,
         prompt=prompt
@@ -511,7 +511,7 @@ def human_agent(prompt, user_data, phone_id):
     return {'step': 'handle_user_message', 'user': user.to_dict(), 'sender': customer_number}
 
 def notify_agent(customer_number, prompt, agent_number, phone_id, lang='en'):
-    agent_message = LANGUAGE_DICT[lang]['new_request'].format(
+    agent_message = LANGUAGES[lang]['new_request'].format(
         customer_number=customer_number,
         prompt=prompt
     )
@@ -522,9 +522,9 @@ def send_fallback_option(customer_number, phone_id, user_data):
     user_data = get_user_state(customer_number)
     if user_data and user_data.get('step') == 'waiting_for_human_agent_response':
         lang = get_user_language(user_data)
-        send(LANGUAGE_DICT[lang]['fallback_option'].format(agent_number="+263719835124"), 
+        send(LANGUAGES[lang]['fallback_option'].format(agent_number="+263719835124"), 
              customer_number, phone_id)
-        send(LANGUAGE_DICT[lang]['followup_question'], customer_number, phone_id)
+        send(LANGUAGES[lang]['followup_question'], customer_number, phone_id)
         update_user_state(customer_number, {
             'step': 'human_agent_followup',
             'user': user_data.get('user', {}),
@@ -542,9 +542,9 @@ def handle_user_message(message, user_data, phone_id):
 
         if elapsed >= 10:
             # Send fallback prompt
-            send(LANGUAGE_DICT[lang]['fallback_option'].format(agent_number="+263719835124"), 
+            send(LANGUAGES[lang]['fallback_option'].format(agent_number="+263719835124"), 
                  customer_number, phone_id)
-            send(LANGUAGE_DICT[lang]['followup_question'], customer_number, phone_id)
+            send(LANGUAGES[lang]['followup_question'], customer_number, phone_id)
 
             # Update state to wait for user's Yes/No reply
             update_user_state(customer_number, {
@@ -556,13 +556,13 @@ def handle_user_message(message, user_data, phone_id):
             return {'step': 'human_agent_followup', 'user': user_data['user'], 'sender': customer_number}
         else:
             # Still waiting, remind user to hold on
-            send(LANGUAGE_DICT[lang]['still_waiting'], customer_number, phone_id)
+            send(LANGUAGES[lang]['still_waiting'], customer_number, phone_id)
             return user_data
 
     elif state == 'human_agent_followup':
         # Handle user's Yes/No answer here
         if message.strip() == '1':  # User wants main menu
-            send(LANGUAGE_DICT[lang]['return_menu'], customer_number, phone_id)
+            send(LANGUAGES[lang]['return_menu'], customer_number, phone_id)
             # Reset state to main menu step
             update_user_state(customer_number, {
                 'step': 'main_menu',
@@ -574,7 +574,7 @@ def handle_user_message(message, user_data, phone_id):
             return {'step': 'main_menu', 'user': user_data['user'], 'sender': customer_number}
 
         elif message.strip() == '2':  # User says No
-            send(LANGUAGE_DICT[lang]['goodbye'], customer_number, phone_id)
+            send(LANGUAGES[lang]['goodbye'], customer_number, phone_id)
             # Optionally clear or end session
             update_user_state(customer_number, {
                 'step': 'end',
@@ -583,7 +583,7 @@ def handle_user_message(message, user_data, phone_id):
             })
             return {'step': 'end', 'user': user_data['user'], 'sender': customer_number}
         else:
-            send(LANGUAGE_DICT[lang]['invalid_option'], customer_number, phone_id)
+            send(LANGUAGES[lang]['invalid_option'], customer_number, phone_id)
             return user_data
 
 
