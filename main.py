@@ -114,7 +114,56 @@ LANGUAGES = {
                 "2. Return to Main Menu"
             ),
             "invalid_option": "Please choose a valid option (1–6)."
-        }
+        },
+        "new_request": "👋 New customer request on WhatsApp\n\n📱 Number: {customer_number}\n📩 Message: \"{prompt}\"",
+        "fallback_option": "Alternatively, you can contact us directly at {agent_number}",
+        "followup_question": "Would you like to:\n1. Return to main menu\n2. End conversation",
+        "return_menu": "Returning you to the main menu...",
+        "human_agent": {
+            "exit_message": "Okay. Feel free to ask if you need anything else.",
+            "invalid_option": "Please reply with 1 for Main Menu or 2 to stay here."
+        },
+        "faq": {
+            "borehole": {
+                "menu": "Here are the most common questions about borehole drilling:\n\n1. How much does borehole drilling cost?\n2. How long does it take to drill a borehole?\n3. How deep will my borehole be?\n4. Do I need permission to drill a borehole?\n5. Do you do a water survey and drilling at the same time?\n6. What if you do a water survey and find no water?\n7. What equipment do you use?\n8. Back to FAQ Menu",
+                "responses": {
+                    "1": "The cost depends on your location, depth, and soil conditions. Please send us your location and site access details for a personalized quote.",
+                    "2": "Typically 4–6 hours or up to several days, depending on site conditions, rock type, and accessibility.",
+                    "3": "Depth varies by area. The standard depth is around 40 meters, but boreholes can range from 40 to 150 meters depending on the underground water table.",
+                    "4": "In some areas, a water permit may be required. We can assist you with the application if necessary.",
+                    "5": "Yes, we offer both as a combined package or separately, depending on your preference.",
+                    "6": "If the client wishes to drill at a second point, we offer a discount.\n\nNote: Survey machines detect underground water-bearing fractures or convergence points of underground streams. However, they do not measure the volume or flow rate of water. Therefore, borehole drilling carries no 100% guarantee of hitting water, as the fractures could be dry, moist, or wet.",
+                    "7": "We use professional-grade rotary and percussion drilling rigs, GPS tools, and geological survey equipment.",
+                    "8": "Returning to FAQ Menu..."
+                },
+                "followup": "Would you like to:\n1. Ask another question from Borehole Drilling FAQs\n2. Return to Main Menu",
+                "invalid_option": "Please choose a valid option (1–8)."
+            },
+            "pump": {
+                "menu": "Here are common questions about pump installation:\n\n1. What's the difference between solar and electric pumps?\n2. Can you install if I already have materials?\n3. How long does pump installation take?\n4. What pump size do I need?\n5. Do you supply tanks and tank stands?\n6. Back to FAQ Menu",
+                "responses": {
+                    "1": "Solar pumps use energy from solar panels and are ideal for off-grid or remote areas. Electric pumps rely on the power grid and are typically more affordable upfront but depend on electricity availability.",
+                    "2": "Yes! We offer labor-only packages if you already have the necessary materials.",
+                    "3": "Installation usually takes one day, provided materials are ready and site access is clear.",
+                    "4": "Pump size depends on your water needs and borehole depth. We can assess your site and recommend the best option.",
+                    "5": "Yes, we supply complete packages including water tanks, tank stands, and all necessary plumbing fittings.",
+                    "6": "Returning to FAQ Menu..."
+                },
+                "followup": "Would you like to:\n1. Ask another question from Pump Installation FAQs\n2. Return to Main Menu",
+                "invalid_option": "Please choose a valid option (1–6)."
+            },
+            "custom_question": "Please type your question below, and we'll do our best to assist you.\n",
+            "menu": "Here are the most common questions:\n\n1. Borehole Drilling FAQs\n2. Pump Installation FAQs\n3. Ask a different question\n4. Human agent\n5. Back to Main Menu",
+            "invalid_option": "Please select a valid option (1–5)."
+        },
+        "custom_question": {
+            "empty_prompt": "Please type your question.",
+            "response_followup": "Would you like to:\n1. Ask another question\n2. Return to Main Menu",
+            "invalid_option": "Please reply 1 to ask another question or 2 to return to the main menu.",
+            "next_question": "Please type your next question."
+        },
+        "human_agent_connect": "Please hold while I connect you to a representative..."
+    },
     },
     "Shona": {
         "welcome": "Mhoro! Tigamuchire kuSpeedGo Services yekuchera maburi emvura muZimbabwe. Tinopa maburi emvura anovimbika nemhinduro dzemvura muZimbabwe yose.\n\nSarudza mutauro waunofarira:\n1. Chirungu\n2. Shona\n3. Ndebele",
@@ -202,7 +251,58 @@ LANGUAGES = {
             "2. Kudzokera kuMain Menu"
         ),
         "invalid_option": "Ndapota sarudza chisarudzo chakakodzera (1–6)."
+    },
+       {
+      "new_request": "👋 Kumbiro kutsva kwevatengi paWhatsApp\n\n📱 Nhamba: {customer_number}\n📩 Mharidzo: \"{prompt}\"",
+      "fallback_option": "Kana zvikatadza, unogonawo kutibata zvakananga pa {agent_number}",
+      "followup_question": "Ungada:\n1. Kudzokera kuMain Menu\n2. Kupedza hurukuro",
+      "return_menu": "Kudzorera kuMain Menu...",
+      "human_agent": {
+        "exit_message": "Zvakanaka. Inzwa wakasununguka kubvunza kana pane zvimwe zvaunoda.",
+        "invalid_option": "Ndapota pindura ne1 kuti udzokere kuMain Menu kana 2 kuti urambe uripo."
+      },
+      "faq": {
+        "borehole": {
+          "menu": "Mibvunzo inonyanya kubvunzwa pamusoro pekuvhenekwa kwemabhorohwa:\n\n1. Kuvhenekwa kwemabhorohwa kunodhura zvakadini?\n2. Zvinotora nguva yakareba sei kuvhura bhorohwa?\n3. Bhorohwa rangu richadzika zvakadini?\n4. Ndiri kuda mvumo here kuti ndichera bhorohwa?\n5. Munobatanidza ongororo yemvura nekuchera bhorohwa here?\n6. Ko kana pakaitwa ongororo yemvura pasina kuwanikwa mvura?\n7. Ndezvipi zvishandiso zvamunoshandisa?\n8. Dzokera kuFAQ Menu",
+          "responses": {
+            "1": "Mutengo unoenderana nenzvimbo yenyu, kudzika, uye mamiriro epasi. Ndokumbira mutitumire nzvimbo yenyu uye mamiriro ekuwana nzvimbo yacho kuti tigokupai mutengo wakakodzera.",
+            "2": "Kazhinji zvinotora maawa 4–6 kana mazuva akati kuti, zvinoenderana nemamiriro enzvimbo, rudzi rwevhu, uye nzira yekuwana nzvimbo yacho.",
+            "3": "Kudzika kunosiyana nenzvimbo. Pakazere zvinenge zviri pa40 meters, asi mabhorohwa anogona kunge ari pakati pe40 kusvika 150 meters zvichienderana nehurongwa hwemvura iri pasi pevhu.",
+            "4": "Mumamwe matunhu, panodiwa rezinesi remvura. Tinogona kukubatsirai nekunyorera kana zvichidikanwa.",
+            "5": "Hongu, tinopa ese ari maviri sechikamu chimwe chete kana zvakasiyana, zvinoenderana nezvamunoda.",
+            "6": "Kana mutengi achida kuchera pane imwe nzvimbo, tinopa kuderedzwa kwemutengo.\n\nCherechedza: Muchina weongororo yemvura unongotarisa makakatanwa ari pasi pevhu ane mukana wekuve nemvura. Haunokwanisi kuyera huwandu kana kuyerera kwemvura. Saka kuchera bhorohwa hakusi nechokwadi chekuwana mvura 100%, sezvo makakatanwa anogona kuva akanyorova, asina mvura, kana ane mvura.",
+            "7": "Tinoshandisa michina yepamusoro inosanganisira rotary uye percussion rigs, maturusi eGPS, pamwe nemidziyo yeongororo yejeoloji.",
+            "8": "Kudzokera kuFAQ Menu..."
+          },
+          "followup": "Ungada:\n1. Kubvunza rimwe remibvunzo pamusoro pekuchera mabhorohwa\n2. Kudzokera kuMain Menu",
+          "invalid_option": "Ndapota sarudza chisarudzo chiri pakati pe1–8."
+        },
+        "pump": {
+          "menu": "Mibvunzo inowanzo bvunzwa pamusoro pekuisa mapombi:\n\n1. Ndeupi musiyano uripo pakati pepombi yesolar neyelectric?\n2. Munogona kuisa kana ini ndine zvinhu zvese here?\n3. Kuisa pombi kunotora nguva yakareba sei?\n4. Ndinoda pombi yakakura zvakadii?\n5. Munotengesa matangi nemapuranga etangi here?\n6. Dzokera kuFAQ Menu",
+          "responses": {
+            "1": "Mapombi eSolar anoshandisa simba rinobva kuzvikwiriso zvezuva uye akakodzera munzvimbo dzisina magetsi. Mapombi emagetsi anoshandisa grid yemagetsi uye anowanzodhura zvishoma pakutanga asi anotsamira pakuwanikwa kwemagetsi.",
+            "2": "Hongu! Tinopa basa rekungoisira chete kana mune zvose zvamunoda.",
+            "3": "Kuisa pombi kunotora zuva rimwe chete, kana zvinhu zvose zviripo uye nzvimbo ichiwanikwa nyore.",
+            "4": "Kukura kwepombi kunoenderana nezvido zvemvura uye kudzika kwebhorohwa renyu. Tinogona kuongorora nzvimbo yenyu tozokurudzira chakanakira.",
+            "5": "Hongu, tinopa mapakeji akazara anosanganisira matangi emvura, mapuranga etangi, nezvimwe zvose zvinodiwa pakuisirwa.",
+            "6": "Kudzokera kuFAQ Menu..."
+          },
+          "followup": "Ungada:\n1. Kubvunza imwe mibvunzo kubva muPump Installation FAQs\n2. Kudzokera kuMain Menu",
+          "invalid_option": "Ndapota sarudza chisarudzo chiri pakati pe1–6."
+        },
+        "custom_question": "Ndapota nyora mubvunzo wako pazasi, tichaedza kukubatsira nepandinogona napo.\n",
+        "menu": "Mibvunzo inowanzo bvunzwa ndeiyi:\n\n1. Mibvunzo yeBorehole Drilling\n2. Mibvunzo yePump Installation\n3. Bvunza chimwe chinhu\n4. Taurirana nemumiriri\n5. Dzokera kuMain Menu",
+        "invalid_option": "Ndapota sarudza chisarudzo chiri pakati pe1–5."
+      },
+      "custom_question": {
+        "empty_prompt": "Ndapota nyora mubvunzo wako.",
+        "response_followup": "Ungada:\n1. Kubvunza chimwe zvakare\n2. Kudzokera kuMain Menu",
+        "invalid_option": "Ndapota pindura ne1 kuti ubvunze chimwe kana 2 kuti udzokere kuMain Menu.",
+        "next_question": "Ndapota nyora mubvunzo wako unotevera."
+      },
+      "human_agent_connect": "Ndapota mirira ndichikubatanidza nemumiriri..."
     }
+ 
 
     },
     "Ndebele": {
@@ -291,7 +391,56 @@ LANGUAGES = {
                 "2. Ukubuyela ku Main Menu"
             ),
             "invalid_option": "Sicela ukhethe inketho evumelekileyo (1–6)."
-        }
+        },
+          "new_request": "👋 Isicelo esitsha sekhasimende kuWhatsApp\n\n📱 Inombolo: {customer_number}\n📩 Umlayezo: \"{prompt}\"",
+          "fallback_option": "Nxa kunzima, ungasithinta ngqo ku {agent_number}",
+          "followup_question": "Ungathanda:\n1. Ukubuyela kuMain Menu\n2. Ukuphetha ingxoxo",
+          "return_menu": "Sikubuyisela kuMain Menu...",
+          "human_agent": {
+            "exit_message": "Kulungile. Zizwe ukhululekile ukubuza nxa kudingeka okunye.",
+            "invalid_option": "Sicela uphendule ngo 1 ukuze ubuyele kuMain Menu kumbe 2 ukuze uqhubekele phambili lapha."
+          },
+          "faq": {
+            "borehole": {
+              "menu": "Nansi imibuzo evame ukubuzwa mayelana lokwemba umthombo:\n\n1. Ukwemba umthombo kubiza malini?\n2. Kudinga isikhathi esingakanani ukumba umthombo?\n3. Umthombo wami uzajula kangakanani?\n4. Ngidinga imvumo na ukuze ngiwumbe?\n5. Liyenziwa ndawonye yini ukuhlola amanzi lokwemba?\n6. Kwenzakalani nxa kungatholakalanga amanzi ngesikhathi sokuhlola?\n7. Yiliphi ifekthri elisetshenziswa?\n8. Buyela kuFAQ Menu",
+              "responses": {
+                "1": "Inani lixhomeke endaweni okuyo, ukujula komthombo, kanye lohlobo lomhlabathi. Sicela usithumele indawo okuyo kanye lokufinyelela ukuze sikwazi ukukupha inani elifanele.",
+                "2": "Kuvamise ukuthatha amahora angu 4–6 kumbe kube yinsuku ezimbalwa, kuye ngomhlabathi kanye lokufinyelela endaweni.",
+                "3": "Ukujula kwehluka ngokwendawo. Okumaphakathi cishe ngamamitha angu-40, kodwa kungafinyelela ku-150m kuye ngamanzi angaphansi komhlabathi.",
+                "4": "Kwezinye izindawo kudingeka imvumo yamanzi. Singakuncedisa ukuyifaka nxa kudingeka.",
+                "5": "Yebo, senza kokubili ngokuhlangene noma ngokwehlukana, kuya ngokuthanda kwakho.",
+                "6": "Nxa ungathanda ukumba kwenye indawo, sinikeza isaphulelo.\n\nQaphela: Amamishini okuhlola amanzi abona kuphela imifantu engaphansi komhlaba enethuba lokuthwala amanzi. Kawalinganisi ivolumu noma ukugeleza kwamanzi. Ngakho akulamlingo wokuthi uzathola amanzi nxa kuwembwa umthombo.",
+                "7": "Sisebenzisa imishini yochwepheshe — ama-rigs e-rotary le-percussion, amathuluzi e-GPS kanye lemishini yokuhlola i-geology.",
+                "8": "Sibuyela kuFAQ Menu..."
+              },
+              "followup": "Ungathanda:\n1. Ukubuza enye imibuzo yeBorehole Drilling\n2. Ukubuyela kuMain Menu",
+              "invalid_option": "Sicela ukhethe inketho eqondileyo (1–8)."
+            },
+            "pump": {
+              "menu": "Nansi imibuzo evame ukubuzwa mayelana lokufakwa kwama-pump:\n\n1. Kuyini okwehlukanisayo phakathi kwama-solar le-electric pumps?\n2. Lingangifakela nxa ngilezinto yini?\n3. Kufaka isikhathi esingakanani ukufaka i-pump?\n4. Ngidinga i-pump engakanani?\n5. Linikezela ngamatanki lama-stand yini?\n6. Buyela kuFAQ Menu",
+              "responses": {
+                "1": "Ama-solar pumps asebenzisa amandla avela ku-solar panels, alungele izindawo ezingenalo ugesi. Ama-electric pumps athembela kugesi we-grid, abiza kancane ekuqaleni kodwa adinga ukuxhuma kugesi.",
+                "2": "Yebo! Sinikeza iphakheji yokufaka kuphela uma unazo izinto.",
+                "3": "Kuvamise ukuthatha usuku olulodwa, uma izinto sezilungile futhi indawo ifinyeleleka kalula.",
+                "4": "Usayizi we-pump uxhomeke kudinga kwakho amanzi lokujula komthombo. Singahlola indawo sikwazise okungcono.",
+                "5": "Yebo, sinikezela ngephakheji ephelele eliqukethe amatanki, ama-tank stands, lezinto zonke zokuxhuma amanzi.",
+                "6": "Sibuyela kuFAQ Menu..."
+              },
+              "followup": "Ungathanda:\n1. Ukubuza enye imibuzo yePump Installation\n2. Ukubuyela kuMain Menu",
+              "invalid_option": "Sicela ukhethe inketho eqondileyo (1–6)."
+            },
+            "custom_question": "Sicela ubhale umbuzo wakho ngezansi, sizazama ukukusiza kangcono.\n",
+            "menu": "Nansi imibuzo evame ukubuzwa:\n\n1. Borehole Drilling FAQs\n2. Pump Installation FAQs\n3. Buza umbuzo ohlukile\n4. Xhumana lo-agent womuntu\n5. Buyela kuMain Menu",
+            "invalid_option": "Sicela ukhethe inketho eqondileyo (1–5)."
+          },
+          "custom_question": {
+            "empty_prompt": "Sicela ubhale umbuzo wakho.",
+            "response_followup": "Ungathanda:\n1. Buza omunye umbuzo\n2. Buyela kuMain Menu",
+            "invalid_option": "Sicela uphendule ngo 1 ukuze ubuze omunye umbuzo noma 2 ukuze ubuyele kuMain Menu.",
+            "next_question": "Sicela ubhale umbuzo wakho olandelayo."
+          },
+          "human_agent_connect": "Ngicela ulinde ngikuxhumanise lommeleli..."
+
 
     }
 }
@@ -664,6 +813,154 @@ def handle_main_menu(prompt, user_data, phone_id):
         return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
     
    
+def human_agent_followup(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language or "english"
+
+    if prompt == "1":
+        return handle_select_language("1", user_data, phone_id)
+    elif prompt == "2":
+        send(get_message(lang, "human_agent.exit_message"), user_data['sender'], phone_id)
+        return {'step': 'human_agent_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send(get_message(lang, "human_agent.invalid_option"), user_data['sender'], phone_id)
+        return {'step': 'human_agent_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def faq_menu(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language or "english"
+
+    if prompt == "1":  # Borehole Drilling FAQs
+        update_user_state(user_data['sender'], {
+            'step': 'faq_borehole',
+            'user': user.to_dict()
+        })
+        send(get_message(lang, "faq.borehole.menu"), user_data['sender'], phone_id)
+        return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "2":  # Pump Installation FAQs
+        update_user_state(user_data['sender'], {
+            'step': 'faq_pump',
+            'user': user.to_dict()
+        })
+        send(get_message(lang, "faq.pump.menu"), user_data['sender'], phone_id)
+        return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "3":  # Ask a different question
+        update_user_state(user_data['sender'], {
+            'step': 'custom_question',
+            'user': user.to_dict()
+        })
+        send(get_message(lang, "faq.custom_question"), user_data['sender'], phone_id)
+        return {'step': 'custom_question', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "4":  # Human agent
+        update_user_state(user_data['sender'], {
+            'step': 'human_agent',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        })
+        send(get_message(lang, "human_agent_connect"), user_data['sender'], phone_id)
+        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "5":  # Back to Main Menu
+        return handle_select_language("1", user_data, phone_id)
+    else:
+        send(get_message(lang, "faq.invalid_option"), user_data['sender'], phone_id)
+        return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def custom_question(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language or "english"
+
+    if not prompt.strip():
+        send(get_message(lang, "custom_question.empty_prompt"), user_data['sender'], phone_id)
+        return {'step': 'custom_question', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    system_prompt = (
+        "You are a helpful assistant for SpeedGo, a borehole drilling and pump installation company in Zimbabwe. "
+        "You will only answer questions related to SpeedGo's services, pricing, processes, or customer support. "
+        "If the user's question is unrelated to SpeedGo, politely let them know that you can only assist with SpeedGo-related topics."
+    )
+
+    try:
+        model = genai.GenerativeModel("gemini-pro")
+        response = model.generate_content([system_prompt, prompt])
+        answer = response.text.strip() if hasattr(response, "text") else "I'm sorry, I give you a response at the moment."
+    except Exception as e:
+        answer = "Sorry, something went wrong while processing your question. Please try again later."
+        print(f"[Gemini error] {e}")
+
+    send(answer, user_data['sender'], phone_id)
+    send(get_message(lang, "custom_question.response_followup"), user_data['sender'], phone_id)
+    return {'step': 'custom_question_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def custom_question_followup(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language or "english"
+
+    if prompt == "1":
+        send(get_message(lang, "custom_question.next_question"), user_data['sender'], phone_id)
+        return {'step': 'custom_question', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "2":
+        return handle_select_language("1", user_data, phone_id)
+    else:
+        send(get_message(lang, "custom_question.invalid_option"), user_data['sender'], phone_id)
+        return {'step': 'custom_question_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def faq_borehole(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language or "english"
+
+    if prompt in get_message(lang, "faq.borehole.responses"):
+        send(get_message(lang, f"faq.borehole.responses.{prompt}"), user_data['sender'], phone_id)
+        if prompt == "8":
+            return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+        
+        send(get_message(lang, "faq.borehole.followup"), user_data['sender'], phone_id)
+        return {'step': 'faq_borehole_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send(get_message(lang, "faq.borehole.invalid_option"), user_data['sender'], phone_id)
+        return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def faq_borehole_followup(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language or "english"
+
+    if prompt == "1":
+        send(get_message(lang, "faq.borehole.menu"), user_data['sender'], phone_id)
+        return {'step': 'faq_borehole', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "2":
+        return handle_select_language("1", user_data, phone_id)
+    else:
+        send(get_message(lang, "custom_question.invalid_option"), user_data['sender'], phone_id)
+        return {'step': 'faq_borehole_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def faq_pump(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language or "english"
+
+    if prompt in get_message(lang, "faq.pump.responses"):
+        send(get_message(lang, f"faq.pump.responses.{prompt}"), user_data['sender'], phone_id)
+        if prompt == "6":
+            return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+        
+        send(get_message(lang, "faq.pump.followup"), user_data['sender'], phone_id)
+        return {'step': 'faq_pump_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send(get_message(lang, "faq.pump.invalid_option"), user_data['sender'], phone_id)
+        return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def faq_pump_followup(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language or "english"
+
+    if prompt == "1":
+        send(get_message(lang, "faq.pump.menu"), user_data['sender'], phone_id)
+        return {'step': 'faq_pump', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "2":
+        return handle_select_language("1", user_data, phone_id)
+    else:
+        send(get_message(lang, "custom_question.invalid_option"), user_data['sender'], phone_id)
+        return {'step': 'faq_pump_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def handle_enter_location_for_quote(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     lang = user.language
