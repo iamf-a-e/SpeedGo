@@ -231,6 +231,7 @@ LANGUAGES = {
                     "4": "Saizi yepombi inoenderana nezvaunoda uye nekudzika kweborehole. Tinogona kuongorora nzvimbo yako uye kukurudzira sarudzo yakanaka.",
                     "5": "Hongu, tinopa mapakeji akazara anosanganisira matangi emvura, matangi stands, uye zvese zvinodiwa zvepombi.",
                     "6": "Ndiri kudzokera kuFAQ Menu..."
+                    },
                 }
 
 
