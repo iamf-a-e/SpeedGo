@@ -220,7 +220,8 @@ LANGUAGES = {
                 },
                 "followup": "Ungada here:\n1. Kubvunza mumwe mubvunzo kubva kuBorehole Drilling FAQs\n2. Kudzokera kuMain Menu",
                 "invalid_option": "Sarudza sarudzo inoshanda (1–8)."
-            }
+            },
+        }
 
 
 
