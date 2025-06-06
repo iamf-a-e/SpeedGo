@@ -122,7 +122,11 @@ LANGUAGES = {
         "main_menu": "Tinokubatsirai sei nhasi?\n\n1. Kukumbira quotation\n2. Tsvaga Mutengo Uchishandisa Nzvimbo\n3. Tarisa Mamiriro ePurojekiti\n4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n5. Zvimwe Zvatinoita\n6. Taura neMunhu\n\nPindura nenhamba (semuenzaniso, 1)",
         "enter_location": "Ndapota nyora nzvimbo yako (Guta/Kanzuru kana GPS coordinates) kuti titange.",
         "location_detected": "Nzvimbo yawanikwa: {}\n\nZvino sarudza sevhisi yaunoda:\n1. Water survey\n2. Kuchera borehole\n3. Kuiswa kwepombi\n4. Kuchera bhora rezvekutengeserana\n5. Kuchinjwa/kudzika zvakare kwe borehole",
-        "location_not_found": "Hatina kukwanisa kuona nzvimbo yenyu. Ndapota nyora zita reguta/kanzvimbo nemaoko."
+        "location_not_found": "Hatina kukwanisa kuona nzvimbo yenyu. Ndapota nyora zita reguta/kanzvimbo nemaoko.",
+        "agent_connect": "Ndatenda. Ndapota mira ndichikubatanidza nemumiriri weSpeedGo...",
+        "agent_notification": "👋 Mutengi anoda kutaura newe paWhatsApp.\n\n📱 Nhamba yeMutengi: {customer_number}\n🙋 Zita: {customer_name}\n📩 Mharidzo yekupedzisira: \"{prompt}\"",
+        "new_request": "👋 Chikumbiro chitsva chemutengi paWhatsApp\n\n📱 Nhamba: {customer_number}\n📩 Mharidzo: \"{prompt}\""
+
     },
     
     "Ndebele": {
