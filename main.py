@@ -155,8 +155,11 @@ LANGUAGES = {
             },
             "custom_question": "Please type your question below, and we'll do our best to assist you.\n",
             "menu": "Here are the most common questions:\n\n1. Borehole Drilling FAQs\n2. Pump Installation FAQs\n3. Ask a different question\n4. Human agent\n5. Back to Main Menu",
-            "invalid_option": "Please select a valid option (1–5)."
-        }
+            "invalid_option": "Please select a valid option (1–5).",
+            "human_agent_connect": "Please hold while I connect you to a representative..."
+    }
+
+        
 
         
                 
