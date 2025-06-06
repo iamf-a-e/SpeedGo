@@ -200,7 +200,28 @@ LANGUAGES = {
                 "2. Kudzokera kuMain Menu"
             ),
             "invalid_option": "Sarudza sarudzo inoshanda (1–6)."
-        }
+        },
+            "human_agent": {
+            "exit_message": "Zvakanaka. Sununguka kubvunza kana uine chimwe chaunoda.",
+            "invalid_option": "Pindura ne1 kuti Main Menu kana 2 kuti ugare pano."
+        },
+        "faq": {
+            "borehole": {
+                "menu": "Heano mibvunzo inowanzo bvunzwa nezvekuchera mabhorehole:\n\n1. Marii kuchera borehole?\n2. Zvinotora nguva yakareba sei kuchera borehole?\n3. Borehole yangu ichadzika sei?\n4. Ndinoda mvumo here kuchera borehole?\n5. Munoona mvura uye mochera panguva imwe chete here?\n6. Ko kana mukaona mvura uye mukashaya mvura?\n7. Mishandisi yenyu ndeipi?\n8. Dzokera kuFAQ Menu",
+                "responses": {
+                    "1": "Mari inoenderana nenzvimbo yako, kudzika, uye mamiriro evhu. Ndapota titumire nzvimbo yako uye ruzivo rwekuwana nzvimbo kuti tikupe mutengo wako.",
+                    "2": "Kazhinji maawa 4–6 kana kusvika mazuva akati wandei, zvichienderana nemamiriro enzvimbo, rudzi rwedombo, uye kuwanikwa kwenzvimbo.",
+                    "3": "Kudzika kunosiyana nenzvimbo. Kudzika kwakajairwa kunosvika mamita makumi mana, asi mabhorehole anogona kubva pamamita makumi mana kusvika zana nemakumi mashanu zvichienderana netafura yemvura yepasi pevhu.",
+                    "4": "Mune dzimwe nzvimbo, mvumo yemvura inogona kudikanwa. Tinogona kukubatsira nechikumbiro kana zvichidikanwa.",
+                    "5": "Hongu, tinopa ese ari maviri semubatanidzwa kana zvakasiyana, zvichienderana nezvaunoda.",
+                    "6": "Kana mutengi achida kuchera panzvimbo yechipiri, tinopa discount.\n\nCherechedza: Michina yekuongorora inoona mitswe inotakura mvura yepasi pevhu kana nzvimbo dzinopindirana dzemvura pasi pevhu. Zvisinei, haipime huwandu kana kuyerera kwemvura. Saka kuchera borehole hakuna vimbiso yekuti muchawana mvura, sezvo mitswe ingave yakaoma, yakanyorova, kana ine mvura.",
+                    "7": "Tinoshandisa midziyo yehunyanzvi yekuchera uye percussion drilling rigs, GPS maturusi, uye midziyo yekuongorora geological.",
+                    "8": "Ndiri kudzokera kuFAQ Menu..."
+                },
+                "followup": "Ungada here:\n1. Kubvunza mumwe mubvunzo kubva kuBorehole Drilling FAQs\n2. Kudzokera kuMain Menu",
+                "invalid_option": "Sarudza sarudzo inoshanda (1–8)."
+            }
+
 
 
 
