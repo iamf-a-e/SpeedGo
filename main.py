@@ -83,10 +83,15 @@ LANGUAGES = {
             "next_question": "Please type your next question.",
             "response_followup": "Would you like to:\n1. Ask another question\n2. Return to Main Menu",
             "invalid_option": "Please reply 1 to ask another question or 2 to return to the main menu."
-        }
-
-
-
+        },
+            "faq_borehole": {
+            "responses": {
+                "1": "The cost depends on your location, depth, and soil conditions. Please send us your location and site access details for a personalized quote.",
+                "2": "Typically 4–6 hours or up to several days, depending on site conditions, rock type, and accessibility.",
+                "3": "Depth varies by area. The standard depth is around 40 meters, but boreholes can range from 40 to 150 meters depending on the underground water table.",
+                "4": "In some areas, a water permit may be required. We can assist you with the application if necessary.",
+                "5": "Yes, we offer both as a combined package or separately, depending on your preference.",
+                "6": "If the client wishes to drill at a second point, we offer a discount.\n\nNote: Survey machines detect underground water-bearing fractures or convergence points of underground streams. However, they do not measure the volume or flow rate of water. Therefore, borehole drilling carries no 100% guarantee of hitting water, as the fractures could be dry, moist, or wet."
 
     },
     
