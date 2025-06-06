@@ -156,6 +156,7 @@ LANGUAGES = {
         },
         "human_agent_connect": "Please hold while I connect you to a representative..."
     }
+    
 
 "Shona": {
     "welcome": "Mhoro! Tigamuchire kuSpeedGo Services yekuchera maburi emvura muZimbabwe. Tinopa maburi emvura anovimbika nemhinduro dzemvura muZimbabwe yose.\n\nSarudza mutauro waunofarira:\n1. Chirungu\n2. Shona\n3. Ndebele",
