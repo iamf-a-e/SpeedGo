@@ -165,25 +165,25 @@ LANGUAGES = {
         "human_agent_connect": "Please hold while I connect you to a representative..."
     },
     },
-    "Shona": {
-        "welcome": "Mhoro! Tigamuchire kuSpeedGo Services yekuchera maburi emvura muZimbabwe. Tinopa maburi emvura anovimbika nemhinduro dzemvura muZimbabwe yose.\n\nSarudza mutauro waunofarira:\n1. Chirungu\n2. Shona\n3. Ndebele",
-        "main_menu": "Tinokubatsirai sei nhasi?\n\n1. Kukumbira quotation\n2. Tsvaga Mutengo Uchishandisa Nzvimbo\n3. Tarisa Mamiriro ePurojekiti\n4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n5. Zvimwe Zvatinoita\n6. Taura neMunhu\n\nPindura nenhamba (semuenzaniso, 1)",
-        "enter_location": "Ndapota nyora nzvimbo yako (Guta/Kanzuru kana GPS coordinates) kuti titange.",
-        "location_detected": "Nzvimbo yawanikwa: {}\n\nZvino sarudza sevhisi yaunoda:\n1. Water survey\n2. Kuchera borehole\n3. Kuiswa kwepombi\n4. Kuchera bhora rezvekutengeserana\n5. Kuchinjwa/kudzika zvakare kwe borehole",
-        "location_not_found": "Hatina kukwanisa kuona nzvimbo yenyu. Ndapota nyora zita reguta/kanzvimbo nemaoko.",
-        "agent_connect": "Ndatenda. Ndapota mira uchimirira kuti ndikubatanidze nemumiriri weSpeedGo...",
-        "agent_notification": "👋 Mutengi anoda kutaura newe paWhatsApp.\n\n📱 Nhamba yemutengi: {customer_number}\n🙋 Zita: {customer_name}\n📩 Mharidzo yekupedzisira: \"{prompt}\"",
-        "new_request": "👋 Chikumbiro chitsva chemutengi paWhatsApp\n\n📱 Nhamba: {customer_number}\n📩 Mharidzo: \"{prompt}\"",
-        "fallback_option": "Zvimwe, unogona kutibata zvakananga pa +263719835124",
-        "followup_question": "Ungada here:\n1. Kudzokera kumenu huru\n2. Kupedza hurukuro",
-        "return_menu": "Tiri kukudzosera kumenu huru...",
-        "goodbye": "Ndatenda! Iva nezuva rakanaka.",
-        "invalid_option": "Ndapota pindura ne1 kuti Hongu kana 2 kuti Kwete",
-        "still_waiting": "Ndapota mira, tichiri kukubatanidza...",
-        "human_agent_followup": {
-            "invalid_option": "Ndapota pindura ne1 kuti udzokere kuMain Menu kana 2 kuti ugare pano.",
-            "stay_here": "Zvakanaka. Inzwa wakasununguka kubvunza kana paine chaunoda."
-        },
+"Shona": {
+    "welcome": "Mhoro! Tigamuchire kuSpeedGo Services yekuchera maburi emvura muZimbabwe. Tinopa maburi emvura anovimbika nemhinduro dzemvura muZimbabwe yose.\n\nSarudza mutauro waunofarira:\n1. Chirungu\n2. Shona\n3. Ndebele",
+    "main_menu": "Tinokubatsirai sei nhasi?\n\n1. Kukumbira quotation\n2. Tsvaga Mutengo Uchishandisa Nzvimbo\n3. Tarisa Mamiriro ePurojekiti\n4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n5. Zvimwe Zvatinoita\n6. Taura neMunhu\n\nPindura nenhamba (semuenzaniso, 1)",
+    "enter_location": "Ndapota nyora nzvimbo yako (Guta/Kanzuru kana GPS coordinates) kuti titange.",
+    "location_detected": "Nzvimbo yawanikwa: {}\n\nZvino sarudza sevhisi yaunoda:\n1. Water survey\n2. Kuchera borehole\n3. Kuiswa kwepombi\n4. Kuchera bhora rezvekutengeserana\n5. Kuchinjwa/kudzika zvakare kwe borehole",
+    "location_not_found": "Hatina kukwanisa kuona nzvimbo yenyu. Ndapota nyora zita reguta/kanzvimbo nemaoko.",
+    "agent_connect": "Ndatenda. Ndapota mira uchimirira kuti ndikubatanidze nemumiriri weSpeedGo...",
+    "agent_notification": "👋 Mutengi anoda kutaura newe paWhatsApp.\n\n📱 Nhamba yemutengi: {customer_number}\n🙋 Zita: {customer_name}\n📩 Mharidzo yekupedzisira: \"{prompt}\"",
+    "new_request": "👋 Chikumbiro chitsva chemutengi paWhatsApp\n\n📱 Nhamba: {customer_number}\n📩 Mharidzo: \"{prompt}\"",
+    "fallback_option": "Zvimwe, unogona kutibata zvakananga pa +263719835124",
+    "followup_question": "Ungada here:\n1. Kudzokera kumenu huru\n2. Kupedza hurukuro",
+    "return_menu": "Tiri kukudzosera kumenu huru...",
+    "goodbye": "Ndatenda! Iva nezuva rakanaka.",
+    "invalid_option": "Ndapota pindura ne1 kuti Hongu kana 2 kuti Kwete",
+    "still_waiting": "Ndapota mira, tichiri kukubatanidza...",
+    "human_agent_followup": {
+        "invalid_option": "Ndapota pindura ne1 kuti udzokere kuMain Menu kana 2 kuti ugare pano.",
+        "stay_here": "Zvakanaka. Inzwa wakasununguka kubvunza kana paine chaunoda."
+    },
     "faq_menu": {
         "invalid_option": "Ndapota sarudza chisarudzo chakakodzera (1–5).",
         "borehole_faqs": (
@@ -251,60 +251,8 @@ LANGUAGES = {
             "2. Kudzokera kuMain Menu"
         ),
         "invalid_option": "Ndapota sarudza chisarudzo chakakodzera (1–6)."
-    },
-       {
-      "new_request": "👋 Kumbiro kutsva kwevatengi paWhatsApp\n\n📱 Nhamba: {customer_number}\n📩 Mharidzo: \"{prompt}\"",
-      "fallback_option": "Kana zvikatadza, unogonawo kutibata zvakananga pa {agent_number}",
-      "followup_question": "Ungada:\n1. Kudzokera kuMain Menu\n2. Kupedza hurukuro",
-      "return_menu": "Kudzorera kuMain Menu...",
-      "human_agent": {
-        "exit_message": "Zvakanaka. Inzwa wakasununguka kubvunza kana pane zvimwe zvaunoda.",
-        "invalid_option": "Ndapota pindura ne1 kuti udzokere kuMain Menu kana 2 kuti urambe uripo."
-      },
-      "faq": {
-        "borehole": {
-          "menu": "Mibvunzo inonyanya kubvunzwa pamusoro pekuvhenekwa kwemabhorohwa:\n\n1. Kuvhenekwa kwemabhorohwa kunodhura zvakadini?\n2. Zvinotora nguva yakareba sei kuvhura bhorohwa?\n3. Bhorohwa rangu richadzika zvakadini?\n4. Ndiri kuda mvumo here kuti ndichera bhorohwa?\n5. Munobatanidza ongororo yemvura nekuchera bhorohwa here?\n6. Ko kana pakaitwa ongororo yemvura pasina kuwanikwa mvura?\n7. Ndezvipi zvishandiso zvamunoshandisa?\n8. Dzokera kuFAQ Menu",
-          "responses": {
-            "1": "Mutengo unoenderana nenzvimbo yenyu, kudzika, uye mamiriro epasi. Ndokumbira mutitumire nzvimbo yenyu uye mamiriro ekuwana nzvimbo yacho kuti tigokupai mutengo wakakodzera.",
-            "2": "Kazhinji zvinotora maawa 4–6 kana mazuva akati kuti, zvinoenderana nemamiriro enzvimbo, rudzi rwevhu, uye nzira yekuwana nzvimbo yacho.",
-            "3": "Kudzika kunosiyana nenzvimbo. Pakazere zvinenge zviri pa40 meters, asi mabhorohwa anogona kunge ari pakati pe40 kusvika 150 meters zvichienderana nehurongwa hwemvura iri pasi pevhu.",
-            "4": "Mumamwe matunhu, panodiwa rezinesi remvura. Tinogona kukubatsirai nekunyorera kana zvichidikanwa.",
-            "5": "Hongu, tinopa ese ari maviri sechikamu chimwe chete kana zvakasiyana, zvinoenderana nezvamunoda.",
-            "6": "Kana mutengi achida kuchera pane imwe nzvimbo, tinopa kuderedzwa kwemutengo.\n\nCherechedza: Muchina weongororo yemvura unongotarisa makakatanwa ari pasi pevhu ane mukana wekuve nemvura. Haunokwanisi kuyera huwandu kana kuyerera kwemvura. Saka kuchera bhorohwa hakusi nechokwadi chekuwana mvura 100%, sezvo makakatanwa anogona kuva akanyorova, asina mvura, kana ane mvura.",
-            "7": "Tinoshandisa michina yepamusoro inosanganisira rotary uye percussion rigs, maturusi eGPS, pamwe nemidziyo yeongororo yejeoloji.",
-            "8": "Kudzokera kuFAQ Menu..."
-          },
-          "followup": "Ungada:\n1. Kubvunza rimwe remibvunzo pamusoro pekuchera mabhorohwa\n2. Kudzokera kuMain Menu",
-          "invalid_option": "Ndapota sarudza chisarudzo chiri pakati pe1–8."
-        },
-        "pump": {
-          "menu": "Mibvunzo inowanzo bvunzwa pamusoro pekuisa mapombi:\n\n1. Ndeupi musiyano uripo pakati pepombi yesolar neyelectric?\n2. Munogona kuisa kana ini ndine zvinhu zvese here?\n3. Kuisa pombi kunotora nguva yakareba sei?\n4. Ndinoda pombi yakakura zvakadii?\n5. Munotengesa matangi nemapuranga etangi here?\n6. Dzokera kuFAQ Menu",
-          "responses": {
-            "1": "Mapombi eSolar anoshandisa simba rinobva kuzvikwiriso zvezuva uye akakodzera munzvimbo dzisina magetsi. Mapombi emagetsi anoshandisa grid yemagetsi uye anowanzodhura zvishoma pakutanga asi anotsamira pakuwanikwa kwemagetsi.",
-            "2": "Hongu! Tinopa basa rekungoisira chete kana mune zvose zvamunoda.",
-            "3": "Kuisa pombi kunotora zuva rimwe chete, kana zvinhu zvose zviripo uye nzvimbo ichiwanikwa nyore.",
-            "4": "Kukura kwepombi kunoenderana nezvido zvemvura uye kudzika kwebhorohwa renyu. Tinogona kuongorora nzvimbo yenyu tozokurudzira chakanakira.",
-            "5": "Hongu, tinopa mapakeji akazara anosanganisira matangi emvura, mapuranga etangi, nezvimwe zvose zvinodiwa pakuisirwa.",
-            "6": "Kudzokera kuFAQ Menu..."
-          },
-          "followup": "Ungada:\n1. Kubvunza imwe mibvunzo kubva muPump Installation FAQs\n2. Kudzokera kuMain Menu",
-          "invalid_option": "Ndapota sarudza chisarudzo chiri pakati pe1–6."
-        },
-        "custom_question": "Ndapota nyora mubvunzo wako pazasi, tichaedza kukubatsira nepandinogona napo.\n",
-        "menu": "Mibvunzo inowanzo bvunzwa ndeiyi:\n\n1. Mibvunzo yeBorehole Drilling\n2. Mibvunzo yePump Installation\n3. Bvunza chimwe chinhu\n4. Taurirana nemumiriri\n5. Dzokera kuMain Menu",
-        "invalid_option": "Ndapota sarudza chisarudzo chiri pakati pe1–5."
-      },
-      "custom_question": {
-        "empty_prompt": "Ndapota nyora mubvunzo wako.",
-        "response_followup": "Ungada:\n1. Kubvunza chimwe zvakare\n2. Kudzokera kuMain Menu",
-        "invalid_option": "Ndapota pindura ne1 kuti ubvunze chimwe kana 2 kuti udzokere kuMain Menu.",
-        "next_question": "Ndapota nyora mubvunzo wako unotevera."
-      },
-      "human_agent_connect": "Ndapota mirira ndichikubatanidza nemumiriri..."
     }
- 
-
-    },
+}
     "Ndebele": {
         "welcome": "Sawubona! Wamukelekile kwiSpeedGo Services yokumba amaBorehole eZimbabwe. Sinikeza ukumba kwamaBorehole okuthembekile kanye nezixazululo zamanzi kulo lonke iZimbabwe.\n\nKhetha ulimi oluthandayo:\n1. IsiNgisi\n2. IsiNdebele\n3. IsiShona",
         "main_menu": "Singakusiza njani lamuhla?\n\n1. Cela isiphakamiso\n2. Phanda Intengo Ngokusebenzisa Indawo\n3. Bheka Isimo Sephrojekthi\n4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n5. Eminye Imisebenzi\n6. Khuluma Nomuntu\n\nPhendula ngenombolo (umzekeliso: 1)",
