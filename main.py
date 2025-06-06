@@ -2437,9 +2437,13 @@ def handle_enter_location_for_quote2(prompt, user_data, phone_id):
                 "5. Kuchinjwa/kudzika zvakare kwe borehole",
                 user_data['sender'], phone_id
             )
+            print(f"Raw API data: {data}")  # Add this before processing API results
+            print(f"Final return: {location_name2}")  # Add before returning
             return {'step': 'select_service_quote2', 'user': user.to_dict(), 'sender': user_data['sender']}
         else:
             send("Hatina kukwanisa kuona nzvimbo yenyu. Ndapota nyora zita reguta/kanzvimbo nemaoko.", user_data['sender'], phone_id)
+            print(f"Raw API data: {data}")  # Add this before processing API results
+            print(f"Final return: {location_name2}")  # Add before returning
             return {'step': 'enter_location_for_quote2', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
         location_name2 = prompt.strip()
