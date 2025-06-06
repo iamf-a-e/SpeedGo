@@ -111,7 +111,8 @@ LANGUAGES = {
                 "5": "Yes, we supply complete packages including water tanks, tank stands, and all necessary plumbing fittings.",
                 "6": "Returning to FAQ Menu..."
                 },
-            }
+            },
+    }
 
 
         },
