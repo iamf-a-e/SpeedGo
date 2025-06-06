@@ -2527,6 +2527,70 @@ def handle_collect_quote_details2(prompt, user_data, phone_id):
         return {'step': 'collect_quote_details2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
+def reverse_geocode_location2(gps_coords2):
+    """
+    Converts GPS coordinates (latitude,longitude) to a city using local logic first,
+    then Google Maps API if not matched.
+    """
+    if not gps_coords2 or ',' not in gps_coords2:
+        return None
+
+    try:
+        lat_str, lng_str = gps_coords2.strip().split(',')
+        lat = float(lat_str.strip())
+        lng = float(lng_str.strip())
+    except ValueError:
+        return None
+
+    # Local fallback mapping
+    
+    if -22.27 < lat < -22.16 and 29.94 < lng < 30.06:
+        return "Beitbridge Town"
+    elif -20.06 < lat < -19.95 and 31.54 < lng < 31.65:
+        return "Nyika Growth Point"
+    elif -17.36 < lat < -17.25 and 31.28 < lng < 31.39:
+        return "Bindura Town"
+    elif -17.68 < lat < -17.57 and 27.29 < lng < 27.40:
+        return "Binga Town"
+    elif -19.58 < lat < -19.47 and 28.62 < lng < 28.73:
+        return "Bubi Town/Centre"
+    elif -19.33 < lat < -19.22 and 31.59 < lng < 31.70:
+        return "Murambinda Town"
+    elif -19.39 < lat < -19.28 and 31.38 < lng < 31.49:
+        return "Buhera"
+    elif -20.20 < lat < -20.09 and 28.51 < lng < 28.62:
+        return "Bulawayo City/Town"
+    elif -19.691 < lat < -19.590 and 31.103 < lng < 31.204:
+        return "Gutu"
+    elif -20.99 < lat < -20.88 and 28.95 < lng < 29.06:
+        return "Gwanda"
+    elif -19.50 < lat < -19.39 and 29.76 < lng < 29.87:
+        return "Gweru"
+    elif -17.88 < lat < -17.77 and 31.00 < lng < 31.11:
+        return "Harare"
+
+    # If not found locally, use Google Maps API
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lng}&key={GOOGLE_MAPS_API_KEY}"
+
+    try:
+        response = requests.get(url)
+        data = response.json()
+
+        if data['status'] != 'OK':
+            return None
+
+        for result in data['results']:
+            for component in result['address_components']:
+                if 'locality' in component['types'] or 'administrative_area_level_1' in component['types']:
+                    return component['long_name'].lower()
+
+        return data['results'][0]['formatted_address'].lower()
+
+    except Exception as e:
+        print("Geocoding error:", e)
+        return None
+
+
 def handle_quote_response2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     if prompt == "1":  # Offer price
