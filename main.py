@@ -887,6 +887,7 @@ def handle_enter_location_for_quote(prompt, user_data, phone_id):
     
     # Check if we have a location object from WhatsApp
     if 'location' in user_data and 'latitude' in user_data['location'] and 'longitude' in user_data['location']:
+        location_name = user_input.lower()
         # This is a WhatsApp location message
         lat = user_data['location']['latitude']
         lng = user_data['location']['longitude']
@@ -2413,6 +2414,7 @@ def handle_enter_location_for_quote2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
     if 'location2' in user_data and 'latitude' in user_data['location2'] and 'longitude' in user_data['location2']:
+        location_name2 = user_input.lower()
         lat = user_data['location2']['latitude']
         lng = user_data['location2']['longitude']
         gps_coords2 = f"{lat},{lng}"
@@ -2441,7 +2443,7 @@ def handle_enter_location_for_quote2(prompt, user_data, phone_id):
             return {'step': 'enter_location_for_quote2', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
         location_name2 = prompt.strip()
-        user.quote_data['location'] = location_name.lower()
+        user.quote_data['location'] = location_name2.lower()
         update_user_state(user_data['sender'], {
             'step': 'select_service_quote2',
             'user': user.to_dict()
@@ -3962,6 +3964,7 @@ def handle_enter_location_for_quote3(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     
     if 'location' in user_data and 'latitude' in user_data['location'] and 'longitude' in user_data['location']:
+        location_name3 = user_input.lower()
         lat = user_data['location']['latitude']
         lng = user_data['location']['longitude']
         gps_coords3 = f"{lat},{lng}"
@@ -3989,8 +3992,8 @@ def handle_enter_location_for_quote3(prompt, user_data, phone_id):
             send("Asikwazanga ukuhlonza indawo yakho. Sicela bhala igama ledolobho/lindawo yakho ngesandla.", user_data['sender'], phone_id)
             return {'step': 'enter_location_for_quote3', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        location_name = prompt.strip()
-        user.quote_data['location'] = location_name.lower()
+        location_name3 = prompt.strip()
+        user.quote_data['location'] = location_name3.lower()
         update_user_state(user_data['sender'], {
             'step': 'select_service_quote3',
             'user': user.to_dict()
