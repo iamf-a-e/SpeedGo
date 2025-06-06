@@ -143,7 +143,17 @@ LANGUAGES = {
                 "7. Mishandisi yenyu ndeipi?\n"
                 "8. Dzokera kuFAQ Menu"
             ),
-        }
+        },
+                "pump_faqs": (
+                "Heano mibvunzo inowanzo bvunzwa nezvekuisa mapombi:\n\n"
+                "1. Musiyano uripi pakati pemapombi ezuva nemagetsi?\n"
+                "2. Munogona here kuisa kana ndine zvinhu zvacho?\n"
+                "3. Zvinotora nguva yakareba sei kuisa pombi?\n"
+                "4. Pombi yakakura sei yandinoda?\n"
+                "5. Munopa matangi nematangi stands here?\n"
+                "6. Dzokera kuFAQ Menu"
+            )
+
 
 
     },
