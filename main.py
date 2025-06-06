@@ -110,6 +110,7 @@ LANGUAGES = {
                 "4": "Pump size depends on your water needs and borehole depth. We can assess your site and recommend the best option.",
                 "5": "Yes, we supply complete packages including water tanks, tank stands, and all necessary plumbing fittings.",
                 "6": "Returning to FAQ Menu..."
+                }
             }
 
 
