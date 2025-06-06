@@ -184,7 +184,24 @@ LANGUAGES = {
                 "2. Kudzokera kuMain Menu"
             ),
             "invalid_option": "Sarudza sarudzo inoshanda (1–8)."
+        },
+            "faq_pump": {
+            "responses": {
+                "1": "Mapombi ezuva anoshandisa simba remapaneru ezuva uye akanakira nzvimbo dzisina magetsi kana dziri kure. Mapombi emagetsi anovimba nemagetsi uye anowanzo kuve akachipa pakutanga asi anoenderana nekuwanikwa kwemagetsi.",
+                "2": "Hongu! Tinopa mapakeji ebasa chete kana uine zvinhu zvinodiwa.",
+                "3": "Kuiswa kunowanzo torera zuva rimwe, chero zvinhu zvagadzirira uye nzvimbo yakavhurika.",
+                "4": "Saizi yepombi inoenderana nezvaunoda uye nekudzika kweborehole. Tinogona kuongorora nzvimbo yako uye kukurudzira sarudzo yakanaka.",
+                "5": "Hongu, tinopa mapakeji akazara anosanganisira matangi emvura, matangi stands, uye zvese zvinodiwa zvepombi.",
+                "6": "Ndiri kudzokera kuFAQ Menu..."
+            },
+            "follow_up": (
+                "Ungada here:\n"
+                "1. Kubvunza mumwe mubvunzo kubva kuPump Installation FAQs\n"
+                "2. Kudzokera kuMain Menu"
+            ),
+            "invalid_option": "Sarudza sarudzo inoshanda (1–6)."
         }
+
 
 
 
