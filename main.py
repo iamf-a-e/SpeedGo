@@ -58,7 +58,7 @@ LANGUAGES = {
                 "5. Do you do a water survey and drilling at the same time?\n",
                 "6. What if you do a water survey and find no water?\n",
                 "7. What equipment do you use?\n",
-                "8. Back to FAQ Menu",
+                "8. Back to FAQ Menu"
             )
 
 
