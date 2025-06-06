@@ -33,7 +33,7 @@ LANGUAGES = {
         "main_menu": "How can we help you today?\n\n1. Request a quote\n2. Search Price Using Location\n3. Check Project Status\n4. FAQs or Learn About Borehole Drilling\n5. Other services\n6. Talk to a Human Agent\n\nPlease reply with a number (e.g., 1)",
         "enter_location": "Please enter your location (City/Town or GPS coordinates) to get started.",
         "location_detected": "Location detected: {}\n\nNow select the service:\n1. Water survey\n2. Borehole drilling\n3. Pump installation\n4. Commercial hole drilling\n5. Borehole Deepening",
-        "location_not_found": "We couldn't identify your location. Please type your city/town name manually."
+        "location_not_found": "We couldn't identify your location. Please type your city/town name manually.",
         "agent_connect": "Thank you. Please hold while I connect you to a SpeedGo representative...",
         "agent_notification": "👋 A customer would like to talk to you on WhatsApp.\n\n📱 Customer Number: {customer_number}\n🙋 Name: {customer_name}\n📩 Last Message: \"{prompt}\"",
         "new_request": "👋 New customer request on WhatsApp\n\n📱 Number: {customer_number}\n📩 Message: \"{prompt}\"",
