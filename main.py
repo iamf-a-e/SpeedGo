@@ -91,10 +91,18 @@ LANGUAGES = {
                 "3": "Depth varies by area. The standard depth is around 40 meters, but boreholes can range from 40 to 150 meters depending on the underground water table.",
                 "4": "In some areas, a water permit may be required. We can assist you with the application if necessary.",
                 "5": "Yes, we offer both as a combined package or separately, depending on your preference.",
-                "6": "If the client wishes to drill at a second point, we offer a discount.\n\nNote: Survey machines detect underground water-bearing fractures or convergence points of underground streams. However, they do not measure the volume or flow rate of water. Therefore, borehole drilling carries no 100% guarantee of hitting water, as the fractures could be dry, moist, or wet."
-
-                }
+                "6": "If the client wishes to drill at a second point, we offer a discount.\n\nNote: Survey machines detect underground water-bearing fractures or convergence points of underground streams. However, they do not measure the volume or flow rate of water. Therefore, borehole drilling carries no 100% guarantee of hitting water, as the fractures could be dry, moist, or wet.",
+                "7": "We use professional-grade rotary and percussion drilling rigs, GPS tools, and geological survey equipment.",
+                "8": "Returning to FAQ Menu..."
+            },
+            "follow_up": (
+                "Would you like to:\n"
+                "1. Ask another question from Borehole Drilling FAQs\n"
+                "2. Return to Main Menu"
+            ),
+            "invalid_option": "Please choose a valid option (1–8)."
             }
+
         },
     
     "Shona": {
