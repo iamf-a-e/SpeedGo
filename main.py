@@ -102,6 +102,7 @@ LANGUAGES = {
             ),
             "invalid_option": "Please choose a valid option (1–8)."
                     },
+            },
             
             "faq_pump": {
             "responses": {
