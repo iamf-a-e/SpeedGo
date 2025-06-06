@@ -51,7 +51,7 @@ LANGUAGES = {
         "location_detected": "Nzvimbo yawanikwa: {}\n\nZvino sarudza sevhisi yaunoda:\n1. Water survey\n2. Kuchera borehole\n3. Kuiswa kwepombi\n4. Kuchera bhora rezvekutengeserana\n5. Kuchinjwa/kudzika zvakare kwe borehole",
         "location_not_found": "Hatina kukwanisa kuona nzvimbo yenyu. Ndapota nyora zita reguta/kanzvimbo nemaoko.",
         "agent_connect": "Ndatenda. Ndapota mira uchimirira kuti ndikubatanidze nemumiriri weSpeedGo...",
-        "agent_notification': "👋 Mutengi anoda kutaura newe paWhatsApp.\n\n📱 Nhamba yemutengi: {customer_number}\n🙋 Zita: {customer_name}\n📩 Mharidzo yekupedzisira: \"{prompt}\"",
+        "agent_notification": "👋 Mutengi anoda kutaura newe paWhatsApp.\n\n📱 Nhamba yemutengi: {customer_number}\n🙋 Zita: {customer_name}\n📩 Mharidzo yekupedzisira: \"{prompt}\"",
         "new_request": "👋 Chikumbiro chitsva chemutengi paWhatsApp\n\n📱 Nhamba: {customer_number}\n📩 Mharidzo: \"{prompt}\"",
         "fallback_option": "Zvimwe, unogona kutibata zvakananga pa +263719835124",
         "followup_question": "Ungada here:\n1. Kudzokera kumenu huru\n2. Kupedza hurukuro",
