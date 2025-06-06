@@ -283,8 +283,8 @@ LANGUAGES = {
                 "6. Buyela kumenyu yemibuzo"
             ),
             "custom_question": "Sicela uthayiphe umbuzo wakho ngezansi, futhi sizokwenza konke okusemandleni ethu ukukusiza.\n",
-            "connecting_agent": "Sicela ulinde ngizokuxhumanisa nommeleli..."
-        },
+            "connecting_agent": "Sicela ulinde ngizokuxhumanisa nommeleli...",
+        
             "custom_question": {
             "empty_prompt": "Sicela uthayiphe umbuzo wakho.",
             "follow_up": (
@@ -295,7 +295,20 @@ LANGUAGES = {
             "next_question": "Sicela uthayiphe umbuzo wakho olandelayo.",
             "response_followup": "Ungathanda:\n1. Ukubuza omunye umbuzo\n2. Ukubuyela kumenyu eyinhloko",
             "invalid_option": "Phendula ngo-1 ukuze ubuze omunye umbuzo noma ngo-2 ukuze ubuyele kumenyu eyinhloko."
+        },
+            "faq_borehole": {
+            "responses": {
+                "1": "Intengo incike endaweni yakho, ekujuleni, nasezimeni zomhlabathi. Sicela usithumelele indawo yakho nolwazi lokufinyelela ukuze sikunikeze isilinganiso sakho.",
+                "2": "Ngokuvamile amahora angu-4–6 noma kuze kufike ezinsukwini ezimbalwa, kuncike ezimeni zendawo, uhlobo lwedwala, nokufinyeleleka kwendawo.",
+                "3": "Ubujulu buyahluka ngendawo. Ubujulu obujwayelekile buphakathi nemamitha angu-40, kodwa imigodi yamanzi ingavela kumamitha angu-40 kuya kwayi-150 kuncike kuthebula yamanzi angaphansi komhlaba.",
+                "4": "Kwezinye izindawo, kungadingeka imvume yamanzi. Singakusiza ngesicelo uma kudingeka.",
+                "5": "Yebo, sinikeza kokubili njengephakethe elihlanganisiwe noma ngokwehlukana, kuncike kulokho okufunayo.",
+                "6": "Uma ikhasimende lifuna ukumba endaweni yesibili, sinikeza isaphulelo.\n\nQaphela: Imishini yokuhlola ithola imikhondo ephansi komhlaba ethwala amanzi noma izindawo ezihlangana zamanzi angaphansi komhlaba. Kodwa, ayilinganisi inani noma ijubane lamanzi. Ngakho-ke ukumba umgodi wamanzi akunasigqiniseko sokuthi uzothola amanzi, njengoba imikhondo ingaba yomile, imanzi noma inamanzi.",
+                "7": "Sisebenzisa izinsimbi zokumba ezingochwepheshe kanye ne-percussion drilling rigs, amathuluzi e-GPS, namathuluzi okuhlola geological.",
+            }
         }
+    }
+
 
 
 
