@@ -33,21 +33,48 @@ LANGUAGES = {
         "main_menu": "How can we help you today?\n\n1. Request a quote\n2. Search Price Using Location\n3. Check Project Status\n4. FAQs or Learn About Borehole Drilling\n5. Other services\n6. Talk to a Human Agent\n\nPlease reply with a number (e.g., 1)",
         "enter_location": "Please enter your location (City/Town or GPS coordinates) to get started.",
         "location_detected": "Location detected: {}\n\nNow select the service:\n1. Water survey\n2. Borehole drilling\n3. Pump installation\n4. Commercial hole drilling\n5. Borehole Deepening",
-        "location_not_found": "We couldn't identify your location. Please type your city/town name manually."
+        "location_not_found": "We couldn't identify your location. Please type your city/town name manually.",
+        "agent_connect": "Thank you. Please hold while I connect you to a SpeedGo representative...",
+        "agent_notification": "👋 A customer would like to talk to you on WhatsApp.\n\n📱 Customer Number: {customer_number}\n🙋 Name: {customer_name}\n📩 Last Message: \"{prompt}\"",
+        "new_request": "👋 New customer request on WhatsApp\n\n📱 Number: {customer_number}\n📩 Message: \"{prompt}\"",
+        "fallback_option": "Alternatively, you can contact us directly at {agent_number}",
+        "followup_question": "Would you like to:\n1. Return to main menu\n2. End conversation",
+        "return_menu": "Returning you to the main menu...",
+        "goodbye": "Thank you! Have a good day.",
+        "invalid_option": "Please reply with 1 for Yes or 2 for No.",
+        "still_waiting": "Please hold, we're still connecting you..."
     },
     "Shona": {
         "welcome": "Mhoro! Tigamuchire kuSpeedGo Services yekuchera maburi emvura muZimbabwe. Tinopa maburi emvura anovimbika nemhinduro dzemvura muZimbabwe yose.\n\nSarudza mutauro waunofarira:\n1. Chirungu\n2. Shona\n3. Ndebele",
         "main_menu": "Tinokubatsirai sei nhasi?\n\n1. Kukumbira quotation\n2. Tsvaga Mutengo Uchishandisa Nzvimbo\n3. Tarisa Mamiriro ePurojekiti\n4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n5. Zvimwe Zvatinoita\n6. Taura neMunhu\n\nPindura nenhamba (semuenzaniso, 1)",
         "enter_location": "Ndapota nyora nzvimbo yako (Guta/Kanzuru kana GPS coordinates) kuti titange.",
         "location_detected": "Nzvimbo yawanikwa: {}\n\nZvino sarudza sevhisi yaunoda:\n1. Water survey\n2. Kuchera borehole\n3. Kuiswa kwepombi\n4. Kuchera bhora rezvekutengeserana\n5. Kuchinjwa/kudzika zvakare kwe borehole",
-        "location_not_found": "Hatina kukwanisa kuona nzvimbo yenyu. Ndapota nyora zita reguta/kanzvimbo nemaoko."
+        "location_not_found": "Hatina kukwanisa kuona nzvimbo yenyu. Ndapota nyora zita reguta/kanzvimbo nemaoko.",
+        "agent_connect": "Ndatenda. Ndapota mira uchimirira kuti ndikubatanidze nemumiriri weSpeedGo...",
+        "agent_notification': "👋 Mutengi anoda kutaura newe paWhatsApp.\n\n📱 Nhamba yemutengi: {customer_number}\n🙋 Zita: {customer_name}\n📩 Mharidzo yekupedzisira: \"{prompt}\"",
+        "new_request": "👋 Chikumbiro chitsva chemutengi paWhatsApp\n\n📱 Nhamba: {customer_number}\n📩 Mharidzo: \"{prompt}\"",
+        "fallback_option": "Zvimwe, unogona kutibata zvakananga pa +263719835124",
+        "followup_question": "Ungada here:\n1. Kudzokera kumenu huru\n2. Kupedza hurukuro",
+        "return_menu": "Tiri kukudzosera kumenu huru...",
+        "goodbye": "Ndatenda! Iva nezuva rakanaka.",
+        "invalid_option": "Ndapota pindura ne1 kuti Hongu kana 2 kuti Kwete",
+        "still_waiting": "Ndapota mira, tichiri kukubatanidza..."
     },
     "Ndebele": {
         "welcome": "Sawubona! Wamukelekile kwiSpeedGo Services yokumba amaBorehole eZimbabwe. Sinikeza ukumba kwamaBorehole okuthembekile kanye nezixazululo zamanzi kulo lonke iZimbabwe.\n\nKhetha ulimi oluthandayo:\n1. IsiNgisi\n2. IsiNdebele\n3. IsiShona",
         "main_menu": "Singakusiza njani lamuhla?\n\n1. Cela isiphakamiso\n2. Phanda Intengo Ngokusebenzisa Indawo\n3. Bheka Isimo Sephrojekthi\n4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n5. Eminye Imisebenzi\n6. Khuluma Nomuntu\n\nPhendula ngenombolo (umzekeliso: 1)",
         "enter_location": "Sicela ufake indawo yakho (Idolobha/Idolobhana noma i-GPS) ukuze siqale.",
         "location_detected": "Indawo etholakele: {}\n\nSicela ukhethe inkonzo ofunayo:\n1. Ukuhlolwa kwamanzi\n2. Ukumba iBorehole\n3. Ukufakwa kwepampu\n4. Ukumba umgodi wezentengiselwano\n5. Ukwelula iBorehole (Deepening)",
-        "location_not_found": "Asikwazanga ukuhlonza indawo yakho. Sicela bhala igama ledolobho/lindawo yakho ngesandla."
+        "location_not_found": "Asikwazanga ukuhlonza indawo yakho. Sicela bhala igama ledolobho/lindawo yakho ngesandla.",
+        "agent_connect": "Ngiyabonga. Sicela ulinde njengoba ngikuxhumanisa nommeleli we-SpeedGo...",
+        "agent_notification": "👋 Ikhasimende lifuna ukukhuluma nawe ku-WhatsApp.\n\n📱 Inombolo yekhasimende: {customer_number}\n🙋 Igama: {customer_name}\n📩 Umlayezo wokugcina: \"{prompt}\"",
+        "new_request": "👋 Isicelo sesikhasimende esisha ku-WhatsApp\n\n📱 Inombolo: {customer_number}\n📩 Umlayezo: \"{prompt}\"",
+        "fallback_option": "Ngenye indlela, ungaxhumana nathi ngqo ku-+263719835124",
+        "followup_question": "Ungathanda:\n1. Ukubuyela kumenyu eyinhloko\n2. Ukuphelisa ingxoxo",
+        "return_menu": "Kubuyiselwa kumenyu oyinhloko...",
+        "goodbye": "Ngiyabonga! Ube nosuku oluhle.",
+        "invalid_option": "Sicela uphendule ngo-1 ukuze U-Yebo noma u-2 ukuze Cha",
+        "still_waiting": "Sicela ulinde, sisaxhumanisa..."
     }
 }
 
@@ -173,7 +200,7 @@ def reverse_geocode_location(gps_coords):
         print("Geocoding error:", e)
         return None
 
-# Pricing dictionaries (same as before)
+
 location_pricing = {
     "beitbridge": {
         "Water Survey": 150,
@@ -187,7 +214,102 @@ location_pricing = {
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
-    # ... (rest of pricing dictionaries remain the same)
+        "nyika": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1050,
+            "class 9": 1181.25,
+            "class 10": 1312.5,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "bindura": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "binga": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1300,
+            "class 9": 1462.5,
+            "class 10": 1625,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "bubi": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1200,
+            "class 9": 1350,
+            "class 10": 1500,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "murambinda": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1050,
+            "class 9": 1181.25,
+            "class 10": 1312.5,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "buhera": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1150,
+            "class 9": 1293.75,
+            "class 10": 1437.5,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "harare": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 30
+        },       
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "bulawayo": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    }
 }
 
 pump_installation_options = {
@@ -195,7 +317,26 @@ pump_installation_options = {
         "description": "D.C solar (direct solar NO inverter) - I have tank and tank stand",
         "price": 1640
     },
-    # ... (rest of pump options remain the same)
+        "2": {
+        "description": "D.C solar (direct solar NO inverter) - I don't have anything",
+        "price": 2550
+    },
+    "3": {
+        "description": "D.C solar (direct solar NO inverter) - Labour only",
+        "price": 200
+    },
+    "4": {
+        "description": "A.C electric (ZESA or solar inverter) - Fix and supply",
+        "price": 1900
+    },
+    "5": {
+        "description": "A.C electric (ZESA or solar inverter) - Labour only",
+        "price": 170
+    },
+    "6": {
+        "description": "A.C electric (ZESA or solar inverter) - I have tank and tank stand",
+        "price": 950
+    }
 }
 
 def get_pricing_for_location_quotes(location, service_type, pump_option_selected=None):
@@ -304,8 +445,7 @@ def handle_main_menu(prompt, user_data, phone_id):
         send(LANGUAGES[lang]["enter_location"], user_data['sender'], phone_id)
         return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
     
-    # ... (rest of main menu handling remains similar but with language support)
-
+   
 def handle_enter_location_for_quote(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     lang = user.language
@@ -342,7 +482,111 @@ def handle_enter_location_for_quote(prompt, user_data, phone_id):
              user_data['sender'], phone_id)
         return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-# ... (rest of the handlers remain similar but with language support)
+def human_agent(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    customer_number = user_data['sender']
+    customer_name = user.name if hasattr(user, "name") and user.name else "Unknown"
+    agent_number = "+263719835124"
+    lang = get_user_language(user_data)
+
+    # Notify the customer immediately
+    send(LANGUAGE_DICT[lang]['agent_connect'], customer_number, phone_id)
+
+    # Notify the agent immediately
+    agent_message = LANGUAGE_DICT[lang]['agent_notification'].format(
+        customer_number=customer_number,
+        customer_name=customer_name,
+        prompt=prompt
+    )
+    send(agent_message, agent_number, phone_id)
+
+    # Store state with timestamp to track elapsed time
+    update_user_state(customer_number, {
+        'step': 'waiting_for_human_agent_response',
+        'user': user.to_dict(),
+        'sender': customer_number,
+        'agent_prompt_time': time.time()
+    })
+
+    return {'step': 'handle_user_message', 'user': user.to_dict(), 'sender': customer_number}
+
+def notify_agent(customer_number, prompt, agent_number, phone_id, lang='en'):
+    agent_message = LANGUAGE_DICT[lang]['new_request'].format(
+        customer_number=customer_number,
+        prompt=prompt
+    )
+    send(agent_message, agent_number, phone_id)
+
+def send_fallback_option(customer_number, phone_id, user_data):
+    # Check if still waiting
+    user_data = get_user_state(customer_number)
+    if user_data and user_data.get('step') == 'waiting_for_human_agent_response':
+        lang = get_user_language(user_data)
+        send(LANGUAGE_DICT[lang]['fallback_option'].format(agent_number="+263719835124"), 
+             customer_number, phone_id)
+        send(LANGUAGE_DICT[lang]['followup_question'], customer_number, phone_id)
+        update_user_state(customer_number, {
+            'step': 'human_agent_followup',
+            'user': user_data.get('user', {}),
+            'sender': customer_number
+        })
+
+def handle_user_message(message, user_data, phone_id):
+    state = user_data.get('step')
+    customer_number = user_data['sender']
+    lang = get_user_language(user_data)
+
+    if state == 'waiting_for_human_agent_response':
+        prompt_time = user_data.get('agent_prompt_time', 0)
+        elapsed = time.time() - prompt_time
+
+        if elapsed >= 10:
+            # Send fallback prompt
+            send(LANGUAGE_DICT[lang]['fallback_option'].format(agent_number="+263719835124"), 
+                 customer_number, phone_id)
+            send(LANGUAGE_DICT[lang]['followup_question'], customer_number, phone_id)
+
+            # Update state to wait for user's Yes/No reply
+            update_user_state(customer_number, {
+                'step': 'human_agent_followup',
+                'user': user_data['user'],
+                'sender': customer_number
+            })
+
+            return {'step': 'human_agent_followup', 'user': user_data['user'], 'sender': customer_number}
+        else:
+            # Still waiting, remind user to hold on
+            send(LANGUAGE_DICT[lang]['still_waiting'], customer_number, phone_id)
+            return user_data
+
+    elif state == 'human_agent_followup':
+        # Handle user's Yes/No answer here
+        if message.strip() == '1':  # User wants main menu
+            send(LANGUAGE_DICT[lang]['return_menu'], customer_number, phone_id)
+            # Reset state to main menu step
+            update_user_state(customer_number, {
+                'step': 'main_menu',
+                'user': user_data['user'],
+                'sender': customer_number
+            })
+            # Show main menu (assuming send_main_menu also supports languages)
+            send_main_menu(customer_number, phone_id, lang)
+            return {'step': 'main_menu', 'user': user_data['user'], 'sender': customer_number}
+
+        elif message.strip() == '2':  # User says No
+            send(LANGUAGE_DICT[lang]['goodbye'], customer_number, phone_id)
+            # Optionally clear or end session
+            update_user_state(customer_number, {
+                'step': 'end',
+                'user': user_data['user'],
+                'sender': customer_number
+            })
+            return {'step': 'end', 'user': user_data['user'], 'sender': customer_number}
+        else:
+            send(LANGUAGE_DICT[lang]['invalid_option'], customer_number, phone_id)
+            return user_data
+
+
 
 def handle_select_service_quote(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
