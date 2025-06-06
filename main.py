@@ -2415,18 +2415,18 @@ def handle_enter_location_for_quote2(prompt, user_data, phone_id):
     if 'location' in user_data and 'latitude' in user_data['location'] and 'longitude' in user_data['location']:
         lat = user_data['location']['latitude']
         lng = user_data['location']['longitude']
-        gps_coords = f"{lat},{lng}"
-        location_name = reverse_geocode_location(gps_coords)
+        gps_coords2 = f"{lat},{lng}"
+        location_name2 = reverse_geocode_location2(gps_coords2)
 
-        if location_name:
-            user.quote_data['location'] = location_name
-            user.quote_data['gps_coords'] = gps_coords
+        if location_name2:
+            user.quote_data['location'] = location_name2
+            user.quote_data['gps_coords'] = gps_coords2
             update_user_state(user_data['sender'], {
                 'step': 'select_service_quote2',
                 'user': user.to_dict()
             })
             send(
-                f"Nzvimbo yawanikwa: {location_name.title()}\n\n"
+                f"Nzvimbo yawanikwa: {location_name2.title()}\n\n"
                 "Zvino sarudza sevhisi yaunoda:\n"
                 "1. Water survey\n"
                 "2. Kuchera borehole\n"
@@ -3900,18 +3900,18 @@ def handle_enter_location_for_quote3(prompt, user_data, phone_id):
     if 'location' in user_data and 'latitude' in user_data['location'] and 'longitude' in user_data['location']:
         lat = user_data['location']['latitude']
         lng = user_data['location']['longitude']
-        gps_coords = f"{lat},{lng}"
-        location_name = reverse_geocode_location(gps_coords)
+        gps_coords3 = f"{lat},{lng}"
+        location_name3 = reverse_geocode_location3(gps_coords)
 
-        if location_name:
-            user.quote_data['location'] = location_name
-            user.quote_data['gps_coords'] = gps_coords
+        if location_name3:
+            user.quote_data['location'] = location_name3
+            user.quote_data['gps_coords'] = gps_coords3
             update_user_state(user_data['sender'], {
                 'step': 'select_service_quote3',
                 'user': user.to_dict()
             })
             send(
-                f"Indawo etholakele: {location_name.title()}\n\n"
+                f"Indawo etholakele: {location_name3.title()}\n\n"
                 "Sicela ukhethe inkonzo ofunayo:\n"
                 "1. Ukuhlolwa kwamanzi\n"
                 "2. Ukumba iBorehole\n"
