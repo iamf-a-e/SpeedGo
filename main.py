@@ -166,7 +166,26 @@ LANGUAGES = {
             "next_question": "Ndapota nyora mubvunzo wako unotevera.",
             "response_followup": "Ungada here:\n1. Kubvunza mumwe mubvunzo\n2. Kudzokera kuMain Menu",
             "invalid_option": "Pindura ne1 kuti ubvunze mumwe mubvunzo kana 2 kuti udzokere kumenu huru."
+        },
+            "faq_borehole": {
+            "responses": {
+                "1": "Mari inoenderana nenzvimbo yako, kudzika, uye mamiriro evhu. Ndapota titumire nzvimbo yako uye ruzivo rwekuwana nzvimbo kuti tikupe mutengo wako.",
+                "2": "Kazhinji maawa 4–6 kana kusvika mazuva akati wandei, zvichienderana nemamiriro enzvimbo, rudzi rwedombo, uye kuwanikwa kwenzvimbo.",
+                "3": "Kudzika kunosiyana nenzvimbo. Kudzika kwakajairwa kunosvika mamita makumi mana, asi mabhorehole anogona kubva pamamita makumi mana kusvika zana nemakumi mashanu zvichienderana netafura yemvura yepasi pevhu.",
+                "4": "Mune dzimwe nzvimbo, mvumo yemvura inogona kudikanwa. Tinogona kukubatsira nechikumbiro kana zvichidikanwa.",
+                "5": "Hongu, tinopa ese ari maviri semubatanidzwa kana zvakasiyana, zvichienderana nezvaunoda.",
+                "6": "Kana mutengi achida kuchera panzvimbo yechipiri, tinopa discount.\n\nCherechedza: Michina yekuongorora inoona mitswe inotakura mvura yepasi pevhu kana nzvimbo dzinopindirana dzemvura pasi pevhu. Zvisinei, haipime huwandu kana kuyerera kwemvura. Saka kuchera borehole hakuna vimbiso yekuti muchawana mvura, sezvo mitswe ingave yakaoma, yakanyorova, kana ine mvura.",
+                "7": "Tinoshandisa midziyo yehunyanzvi yekuchera uye percussion drilling rigs, GPS maturusi, uye midziyo yekuongorora geological.",
+                "8": "Ndiri kudzokera kuFAQ Menu..."
+            },
+            "follow_up": (
+                "Ungada here:\n"
+                "1. Kubvunza mumwe mubvunzo kubva kuBorehole Drilling FAQs\n"
+                "2. Kudzokera kuMain Menu"
+            ),
+            "invalid_option": "Sarudza sarudzo inoshanda (1–8)."
         }
+
 
 
 
