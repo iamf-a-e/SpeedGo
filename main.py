@@ -79,7 +79,9 @@ LANGUAGES = {
                 "1. Ask another question\n"
                 "2. Return to Main Menu"
             ),
-            "next_question": "Please type your next question."
+            "next_question": "Please type your next question.",
+            "response_followup": "Would you like to:\n1. Ask another question\n2. Return to Main Menu",
+            "invalid_option": "Please reply 1 to ask another question or 2 to return to the main menu."
         },
         "faq_borehole": {
             "responses": {
@@ -115,10 +117,6 @@ LANGUAGES = {
             ),
             "invalid_option": "Please choose a valid option (1–6)."
         },
-        "new_request": "👋 New customer request on WhatsApp\n\n📱 Number: {customer_number}\n📩 Message: \"{prompt}\"",
-        "fallback_option": "Alternatively, you can contact us directly at {agent_number}",
-        "followup_question": "Would you like to:\n1. Return to main menu\n2. End conversation",
-        "return_menu": "Returning you to the main menu...",
         "human_agent": {
             "exit_message": "Okay. Feel free to ask if you need anything else.",
             "invalid_option": "Please reply with 1 for Main Menu or 2 to stay here."
@@ -156,15 +154,9 @@ LANGUAGES = {
             "menu": "Here are the most common questions:\n\n1. Borehole Drilling FAQs\n2. Pump Installation FAQs\n3. Ask a different question\n4. Human agent\n5. Back to Main Menu",
             "invalid_option": "Please select a valid option (1–5)."
         },
-        "custom_question": {
-            "empty_prompt": "Please type your question.",
-            "response_followup": "Would you like to:\n1. Ask another question\n2. Return to Main Menu",
-            "invalid_option": "Please reply 1 to ask another question or 2 to return to the main menu.",
-            "next_question": "Please type your next question."
-        },
         "human_agent_connect": "Please hold while I connect you to a representative..."
-    },
-    },
+    }
+
 "Shona": {
     "welcome": "Mhoro! Tigamuchire kuSpeedGo Services yekuchera maburi emvura muZimbabwe. Tinopa maburi emvura anovimbika nemhinduro dzemvura muZimbabwe yose.\n\nSarudza mutauro waunofarira:\n1. Chirungu\n2. Shona\n3. Ndebele",
     "main_menu": "Tinokubatsirai sei nhasi?\n\n1. Kukumbira quotation\n2. Tsvaga Mutengo Uchishandisa Nzvimbo\n3. Tarisa Mamiriro ePurojekiti\n4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n5. Zvimwe Zvatinoita\n6. Taura neMunhu\n\nPindura nenhamba (semuenzaniso, 1)",
@@ -252,7 +244,7 @@ LANGUAGES = {
         ),
         "invalid_option": "Ndapota sarudza chisarudzo chakakodzera (1–6)."
     }
-}
+
     "Ndebele": {
         "welcome": "Sawubona! Wamukelekile kwiSpeedGo Services yokumba amaBorehole eZimbabwe. Sinikeza ukumba kwamaBorehole okuthembekile kanye nezixazululo zamanzi kulo lonke iZimbabwe.\n\nKhetha ulimi oluthandayo:\n1. IsiNgisi\n2. IsiNdebele\n3. IsiShona",
         "main_menu": "Singakusiza njani lamuhla?\n\n1. Cela isiphakamiso\n2. Phanda Intengo Ngokusebenzisa Indawo\n3. Bheka Isimo Sephrojekthi\n4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n5. Eminye Imisebenzi\n6. Khuluma Nomuntu\n\nPhendula ngenombolo (umzekeliso: 1)",
@@ -388,10 +380,7 @@ LANGUAGES = {
             "next_question": "Sicela ubhale umbuzo wakho olandelayo."
           },
           "human_agent_connect": "Ngicela ulinde ngikuxhumanise lommeleli..."
-
-
     }
-}
 
 # User serialization helpers
 class User:
