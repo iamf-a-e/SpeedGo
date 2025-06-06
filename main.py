@@ -284,7 +284,19 @@ LANGUAGES = {
             ),
             "custom_question": "Sicela uthayiphe umbuzo wakho ngezansi, futhi sizokwenza konke okusemandleni ethu ukukusiza.\n",
             "connecting_agent": "Sicela ulinde ngizokuxhumanisa nommeleli..."
+        },
+            "custom_question": {
+            "empty_prompt": "Sicela uthayiphe umbuzo wakho.",
+            "follow_up": (
+                "Ungathanda:\n"
+                "1. Ukubuza omunye umbuzo\n"
+                "2. Ukubuyela kumenyu eyinhloko"
+            ),
+            "next_question": "Sicela uthayiphe umbuzo wakho olandelayo.",
+            "response_followup": "Ungathanda:\n1. Ukubuza omunye umbuzo\n2. Ukubuyela kumenyu eyinhloko",
+            "invalid_option": "Phendula ngo-1 ukuze ubuze omunye umbuzo noma ngo-2 ukuze ubuyele kumenyu eyinhloko."
         }
+
 
 
     }
