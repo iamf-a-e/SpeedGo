@@ -140,7 +140,25 @@ LANGUAGES = {
                 "followup": "Would you like to:\n1. Ask another question from Borehole Drilling FAQs\n2. Return to Main Menu",
                 "invalid_option": "Please choose a valid option (1–8)."
             },
+                "pump": {
+                "menu": "Here are common questions about pump installation:\n\n1. What's the difference between solar and electric pumps?\n2. Can you install if I already have materials?\n3. How long does pump installation take?\n4. What pump size do I need?\n5. Do you supply tanks and tank stands?\n6. Back to FAQ Menu",
+                "responses": {
+                    "1": "Solar pumps use energy from solar panels and are ideal for off-grid or remote areas. Electric pumps rely on the power grid and are typically more affordable upfront but depend on electricity availability.",
+                    "2": "Yes! We offer labor-only packages if you already have the necessary materials.",
+                    "3": "Installation usually takes one day, provided materials are ready and site access is clear.",
+                    "4": "Pump size depends on your water needs and borehole depth. We can assess your site and recommend the best option.",
+                    "5": "Yes, we supply complete packages including water tanks, tank stands, and all necessary plumbing fittings.",
+                    "6": "Returning to FAQ Menu..."
+                },
+                "followup": "Would you like to:\n1. Ask another question from Pump Installation FAQs\n2. Return to Main Menu",
+                "invalid_option": "Please choose a valid option (1–6)."
+            },
+            "custom_question": "Please type your question below, and we'll do our best to assist you.\n",
+            "menu": "Here are the most common questions:\n\n1. Borehole Drilling FAQs\n2. Pump Installation FAQs\n3. Ask a different question\n4. Human agent\n5. Back to Main Menu",
+            "invalid_option": "Please select a valid option (1–5)."
         }
+
+        
                 
 
 
