@@ -242,13 +242,6 @@ LANGUAGES = {
                 },
 
 
-
-
-
-
-
-
-
     },
     
     "Ndebele": {
@@ -262,7 +255,37 @@ LANGUAGES = {
         "return_menu": "Ndiri kukudzosera kumenu huru...",
         "goodbye": "Ndatenda! Iva nezuva rakanaka.",
         "invalid_option": "Pindura ne1 kuti Hongu kana 2 kuti Kwete.",
-        "still_waiting": "Ndapota mira, tichiri kukubatanidza..."
+        "still_waiting": "Ndapota mira, tichiri kukubatanidza...",
+        "human_agent_followup": {
+            "invalid_option": "Phendula ngo-1 ukuze uthi Main Menu noma ngo-2 ukuze uhlale lapha.",
+            "stay_here": "Kulungile. Zizwe ukhululekile ukubuza uma unokuthile okudingayo."
+        },
+        "faq_menu": {
+            "invalid_option": "Khetha inketho evumelekile (1–5).",
+            "borehole_faqs": (
+                "Nazi imibuzo evame ukubuzwa mayelana nokumbiwa kwemigodi yamanzi:\n\n"
+                "1. Kubiza malini ukumba umgodi wamanzi?\n"
+                "2. Kuthatha isikhathi esingakanani ukumba umgodi wamanzi?\n"
+                "3. Uzoba njani ubujulu bomgodi wami wamanzi?\n"
+                "4. Ngidinga imvume yokumba umgodi wamanzi?\n"
+                "5. Ngabe niyahlola amanzi bese nibamba ngesikhathi esisodwa?\n"
+                "6. Kuthiwani uma nihlola amanzi bese ningenayo?\n"
+                "7. Yiziphi izinto enizisebenzisayo?\n"
+                "8. Buyela kumenyu yemibuzo"
+            ),
+            "pump_faqs": (
+                "Nazi imibuzo evame ukubuzwa mayelana nokufakwa kwepompi:\n\n"
+                "1. Umehluko uyini phakathi kwepompi yelanga neyogesi?\n"
+                "2. Ngabe ningayifaka uma senginazo izinto ezidingekayo?\n"
+                "3. Kuthatha isikhathi esingakanani ukufaka ipompi?\n"
+                "4. Ngidinga ipompi enkulu kangakanani?\n"
+                "5. Ngabe ninikeza amathangi nezinduku zamathangi?\n"
+                "6. Buyela kumenyu yemibuzo"
+            ),
+            "custom_question": "Sicela uthayiphe umbuzo wakho ngezansi, futhi sizokwenza konke okusemandleni ethu ukukusiza.\n",
+            "connecting_agent": "Sicela ulinde ngizokuxhumanisa nommeleli..."
+        }
+
 
     }
 }
