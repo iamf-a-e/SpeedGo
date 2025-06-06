@@ -102,6 +102,7 @@ LANGUAGES = {
             ),
             "invalid_option": "Please choose a valid option (1–8).",
             },
+    },
             "faq_pump": {
             "responses": {
                 "1": "Solar pumps use energy from solar panels and are ideal for off-grid or remote areas. Electric pumps rely on the power grid and are typically more affordable upfront but depend on electricity availability.",
@@ -111,9 +112,8 @@ LANGUAGES = {
                 "5": "Yes, we supply complete packages including water tanks, tank stands, and all necessary plumbing fittings.",
                 "6": "Returning to FAQ Menu..."
                 },
-            },
-    }
-
+            }
+  
 
         },
     
