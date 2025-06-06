@@ -158,231 +158,331 @@ LANGUAGES = {
     }
     
 
-"Shona": {
-    "welcome": "Mhoro! Tigamuchire kuSpeedGo Services yekuchera maburi emvura muZimbabwe. Tinopa maburi emvura anovimbika nemhinduro dzemvura muZimbabwe yose.\n\nSarudza mutauro waunofarira:\n1. Chirungu\n2. Shona\n3. Ndebele",
-    "main_menu": "Tinokubatsirai sei nhasi?\n\n1. Kukumbira quotation\n2. Tsvaga Mutengo Uchishandisa Nzvimbo\n3. Tarisa Mamiriro ePurojekiti\n4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n5. Zvimwe Zvatinoita\n6. Taura neMunhu\n\nPindura nenhamba (semuenzaniso, 1)",
-    "enter_location": "Ndapota nyora nzvimbo yako (Guta/Kanzuru kana GPS coordinates) kuti titange.",
-    "location_detected": "Nzvimbo yawanikwa: {}\n\nZvino sarudza sevhisi yaunoda:\n1. Water survey\n2. Kuchera borehole\n3. Kuiswa kwepombi\n4. Kuchera bhora rezvekutengeserana\n5. Kuchinjwa/kudzika zvakare kwe borehole",
-    "location_not_found": "Hatina kukwanisa kuona nzvimbo yenyu. Ndapota nyora zita reguta/kanzvimbo nemaoko.",
-    "agent_connect": "Ndatenda. Ndapota mira uchimirira kuti ndikubatanidze nemumiriri weSpeedGo...",
-    "agent_notification": "👋 Mutengi anoda kutaura newe paWhatsApp.\n\n📱 Nhamba yemutengi: {customer_number}\n🙋 Zita: {customer_name}\n📩 Mharidzo yekupedzisira: \"{prompt}\"",
-    "new_request": "👋 Chikumbiro chitsva chemutengi paWhatsApp\n\n📱 Nhamba: {customer_number}\n📩 Mharidzo: \"{prompt}\"",
-    "fallback_option": "Zvimwe, unogona kutibata zvakananga pa +263719835124",
-    "followup_question": "Ungada here:\n1. Kudzokera kumenu huru\n2. Kupedza hurukuro",
-    "return_menu": "Tiri kukudzosera kumenu huru...",
-    "goodbye": "Ndatenda! Iva nezuva rakanaka.",
-    "invalid_option": "Ndapota pindura ne1 kuti Hongu kana 2 kuti Kwete",
-    "still_waiting": "Ndapota mira, tichiri kukubatanidza...",
-    "human_agent_followup": {
-        "invalid_option": "Ndapota pindura ne1 kuti udzokere kuMain Menu kana 2 kuti ugare pano.",
-        "stay_here": "Zvakanaka. Inzwa wakasununguka kubvunza kana paine chaunoda."
-    },
-    "faq_menu": {
-        "invalid_option": "Ndapota sarudza chisarudzo chakakodzera (1–5).",
-        "borehole_faqs": (
-            "Mibvunzo inowanzo bvunzwa nezve kuchera maburi emvura:\n\n"
-            "1. Kuchera buri remvura kunodhura zvakadini?\n"
-            "2. Zvinotora nguva yakareba sei kuchera buri?\n"
-            "3. Buri rangu richadzika zvakadini?\n"
-            "4. Ndine mvumo here yekuchera buri?\n"
-            "5. Munoitawo ongororo yemvura pamwe nekuchera panguva imwe chete here?\n"
-            "6. Ko kana mukaita ongororo asi mukasawana mvura?\n"
-            "7. Munoshandisa midziyo ipi?\n"
-            "8. Dzokera kuFAQ Menu"
-        ),
-        "pump_faqs": (
-            "Mibvunzo inowanzo bvunzwa nezvekuisirwa mapombi:\n\n"
-            "1. Ndeupi musiyano uripo pakati pepombi dzezuva nepemagetsi?\n"
-            "2. Munogona kuisa kana ndatotenga zvinhu zvese here?\n"
-            "3. Zvinotora nguva yakareba sei kuisa pombi?\n"
-            "4. Ndinoda pombi yakakura zvakadii?\n"
-            "5. Munotengesa matanki nematanda etanki here?\n"
-            "6. Dzokera kuFAQ Menu"
-        ),
-        "custom_question": "Ndapota nyora mubvunzo wako pazasi, tichaita zvatinogona kukubatsira.\n",
-        "connecting_agent": "Ndapota mirira ndichikubatanidza nemumiriri..."
-    },
-    "custom_question": {
-        "empty_prompt": "Ndapota nyora mubvunzo wako.",
-        "follow_up": (
-            "Ungada:\n"
-            "1. Kubvunza mumwe mubvunzo\n"
-            "2. Kudzokera kuMain Menu"
-        ),
-        "next_question": "Ndapota nyora mubvunzo wako unotevera."
-    },
-    "faq_borehole": {
-        "responses": {
-            "1": "Mutengo unoenderana nenzvimbo yako, kudzika kwatinofanira kuchera, uye ivhu riripo. Ndapota tumira nzvimbo yako nemamiriro eaccess kuti tigokupa mutengo wakakodzera.",
-            "2": "Kazhinji zvinotora maawa 4–6 kana mazuva akati wandei, zvichienderana nemamiriro ensaiti, dombo riripo, uye kuti nzvimbo inosvikika sei.",
-            "3": "Kudzika kunosiyana nenzvimbo. Kudzika kwakajairika kuri pamatamita 40, asi maburi anogona kubva pa40 kusvika ku150 metres zvichienderana nemvura iri pasi pevhu.",
-            "4": "Kune dzimwe nzvimbo, panodiwa mvumo yekuchera. Tinogona kukubatsira kuwana mvumo iyi kana zvichidikanwa.",
-            "5": "Ehe, tinopa ongororo nemabasa ekuchera pamwe chete kana zvakasiyana, zvinoenderana nezvaunoda.",
-            "6": "Kana mutengi achida kuchera kune imwe nzvimbo, tinopa kuderedzwa kwemitengo.\n\nCherechedza: Michina inoshandiswa kuongorora inongoona kupatsanuka kwepasi panogona kubuda mvura kana kusangana kwemvura iri pasi. Haina kugona kuyera kuti mvura yakawanda sei. Saka kuchera buri harikupi vimbiso ye100% yekuwana mvura.",
-            "7": "Tinoshandisa michina yepamusoro ye rotary ne percussion rigs, maturusi eGPS, nemidziyo yevanoongorora geology.",
-            "8": "Kudzokera kuFAQ Menu..."
-        },
-        "follow_up": (
-            "Ungada:\n"
-            "1. Kubvunza mumwe mubvunzo kubva kuBorehole Drilling FAQs\n"
-            "2. Kudzokera kuMain Menu"
-        ),
-        "invalid_option": "Ndapota sarudza chisarudzo chakakodzera (1–8)."
-    },
-    "faq_pump": {
-        "responses": {
-            "1": "Mapombi ezuva anoshandisa simba kubva kuma solar panels uye akakodzera nzvimbo dzisina magetsi. Mapombi emagetsi anoda grid yemagetsi uye anowanzo kudhura zvishoma pakutanga asi anoenderana nekugara kwazvo kwemagetsi.",
-            "2": "Ehe! Tinopa mapakeji ekubatsira chete kana uine zvinhu zvese kare.",
-            "3": "Kuiswa kunotora zuva rimwe chete, kana zvinhu zvese zviripo uye nzvimbo iri nyore kusvika.",
-            "4": "Saizi yepombi inoenderana nezvinodiwa zvako zvemvura nekudzika kweburi. Tinogona kuuya kunoongorora tokupa zano rakanaka.",
-            "5": "Ehe, tinotengesa mapakeji ane matanki, matanda, uye zvese zvekubatanidza mapaipi.",
-            "6": "Kudzokera kuFAQ Menu..."
-        },
-        "follow_up": (
-            "Ungada:\n"
-            "1. Kubvunza mumwe mubvunzo kubva kuPump Installation FAQs\n"
-            "2. Kudzokera kuMain Menu"
-        ),
-        "invalid_option": "Ndapota sarudza chisarudzo chakakodzera (1–6)."
-    }
-
-    "Ndebele": {
-        "welcome": "Sawubona! Wamukelekile kwiSpeedGo Services yokumba amaBorehole eZimbabwe. Sinikeza ukumba kwamaBorehole okuthembekile kanye nezixazululo zamanzi kulo lonke iZimbabwe.\n\nKhetha ulimi oluthandayo:\n1. IsiNgisi\n2. IsiNdebele\n3. IsiShona",
-        "main_menu": "Singakusiza njani lamuhla?\n\n1. Cela isiphakamiso\n2. Phanda Intengo Ngokusebenzisa Indawo\n3. Bheka Isimo Sephrojekthi\n4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n5. Eminye Imisebenzi\n6. Khuluma Nomuntu\n\nPhendula ngenombolo (umzekeliso: 1)",
-        "enter_location": "Sicela ufake indawo yakho (Idolobha/Idolobhana noma i-GPS) ukuze siqale.",
-        "location_detected": "Indawo etholakele: {}\n\nSicela ukhethe inkonzo ofunayo:\n1. Ukuhlolwa kwamanzi\n2. Ukumba iBorehole\n3. Ukufakwa kwepampu\n4. Ukumba umgodi wezentengiselwano\n5. Ukwelula iBorehole (Deepening)",
-        "location_not_found": "Asikwazanga ukuhlonza indawo yakho. Sicela bhala igama ledolobho/lindawo yakho ngesandla.",
-        "agent_connect": "Ngiyabonga. Sicela ulinde njengoba ngikuxhumanisa nommeleli we-SpeedGo...",
-        "agent_notification": "👋 Ikhasimende lifuna ukukhuluma nawe ku-WhatsApp.\n\n📱 Inombolo yekhasimende: {customer_number}\n🙋 Igama: {customer_name}\n📩 Umlayezo wokugcina: \"{prompt}\"",
-        "new_request": "👋 Isicelo sesikhasimende esisha ku-WhatsApp\n\n📱 Inombolo: {customer_number}\n📩 Umlayezo: \"{prompt}\"",
-        "fallback_option": "Ngenye indlela, ungaxhumana nathi ngqo ku-+263719835124",
-        "followup_question": "Ungathanda:\n1. Ukubuyela kumenyu eyinhloko\n2. Ukuphelisa ingxoxo",
-        "return_menu": "Kubuyiselwa kumenyu oyinhloko...",
-        "goodbye": "Ngiyabonga! Ube nosuku oluhle.",
-        "invalid_option": "Sicela uphendule ngo-1 ukuze U-Yebo noma u-2 ukuze Cha",
-        "still_waiting": "Sicela ulinde, sisaxhumanisa...",
+LANGUAGES = {
+    "English": {
+        "welcome": "Hi there! Welcome to SpeedGo Services for borehole drilling in Zimbabwe. We provide reliable borehole drilling and water solutions across Zimbabwe.\n\nChoose your preferred language:\n1. English\n2. Shona\n3. Ndebele",
+        "main_menu": "How can we help you today?\n\n1. Request a quote\n2. Search Price Using Location\n3. Check Project Status\n4. FAQs or Learn About Borehole Drilling\n5. Other services\n6. Talk to a Human Agent\n\nPlease reply with a number (e.g., 1)",
+        "enter_location": "Please enter your location (City/Town or GPS coordinates) to get started.",
+        "location_detected": "Location detected: {}\n\nNow select the service:\n1. Water survey\n2. Borehole drilling\n3. Pump installation\n4. Commercial hole drilling\n5. Borehole Deepening",
+        "location_not_found": "We couldn't identify your location. Please type your city/town name manually.",
+        "agent_connect": "Thank you. Please hold while I connect you to a SpeedGo representative...",
+        "agent_notification": "👋 A customer would like to talk to you on WhatsApp.\n\n📱 Customer Number: {customer_number}\n🙋 Name: {customer_name}\n📩 Last Message: \"{prompt}\"",
+        "new_request": "👋 New customer request on WhatsApp\n\n📱 Number: {customer_number}\n📩 Message: \"{prompt}\"",
+        "fallback_option": "Alternatively, you can contact us directly at {agent_number}",
+        "followup_question": "Would you like to:\n1. Return to main menu\n2. End conversation",
+        "return_menu": "Returning you to the main menu...",
+        "goodbye": "Thank you! Have a good day.",
+        "invalid_option": "Please reply with 1 for Yes or 2 for No.",
+        "still_waiting": "Please hold, we're still connecting you...",
         "human_agent_followup": {
-            "invalid_option": "Sicela uphendule ngo 1 ku Main Menu kumbe ngo 2 ukuze uhlezi lapha.",
-            "stay_here": "Kulungile. Zizwe ukhululekile ukubuza loba yini enye ofunayo."
+            "invalid_option": "Please reply with 1 for Main Menu or 2 to stay here.",
+            "stay_here": "Okay. Feel free to ask if you need anything else."
         },
         "faq_menu": {
-            "invalid_option": "Sicela ukhethe inketho evumelekileyo (1–5).",
+            "invalid_option": "Please select a valid option (1–5).",
             "borehole_faqs": (
-                "Nansi imibuzo evame ukubuzwa mayelana lokugaya imithombo:\n\n"
-                "1. Kubiza malini ukugaya umthombo?\n"
-                "2. Kudinga isikhathi esingakanani ukugaya umthombo?\n"
-                "3. Umthombo wami uzajula kangakanani?\n"
-                "4. Ngidinga imvumo yini ukuze ngigaye umthombo?\n"
-                "5. Liyenza yini ukuhlolwa kwamanzi kanye lokugaya ngesikhathi sinye?\n"
-                "6. Kwenzakalani nxa kuhlolwe kungatholakali amanzi?\n"
-                "7. Lisebenzisa liphi ithuluzi noma imishini?\n"
-                "8. Buyela ku FAQ Menu"
+                "Here are the most common questions about borehole drilling:\n\n"
+                "1. How much does borehole drilling cost?\n"
+                "2. How long does it take to drill a borehole?\n"
+                "3. How deep will my borehole be?\n"
+                "4. Do I need permission to drill a borehole?\n"
+                "5. Do you do a water survey and drilling at the same time?\n"
+                "6. What if you do a water survey and find no water?\n"
+                "7. What equipment do you use?\n"
+                "8. Back to FAQ Menu"
             ),
             "pump_faqs": (
-                "Nansi imibuzo evamile mayelana lokufakwa kwempompi:\n\n"
-                "1. Kuyini okuhlukanisayo phakathi kwama-solar le electric pump?\n"
-                "2. Liyakwazi ukufaka nxa sengilama-materials?\n"
-                "3. Kudinga isikhathi esingakanani ukufaka impompi?\n"
-                "4. Ngidinga impompi enkulu kangakanani?\n"
-                "5. Liyathengisa yini amanzi tank le tank stand?\n"
-                "6. Buyela ku FAQ Menu"
+                "Here are common questions about pump installation:\n\n"
+                "1. What's the difference between solar and electric pumps?\n"
+                "2. Can you install if I already have materials?\n"
+                "3. How long does pump installation take?\n"
+                "4. What pump size do I need?\n"
+                "5. Do you supply tanks and tank stands?\n"
+                "6. Back to FAQ Menu"
             ),
-            "custom_question": "Sicela ubhale umbuzo wakho ngezansi, sizazama konke okusemandleni ukusiza.\n",
-            "connecting_agent": "Sicela ulinde ngikhulumisane lomsebenzi ozakusiza..."
+            "custom_question": "Please type your question below, and we'll do our best to assist you.\n",
+            "connecting_agent": "Please hold while I connect you to a representative..."
         },
         "custom_question": {
-            "empty_prompt": "Sicela ubhale umbuzo wakho.",
+            "empty_prompt": "Please type your question.",
             "follow_up": (
-                "Ungathanda:\n"
-                "1. Ukubuza omunye umbuzo\n"
-                "2. Ukubuyela ku Main Menu"
+                "Would you like to:\n"
+                "1. Ask another question\n"
+                "2. Return to Main Menu"
             ),
-            "next_question": "Sicela ubhale umbuzo wakho olandelayo."
+            "next_question": "Please type your next question.",
+            "response_followup": "Would you like to:\n1. Ask another question\n2. Return to Main Menu",
+            "invalid_option": "Please reply 1 to ask another question or 2 to return to the main menu."
         },
         "faq_borehole": {
             "responses": {
-                "1": "Inani lixhomeke endaweni okuyo, ukujula komthombo kanye lokuma komhlabathi. Sicela usithumelele indawo yakho kanye lokuthi kuyangena yini lula ukuze sikunike isilinganiso esifaneleyo.",
-                "2": "Ngokuvamile kuthatha amahora angu-4 kuya kwayi-6, kumbe okungaphezulu kuye ngesimo sendawo, uhlobo lwamatshe, lokufinyelela.",
-                "3": "Ukujula kuyahluka kuye ngendawo. Ngokujwayelekileyo kuzingela ku-40 metres, kodwa kungafinyelela ku-150 metres kuye nge-level yamanzi angaphansi komhlaba.",
-                "4": "Kwezinye izindawo kudingeka imvumo yamanzi. Singakuncedisa ukuyifaka nxa kudingeka.",
-                "5": "Yebo, siyahlinzeka kokubili njengephakheji elihlanganisiweyo kumbe ngokuhlukana, kuye ngokuthanda kwakho.",
-                "6": "Nxa iklayenti lifuna ukugaya kwenye indawo yesibili, sinika isaphulelo.\n\nQaphela: Amamishini wokuhlola athola izikhefu ezithwala amanzi angaphansi komhlaba kumbe lapho imifula engaphansi komhlaba ihlangana khona. Kodwa awekali ivolumu noma ijubane lamanzi. Ngakho, ukugaya umthombo akulaso isiqinisekiso se-100% sokuthi kuzatholakala amanzi — izikhefu zingaba zomile, zimanzi kancane, kumbe zigcwele amanzi.",
-                "7": "Sisebenzisa imishini ephakeme ye-rotary le percussion drill rigs, amathuluzi e-GPS kanye lamathuluzi wokuhlola ezokwakha.",
-                "8": "Sibuyela ku FAQ Menu..."
+                "1": "The cost depends on your location, depth, and soil conditions. Please send us your location and site access details for a personalized quote.",
+                "2": "Typically 4–6 hours or up to several days, depending on site conditions, rock type, and accessibility.",
+                "3": "Depth varies by area. The standard depth is around 40 meters, but boreholes can range from 40 to 150 meters depending on the underground water table.",
+                "4": "In some areas, a water permit may be required. We can assist you with the application if necessary.",
+                "5": "Yes, we offer both as a combined package or separately, depending on your preference.",
+                "6": "If the client wishes to drill at a second point, we offer a discount.\n\nNote: Survey machines detect underground water-bearing fractures or convergence points of underground streams. However, they do not measure the volume or flow rate of water. Therefore, borehole drilling carries no 100% guarantee of hitting water, as the fractures could be dry, moist, or wet.",
+                "7": "We use professional-grade rotary and percussion drilling rigs, GPS tools, and geological survey equipment.",
+                "8": "Returning to FAQ Menu..."
             },
             "follow_up": (
-                "Ungathanda:\n"
-                "1. Ukubuza omunye umbuzo mayelana le Borehole Drilling FAQs\n"
-                "2. Ukubuyela ku Main Menu"
+                "Would you like to:\n"
+                "1. Ask another question from Borehole Drilling FAQs\n"
+                "2. Return to Main Menu"
             ),
-            "invalid_option": "Sicela ukhethe inketho evumelekileyo (1–8)."
+            "invalid_option": "Please choose a valid option (1–8)."
         },
         "faq_pump": {
             "responses": {
-                "1": "Ama-solar pump asebenzisa amandla avela ku-solar panels futhi alungele izindawo ezingelamandla kagetsi. Ama-electric pump asebenzisa ugesi ophuma ku-grid, avame ukuba lula ukuthenga kodwa axhomeke ekutholakaleni kukagesi.",
-                "2": "Yebo! Sinikezela ngama-package omsebenzi kuphela nxa usulama-materials.",
-                "3": "Ukufaka impompi kuvamise ukuthatha usuku olulodwa kuphela nxa izinto sezilungile lendawo iyafinyeleleka.",
-                "4": "Usayizi wepompi uxhomeke emandleni owadingayo lamanzi kanye lekujuleni komthombo. Singahlola indawo yakho futhi sinikeze iseluleko esifaneleyo.",
-                "5": "Yebo, sithengisa ama-package agcweleyo afaka amathangi amanzi, ama-tank stands kanye lama-fittings odinga.",
-                "6": "Sibuyela ku FAQ Menu..."
+                "1": "Solar pumps use energy from solar panels and are ideal for off-grid or remote areas. Electric pumps rely on the power grid and are typically more affordable upfront but depend on electricity availability.",
+                "2": "Yes! We offer labor-only packages if you already have the necessary materials.",
+                "3": "Installation usually takes one day, provided materials are ready and site access is clear.",
+                "4": "Pump size depends on your water needs and borehole depth. We can assess your site and recommend the best option.",
+                "5": "Yes, we supply complete packages including water tanks, tank stands, and all necessary plumbing fittings.",
+                "6": "Returning to FAQ Menu..."
             },
             "follow_up": (
-                "Ungathanda:\n"
-                "1. Ukubuza omunye umbuzo we Pump Installation FAQs\n"
-                "2. Ukubuyela ku Main Menu"
+                "Would you like to:\n"
+                "1. Ask another question from Pump Installation FAQs\n"
+                "2. Return to Main Menu"
             ),
-            "invalid_option": "Sicela ukhethe inketho evumelekileyo (1–6)."
+            "invalid_option": "Please choose a valid option (1–6)."
         },
-          "new_request": "👋 Isicelo esitsha sekhasimende kuWhatsApp\n\n📱 Inombolo: {customer_number}\n📩 Umlayezo: \"{prompt}\"",
-          "fallback_option": "Nxa kunzima, ungasithinta ngqo ku {agent_number}",
-          "followup_question": "Ungathanda:\n1. Ukubuyela kuMain Menu\n2. Ukuphetha ingxoxo",
-          "return_menu": "Sikubuyisela kuMain Menu...",
-          "human_agent": {
-            "exit_message": "Kulungile. Zizwe ukhululekile ukubuza nxa kudingeka okunye.",
-            "invalid_option": "Sicela uphendule ngo 1 ukuze ubuyele kuMain Menu kumbe 2 ukuze uqhubekele phambili lapha."
-          },
-          "faq": {
+        "human_agent": {
+            "exit_message": "Okay. Feel free to ask if you need anything else.",
+            "invalid_option": "Please reply with 1 for Main Menu or 2 to stay here."
+        },
+        "faq": {
             "borehole": {
-              "menu": "Nansi imibuzo evame ukubuzwa mayelana lokwemba umthombo:\n\n1. Ukwemba umthombo kubiza malini?\n2. Kudinga isikhathi esingakanani ukumba umthombo?\n3. Umthombo wami uzajula kangakanani?\n4. Ngidinga imvumo na ukuze ngiwumbe?\n5. Liyenziwa ndawonye yini ukuhlola amanzi lokwemba?\n6. Kwenzakalani nxa kungatholakalanga amanzi ngesikhathi sokuhlola?\n7. Yiliphi ifekthri elisetshenziswa?\n8. Buyela kuFAQ Menu",
-              "responses": {
-                "1": "Inani lixhomeke endaweni okuyo, ukujula komthombo, kanye lohlobo lomhlabathi. Sicela usithumele indawo okuyo kanye lokufinyelela ukuze sikwazi ukukupha inani elifanele.",
-                "2": "Kuvamise ukuthatha amahora angu 4–6 kumbe kube yinsuku ezimbalwa, kuye ngomhlabathi kanye lokufinyelela endaweni.",
-                "3": "Ukujula kwehluka ngokwendawo. Okumaphakathi cishe ngamamitha angu-40, kodwa kungafinyelela ku-150m kuye ngamanzi angaphansi komhlabathi.",
-                "4": "Kwezinye izindawo kudingeka imvumo yamanzi. Singakuncedisa ukuyifaka nxa kudingeka.",
-                "5": "Yebo, senza kokubili ngokuhlangene noma ngokwehlukana, kuya ngokuthanda kwakho.",
-                "6": "Nxa ungathanda ukumba kwenye indawo, sinikeza isaphulelo.\n\nQaphela: Amamishini okuhlola amanzi abona kuphela imifantu engaphansi komhlaba enethuba lokuthwala amanzi. Kawalinganisi ivolumu noma ukugeleza kwamanzi. Ngakho akulamlingo wokuthi uzathola amanzi nxa kuwembwa umthombo.",
-                "7": "Sisebenzisa imishini yochwepheshe — ama-rigs e-rotary le-percussion, amathuluzi e-GPS kanye lemishini yokuhlola i-geology.",
-                "8": "Sibuyela kuFAQ Menu..."
-              },
-              "followup": "Ungathanda:\n1. Ukubuza enye imibuzo yeBorehole Drilling\n2. Ukubuyela kuMain Menu",
-              "invalid_option": "Sicela ukhethe inketho eqondileyo (1–8)."
+                "menu": "Here are the most common questions about borehole drilling:\n\n1. How much does borehole drilling cost?\n2. How long does it take to drill a borehole?\n3. How deep will my borehole be?\n4. Do I need permission to drill a borehole?\n5. Do you do a water survey and drilling at the same time?\n6. What if you do a water survey and find no water?\n7. What equipment do you use?\n8. Back to FAQ Menu",
+                "responses": {
+                    "1": "The cost depends on your location, depth, and soil conditions. Please send us your location and site access details for a personalized quote.",
+                    "2": "Typically 4–6 hours or up to several days, depending on site conditions, rock type, and accessibility.",
+                    "3": "Depth varies by area. The standard depth is around 40 meters, but boreholes can range from 40 to 150 meters depending on the underground water table.",
+                    "4": "In some areas, a water permit may be required. We can assist you with the application if necessary.",
+                    "5": "Yes, we offer both as a combined package or separately, depending on your preference.",
+                    "6": "If the client wishes to drill at a second point, we offer a discount.\n\nNote: Survey machines detect underground water-bearing fractures or convergence points of underground streams. However, they do not measure the volume or flow rate of water. Therefore, borehole drilling carries no 100% guarantee of hitting water, as the fractures could be dry, moist, or wet.",
+                    "7": "We use professional-grade rotary and percussion drilling rigs, GPS tools, and geological survey equipment.",
+                    "8": "Returning to FAQ Menu..."
+                },
+                "followup": "Would you like to:\n1. Ask another question from Borehole Drilling FAQs\n2. Return to Main Menu",
+                "invalid_option": "Please choose a valid option (1–8)."
             },
             "pump": {
-              "menu": "Nansi imibuzo evame ukubuzwa mayelana lokufakwa kwama-pump:\n\n1. Kuyini okwehlukanisayo phakathi kwama-solar le-electric pumps?\n2. Lingangifakela nxa ngilezinto yini?\n3. Kufaka isikhathi esingakanani ukufaka i-pump?\n4. Ngidinga i-pump engakanani?\n5. Linikezela ngamatanki lama-stand yini?\n6. Buyela kuFAQ Menu",
-              "responses": {
-                "1": "Ama-solar pumps asebenzisa amandla avela ku-solar panels, alungele izindawo ezingenalo ugesi. Ama-electric pumps athembela kugesi we-grid, abiza kancane ekuqaleni kodwa adinga ukuxhuma kugesi.",
-                "2": "Yebo! Sinikeza iphakheji yokufaka kuphela uma unazo izinto.",
-                "3": "Kuvamise ukuthatha usuku olulodwa, uma izinto sezilungile futhi indawo ifinyeleleka kalula.",
-                "4": "Usayizi we-pump uxhomeke kudinga kwakho amanzi lokujula komthombo. Singahlola indawo sikwazise okungcono.",
-                "5": "Yebo, sinikezela ngephakheji ephelele eliqukethe amatanki, ama-tank stands, lezinto zonke zokuxhuma amanzi.",
-                "6": "Sibuyela kuFAQ Menu..."
-              },
-              "followup": "Ungathanda:\n1. Ukubuza enye imibuzo yePump Installation\n2. Ukubuyela kuMain Menu",
-              "invalid_option": "Sicela ukhethe inketho eqondileyo (1–6)."
+                "menu": "Here are common questions about pump installation:\n\n1. What's the difference between solar and electric pumps?\n2. Can you install if I already have materials?\n3. How long does pump installation take?\n4. What pump size do I need?\n5. Do you supply tanks and tank stands?\n6. Back to FAQ Menu",
+                "responses": {
+                    "1": "Solar pumps use energy from solar panels and are ideal for off-grid or remote areas. Electric pumps rely on the power grid and are typically more affordable upfront but depend on electricity availability.",
+                    "2": "Yes! We offer labor-only packages if you already have the necessary materials.",
+                    "3": "Installation usually takes one day, provided materials are ready and site access is clear.",
+                    "4": "Pump size depends on your water needs and borehole depth. We can assess your site and recommend the best option.",
+                    "5": "Yes, we supply complete packages including water tanks, tank stands, and all necessary plumbing fittings.",
+                    "6": "Returning to FAQ Menu..."
+                },
+                "followup": "Would you like to:\n1. Ask another question from Pump Installation FAQs\n2. Return to Main Menu",
+                "invalid_option": "Please choose a valid option (1–6)."
             },
-            "custom_question": "Sicela ubhale umbuzo wakho ngezansi, sizazama ukukusiza kangcono.\n",
-            "menu": "Nansi imibuzo evame ukubuzwa:\n\n1. Borehole Drilling FAQs\n2. Pump Installation FAQs\n3. Buza umbuzo ohlukile\n4. Xhumana lo-agent womuntu\n5. Buyela kuMain Menu",
-            "invalid_option": "Sicela ukhethe inketho eqondileyo (1–5)."
-          },
-          "custom_question": {
-            "empty_prompt": "Sicela ubhale umbuzo wakho.",
-            "response_followup": "Ungathanda:\n1. Buza omunye umbuzo\n2. Buyela kuMain Menu",
-            "invalid_option": "Sicela uphendule ngo 1 ukuze ubuze omunye umbuzo noma 2 ukuze ubuyele kuMain Menu.",
-            "next_question": "Sicela ubhale umbuzo wakho olandelayo."
-          },
-          "human_agent_connect": "Ngicela ulinde ngikuxhumanise lommeleli..."
+            "custom_question": "Please type your question below, and we'll do our best to assist you.\n",
+            "menu": "Here are the most common questions:\n\n1. Borehole Drilling FAQs\n2. Pump Installation FAQs\n3. Ask a different question\n4. Human agent\n5. Back to Main Menu",
+            "invalid_option": "Please select a valid option (1–5)."
+        },
+        "human_agent_connect": "Please hold while I connect you to a representative..."
+    },
+    "Shona": {
+        "welcome": "Mhoro! Tigashire kuSpeedGo Services yekuchera mabhoreholes muZimbabwe. Tinopa maborehole akavimbika uye mhinduro dzemvura muZimbabwe yose.\n\nSarudza mutauro waunoda:\n1. Chirungu\n2. Shona\n3. Ndebele",
+        "main_menu": "Tingakubatsire sei nhasi?\n\n1. Kumbira mutengo\n2. Tsvaga Mutengo Uchishandisa Nzvimbo\n3. Tarisa Mamiriro eProjekiti\n4. Mibvunzo Inowanzo bvunzwa kana Kudzidza Nezvekuchera Borehole\n5. Mamwe masevhisi\n6. Taura neMumiriri Wevanhu\n\nPindura nenhamba (semuenzaniso 1)",
+        "enter_location": "Ndapota isa nzvimbo yako (Guta/Dhorobha kana GPS coordinates) kuti utange.",
+        "location_detected": "Nzvimbo yawanikwa: {}\n\nSarudza sevhisi:\n1. Ongororo yemvura\n2. Kuchera borehole\n3. Kuiswa kwepombi\n4. Kuchera maburi emabhizinesi\n5. Kudzika borehole",
+        "location_not_found": "Hatina kukwanisa kuona nzvimbo yako. Ndapota nyora zita reguta/dhorobha rako nemaoko.",
+        "agent_connect": "Ndatenda. Ndapota mira ndichikubatanidza nemumiriri weSpeedGo...",
+        "agent_notification": "👋 Mutengi anoda kutaura newe paWhatsApp.\n\n📱 Nhamba yeMutengi: {customer_number}\n🙋 Zita: {customer_name}\n📩 Mharidzo yekupedzisira: \"{prompt}\"",
+        "new_request": "👋 Chikumbiro chitsva chemutengi paWhatsApp\n\n📱 Nhamba: {customer_number}\n📩 Mharidzo: \"{prompt}\"",
+        "fallback_option": "Neimwe nzira, unogona kutibata zvakananga pa {agent_number}",
+        "followup_question": "Ungada here:\n1. Kudzokera kumenu huru\n2. Kupedza hurukuro",
+        "return_menu": "Ndiri kukudzosera kumenu huru...",
+        "goodbye": "Ndatenda! Iva nezuva rakanaka.",
+        "invalid_option": "Pindura ne1 kuti Hongu kana 2 kuti Kwete.",
+        "still_waiting": "Ndapota mira, tichiri kukubatanidza...",
+        "human_agent_followup": {
+            "invalid_option": "Pindura ne1 kuti Main Menu kana 2 kuti ugare pano.",
+            "stay_here": "Zvakanaka. Sununguka kubvunza kana uine chimwe chaunoda."
+        },
+        "faq_menu": {
+            "invalid_option": "Sarudza sarudzo inoshanda (1–5).",
+            "borehole_faqs": (
+                "Heano mibvunzo inowanzo bvunzwa nezvekuchera mabhorehole:\n\n"
+                "1. Marii kuchera borehole?\n"
+                "2. Zvinotora nguva yakareba sei kuchera borehole?\n"
+                "3. Borehole yangu ichadzika sei?\n"
+                "4. Ndinoda mvumo here kuchera borehole?\n"
+                "5. Munoona mvura uye mochera panguva imwe chete here?\n"
+                "6. Ko kana mukaona mvura uye mukashaya mvura?\n"
+                "7. Mishandisi yenyu ndeipi?\n"
+                "8. Dzokera kuFAQ Menu"
+            ),
+            "pump_faqs": (
+                "Heano mibvunzo inowanzo bvunzwa nezvekuisa mapombi:\n\n"
+                "1. Musiyano uripi pakati pemapombi ezuva nemagetsi?\n"
+                "2. Munogona here kuisa kana ndine zvinhu zvacho?\n"
+                "3. Zvinotora nguva yakareba sei kuisa pombi?\n"
+                "4. Pombi yakakura sei yandinoda?\n"
+                "5. Munopa matangi nematangi stands here?\n"
+                "6. Dzokera kuFAQ Menu"
+            ),
+            "custom_question": "Ndapota nyora mubvunzo wako pazasi, uye tichaita nepandinogona kukubatsira.\n",
+            "connecting_agent": "Ndapota mira ndichikubatanidza nemumiriri..."
+        },
+        "custom_question": {
+            "empty_prompt": "Ndapota nyora mubvunzo wako.",
+            "follow_up": (
+                "Ungada here:\n"
+                "1. Kubvunza mumwe mubvunzo\n"
+                "2. Kudzokera kuMain Menu"
+            ),
+            "next_question": "Ndapota nyora mubvunzo wako unotevera.",
+            "response_followup": "Ungada here:\n1. Kubvunza mumwe mubvunzo\n2. Kudzokera kuMain Menu",
+            "invalid_option": "Pindura ne1 kuti ubvunze mumwe mubvunzo kana 2 kuti udzokere kumenu huru."
+        },
+        "faq_borehole": {
+            "responses": {
+                "1": "Mari inoenderana nenzvimbo yako, kudzika, uye mamiriro evhu. Ndapota titumire nzvimbo yako uye ruzivo rwekuwana nzvimbo kuti tikupe mutengo wako.",
+                "2": "Kazhinji maawa 4–6 kana kusvika mazuva akati wandei, zvichienderana nemamiriro enzvimbo, rudzi rwedombo, uye kuwanikwa kwenzvimbo.",
+                "3": "Kudzika kunosiyana nenzvimbo. Kudzika kwakajairwa kunosvika mamita makumi mana, asi mabhorehole anogona kubva pamamita makumi mana kusvika zana nemakumi mashanu zvichienderana netafura yemvura yepasi pevhu.",
+                "4": "Mune dzimwe nzvimbo, mvumo yemvura inogona kudikanwa. Tinogona kukubatsira nechikumbiro kana zvichidikanwa.",
+                "5": "Hongu, tinopa ese ari maviri semubatanidzwa kana zvakasiyana, zvichienderana nezvaunoda.",
+                "6": "Kana mutengi achida kuchera panzvimbo yechipiri, tinopa discount.\n\nCherechedza: Michina yekuongorora inoona mitswe inotakura mvura yepasi pevhu kana nzvimbo dzinopindirana dzemvura pasi pevhu. Zvisinei, haipime huwandu kana kuyerera kwemvura. Saka kuchera borehole hakuna vimbiso yekuti muchawana mvura, sezvo mitswe ingave yakaoma, yakanyorova, kana ine mvura.",
+                "7": "Tinoshandisa midziyo yehunyanzvi yekuchera uye percussion drilling rigs, GPS maturusi, uye midziyo yekuongorora geological.",
+                "8": "Ndiri kudzokera kuFAQ Menu..."
+            },
+            "follow_up": (
+                "Ungada here:\n"
+                "1. Kubvunza mumwe mubvunzo kubva kuBorehole Drilling FAQs\n"
+                "2. Kudzokera kuMain Menu"
+            ),
+            "invalid_option": "Sarudza sarudzo inoshanda (1–8)."
+        },
+        "faq_pump": {
+            "responses": {
+                "1": "Mapombi ezuva anoshandisa simba remapaneru ezuva uye akanakira nzvimbo dzisina magetsi kana dziri kure. Mapombi emagetsi anovimba nemagetsi uye anowanzo kuve akachipa pakutanga asi anoenderana nekuwanikwa kwemagetsi.",
+                "2": "Hongu! Tinopa mapakeji ebasa chete kana uine zvinhu zvinodiwa.",
+                "3": "Kuiswa kunowanzo torera zuva rimwe, chero zvinhu zvagadzirira uye nzvimbo yakavhurika.",
+                "4": "Saizi yepombi inoenderana nezvaunoda uye nekudzika kweborehole. Tinogona kuongorora nzvimbo yako uye kukurudzira sarudzo yakanaka.",
+                "5": "Hongu, tinopa mapakeji akazara anosanganisira matangi emvura, matangi stands, uye zvese zvinodiwa zvepombi.",
+                "6": "Ndiri kudzokera kuFAQ Menu..."
+            },
+            "follow_up": (
+                "Ungada here:\n"
+                "1. Kubvunza mumwe mubvunzo kubva kuPump Installation FAQs\n"
+                "2. Kudzokera kuMain Menu"
+            ),
+            "invalid_option": "Sarudza sarudzo inoshanda (1–6)."
+        },
+        "human_agent": {
+            "exit_message": "Zvakanaka. Sununguka kubvunza kana uine chimwe chaunoda.",
+            "invalid_option": "Pindura ne1 kuti Main Menu kana 2 kuti ugare pano."
+        },
+        "faq": {
+            "borehole": {
+                "menu": "Heano mibvunzo inowanzo bvunzwa nezvekuchera mabhorehole:\n\n1. Marii kuchera borehole?\n2. Zvinotora nguva yakareba sei kuchera borehole?\n3. Borehole yangu ichadzika sei?\n4. Ndinoda mvumo here kuchera borehole?\n5. Munoona mvura uye mochera panguva imwe chete here?\n6. Ko kana mukaona mvura uye mukashaya mvura?\n7. Mishandisi yenyu ndeipi?\n8. Dzokera kuFAQ Menu",
+                "responses": {
+                    "1": "Mari inoenderana nenzvimbo yako, kudzika, uye mamiriro evhu. Ndapota titumire nzvimbo yako uye ruzivo rwekuwana nzvimbo kuti tikupe mutengo wako.",
+                    "2": "Kazhinji maawa 4–6 kana kusvika mazuva akati wandei, zvichienderana nemamiriro enzvimbo, rudzi rwedombo, uye kuwanikwa kwenzvimbo.",
+                    "3": "Kudzika kunosiyana nenzvimbo. Kudzika kwakajairwa kunosvika mamita makumi mana, asi mabhorehole anogona kubva pamamita makumi mana kusvika zana nemakumi mashanu zvichienderana netafura yemvura yepasi pevhu.",
+                    "4": "Mune dzimwe nzvimbo, mvumo yemvura inogona kudikanwa. Tinogona kukubatsira nechikumbiro kana zvichidikanwa.",
+                    "5": "Hongu, tinopa ese ari maviri semubatanidzwa kana zvakasiyana, zvichienderana nezvaunoda.",
+                    "6": "Kana mutengi achida kuchera panzvimbo yechipiri, tinopa discount.\n\nCherechedza: Michina yekuongorora inoona mitswe inotakura mvura yepasi pevhu kana nzvimbo dzinopindirana dzemvura pasi pevhu. Zvisinei, haipime huwandu kana kuyerera kwemvura. Saka kuchera borehole hakuna vimbiso yekuti muchawana mvura, sezvo mitswe ingave yakaoma, yakanyorova, kana ine mvura.",
+                    "7": "Tinoshandisa midziyo yehunyanzvi yekuchera uye percussion drilling rigs, GPS maturusi, uye midziyo yekuongorora geological.",
+                    "8": "Ndiri kudzokera kuFAQ Menu..."
+                },
+                "followup": "Ungada here:\n1. Kubvunza mumwe mubvunzo kubva kuBorehole Drilling FAQs\n2. Kudzokera kuMain Menu",
+                "invalid_option": "Sarudza sarudzo inoshanda (1–8)."
+            },
+            "pump": {
+                "menu": "Heano mibvunzo inowanzo bvunzwa nezvekuisa mapombi:\n\n1. Musiyano uripi pakati pemapombi ezuva nemagetsi?\n2. Munogona here kuisa kana ndine zvinhu zvacho?\n3. Zvinotora nguva yakareba sei kuisa pombi?\n4. Pombi yakakura sei yandinoda?\n5. Munopa matangi nematangi stands here?\n6. Dzokera kuFAQ Menu",
+                "responses": {
+                    "1": "Mapombi ezuva anoshandisa simba remapaneru ezuva uye akanakira nzvimbo dzisina magetsi kana dziri kure. Mapombi emagetsi anovimba nemagetsi uye anowanzo kuve akachipa pakutanga asi anoenderana nekuwanikwa kwemagetsi.",
+                    "2": "Hongu! Tinopa mapakeji ebasa chete kana uine zvinhu zvinodiwa.",
+                    "3": "Kuiswa kunowanzo torera zuva rimwe, chero zvinhu zvagadzirira uye nzvimbo yakavhurika.",
+                    "4": "Saizi yepombi inoenderana nezvaunoda uye nekudzika kweborehole. Tinogona kuongorora nzvimbo yako uye kukurudzira sarudzo yakanaka.",
+                    "5": "Hongu, tinopa mapakeji akazara anosanganisira matangi emvura, matangi stands, uye zvese zvinodiwa zvepombi.",
+                    "6": "Ndiri kudzokera kuFAQ Menu..."
+                },
+                "followup": "Ungada here:\n1. Kubvunza mumwe mubvunzo kubva kuPump Installation FAQs\n2. Kudzokera kuMain Menu",
+                "invalid_option": "Sarudza sarudzo inoshanda (1–6)."
+            },
+            "custom_question": "Ndapota nyora mubvunzo wako pazasi, uye tichaita nepandinogona kukubatsira.\n",
+            "menu": "Heano mibvunzo inowanzo bvunzwa:\n\n1. Borehole Drilling FAQs\n2. Pump Installation FAQs\n3. Bvunza mumwe mubvunzo\n4. Mumiriri wevanhu\n5. Dzokera kuMain Menu",
+            "invalid_option": "Sarudza sarudzo inoshanda (1–5)."
+        },
+        "human_agent_connect": "Ndapota mira ndichikubatanidza nemumiriri..."
+    },
+    "Ndebele": {
+        "welcome": "Salibonani! Wamukelekile kumaSpeedGo Services okumbiwa kwemigodi yamanzi eZimbabwe. Sinikezela ngokuthembekile ukumbiwa kwemigodi yamanzi kanye nezixazululo zamanzi kulo lonke elaseZimbabwe.\n\nKhetha ulimi oluthandayo:\n1. IsiNgesi\n2. IsiShona\n3. IsiNdebele",
+        "main_menu": "Singakusiza kanjani namuhla?\n\n1. Cela isilinganiso\n2. Sesha intengo usebenzisa indawo\n3. Hlola isimo sephrojekthi\n4. Imibuzo evame ukubuzwa noma Funda Ngokumbiwa Kwemigodi Yamanzi\n5. Eminye imisebenzi\n6. Khuluma nomuntu\n\nPhendula ngenombolo (isib. 1)",
+        "enter_location": "Sicela ufake indawo yakho (Idolobha noma ama-GPS coordinates) ukuze uqale.",
+        "location_detected": "Indawo itholakele: {}\n\nManje khetha isevisi:\n1. Ukuhlolwa kwamanzi\n2. Ukumbiwa kwemigodi yamanzi\n3. Ukufakwa kwepompi\n4. Ukumbiwa kwemigodi yebhizinisi\n5. Ukujulisa umgodi wamanzi",
+        "location_not_found": "Asikwazanga ukuthola indawo yakho. Sicela ubhale igama ledolobha lakho ngesandla.",
+        "agent_connect": "Ngiyabonga. Sicela ulinde ngizokuxhumanisa nommeleli weSpeedGo...",
+        "agent_notification": "👋 Ikhasimende lifuna ukukhuluma nawe ku-WhatsApp.\n\n📱 Inombolo yekhasimende: {customer_number}\n🙋 Igama: {customer_name}\n📩 Umlayezo wokugcina: \"{prompt}\"",
+        "new_request": "👋 Isicelo esisha sekhasimende ku-WhatsApp\n\n📱 Inombolo: {customer_number}\n📩 Umlayezo: \"{prompt}\"",
+        "fallback_option": "Ngenye indlela, ungaxhumana nathi ngqo ku-{agent_number}",
+        "followup_question": "Ungathanda:\n1. Ukubuyela kumenyu eyinhloko\n2. Ukuphelisa inkulumo",
+        "return_menu": "Kubuyiselwa kumenyu eyinhloko...",
+        "goodbye": "Ngiyabonga! Ube nosuku oluhle.",
+        "invalid_option": "Phendula ngo-1 ukuze uthi Yebo noma ngo-2 ukuze uthi Cha.",
+        "still_waiting": "Sicela ulinde, sisaxhumanisa...",
+        "human_agent_followup": {
+            "invalid_option": "Phendula ngo-1 ukuze uthi Main Menu noma ngo-2 ukuze uhlale lapha.",
+            "stay_here": "Kulungile. Zizwe ukhululekile ukubuza uma unokuthile okudingayo."
+        },
+        "faq_menu": {
+            "invalid_option": "Khetha inketho evumelekile (1–5).",
+            "borehole_faqs": (
+                "Nazi imibuzo evame ukubuzwa mayelana nokumbiwa kwemigodi yamanzi:\n\n"
+                "1. Kubiza malini ukumba umgodi wamanzi?\n"
+                "2. Kuthatha isikhathi esingakanani ukumba umgodi wamanzi?\n"
+                "3. Uzoba njani ubujulu bomgodi wami wamanzi?\n"
+                "4. Ngidinga imvume yokumba umgodi wamanzi?\n"
+                "5. Ngabe niyahlola amanzi bese nibamba ngesikhathi esisodwa?\n"
+                "6. Kuthiwani uma nihlola amanzi bese ningenayo?\n"
+                "7. Yiziphi izinto enizisebenzisayo?\n"
+                "8. Buyela kumenyu yemibuzo"
+            ),
+            "pump_faqs": (
+                "Nazi imibuzo evame ukubuzwa mayelana nokufakwa kwepompi:\n\n"
+                "1. Umehluko uyini phakathi kwepompi yelanga neyogesi?\n"
+                "2. Ngabe ningayifaka uma senginazo izinto ezidingekayo?\n"
+                "3. Kuthatha isikhathi esingakanani ukufaka ipompi?\n"
+                "4. Ngidinga ipompi enkulu kangakanani?\n"
+                "5. Ngabe ninikeza amathangi nezinduku zamathangi?\n"
+                "6. Buyela kumenyu yemibuzo"
+            ),
+            "custom_question": "Sicela uthayiphe umbuzo wakho ngezansi, futhi sizokwenza konke okusemandleni ethu ukukusiza.\n",
+            "connecting_agent": "Sicela ulinde ngizokuxhumanisa nommeleli..."
+        },
+        "custom_question": {
+            "empty_prompt": "Sicela uthayiphe umbuzo wakho.",
+            "follow_up": (
+                "Ungathanda:\n"
+                "1. Ukubuza omunye umbuzo\n"
+                "2. Ukubuyela kumenyu eyinhloko"
+            ),
+            "next_question": "Sicela uthayiphe umbuzo wakho olandelayo.",
+            "response_followup": "Ungathanda:\n1. Ukubuza omunye umbuzo\n2. Ukubuyela kumenyu eyinhloko",
+            "invalid_option": "Phendula ngo-1 ukuze ubuze omunye umbuzo noma ngo-2 ukuze ubuyele kumenyu eyinhloko."
+        },
+        "faq_borehole": {
+            "responses": {
+                "1": "Intengo incike endaweni yakho, ekujuleni, nasezimeni zomhlabathi. Sicela usithumelele indawo yakho nolwazi lokufinyelela ukuze sikunikeze isilinganiso sakho.",
+                "2": "Ngokuvamile amahora angu-4–6 noma kuze kufike ezinsukwini ezimbalwa, kuncike ezimeni zendawo, uhlobo lwedwala, nokufinyeleleka kwendawo.",
+                "3": "Ubujulu buyahluka ngendawo. Ubujulu obujwayelekile buphakathi nemamitha angu-40, kodwa imigodi yamanzi ingavela kumamitha angu-40 kuya kwayi-150 kuncike kuthebula yamanzi angaphansi komhlaba.",
+                "4": "Kwezinye izindawo, kungadingeka imvume yamanzi. Singakusiza ngesicelo uma kudingeka.",
+                "5": "Yebo, sinikeza kokubili njengephakethe elihlanganisiwe noma ngokwehlukana, kuncike kulokho okufunayo.",
+                "6": "Uma ikhasimende lifuna ukumba endaweni yesibili, sinikeza isaphulelo.\n\nQaphela: Imishini yokuhlola ithola imikhondo ephansi komhlaba ethwala amanzi noma izindawo ezihlangana zamanzi angaphansi komhlaba. Kodwa, ayilinganisi inani noma ijubane lamanzi. Ngakho-ke ukumba umgodi wamanzi akunasigqiniseko sokuthi uzothola amanzi, njengoba imikhondo ingaba yomile, imanzi noma inamanzi.",
+                "7": "Sisebenzisa izinsimbi zokumba ezingochwepheshe kanye ne-percussion drilling rigs, amathuluzi e-GPS, namathuluzi okuhlola geological.",
+            }
+        }
     }
-
+    
 # User serialization helpers
 class User:
     def __init__(self, phone_number):
