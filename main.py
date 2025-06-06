@@ -59,7 +59,7 @@ LANGUAGES = {
                 "6. What if you do a water survey and find no water?\n"
                 "7. What equipment do you use?\n"
                 "8. Back to FAQ Menu"
-            )
+            ),
         
                 "pump_faqs": (
                 "Here are common questions about pump installation:\n\n"
@@ -72,7 +72,7 @@ LANGUAGES = {
             ),
             "custom_question": "Please type your question below, and we'll do our best to assist you.\n",
             "connecting_agent": "Please hold while I connect you to a representative..."
-        },
+        }
 
 
 
