@@ -60,7 +60,20 @@ LANGUAGES = {
                 "7. What equipment do you use?\n"
                 "8. Back to FAQ Menu"
             )
-        }
+        
+                "pump_faqs": (
+                "Here are common questions about pump installation:\n\n"
+                "1. What's the difference between solar and electric pumps?\n"
+                "2. Can you install if I already have materials?\n"
+                "3. How long does pump installation take?\n"
+                "4. What pump size do I need?\n"
+                "5. Do you supply tanks and tank stands?\n"
+                "6. Back to FAQ Menu"
+            ),
+            "custom_question": "Please type your question below, and we'll do our best to assist you.\n",
+            "connecting_agent": "Please hold while I connect you to a representative..."
+        },
+
 
 
     },
