@@ -50,16 +50,17 @@ LANGUAGES = {
         "faq_menu": {
             "invalid_option": "Please select a valid option (1–5).",
             "borehole_faqs": (
-                "Here are the most common questions about borehole drilling:\n\n",
-                "1. How much does borehole drilling cost?\n",
-                "2. How long does it take to drill a borehole?\n",
-                "3. How deep will my borehole be?\n",
-                "4. Do I need permission to drill a borehole?\n",
-                "5. Do you do a water survey and drilling at the same time?\n",
-                "6. What if you do a water survey and find no water?\n",
-                "7. What equipment do you use?\n",
+                "Here are the most common questions about borehole drilling:\n\n"
+                "1. How much does borehole drilling cost?\n"
+                "2. How long does it take to drill a borehole?\n"
+                "3. How deep will my borehole be?\n"
+                "4. Do I need permission to drill a borehole?\n"
+                "5. Do you do a water survey and drilling at the same time?\n"
+                "6. What if you do a water survey and find no water?\n"
+                "7. What equipment do you use?\n"
                 "8. Back to FAQ Menu"
             )
+        }
 
 
     },
