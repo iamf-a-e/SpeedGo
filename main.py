@@ -143,7 +143,7 @@ LANGUAGES = {
                 "7. Mishandisi yenyu ndeipi?\n"
                 "8. Dzokera kuFAQ Menu"
             ),
-        },
+        
                 "pump_faqs": (
                 "Heano mibvunzo inowanzo bvunzwa nezvekuisa mapombi:\n\n"
                 "1. Musiyano uripi pakati pemapombi ezuva nemagetsi?\n"
@@ -152,7 +152,22 @@ LANGUAGES = {
                 "4. Pombi yakakura sei yandinoda?\n"
                 "5. Munopa matangi nematangi stands here?\n"
                 "6. Dzokera kuFAQ Menu"
-            )
+            ),
+                "custom_question": "Ndapota nyora mubvunzo wako pazasi, uye tichaita nepandinogona kukubatsira.\n",
+                "connecting_agent": "Ndapota mira ndichikubatanidza nemumiriri..."
+        },
+        "custom_question": {
+            "empty_prompt": "Ndapota nyora mubvunzo wako.",
+            "follow_up": (
+                "Ungada here:\n"
+                "1. Kubvunza mumwe mubvunzo\n"
+                "2. Kudzokera kuMain Menu"
+            ),
+            "next_question": "Ndapota nyora mubvunzo wako unotevera.",
+            "response_followup": "Ungada here:\n1. Kubvunza mumwe mubvunzo\n2. Kudzokera kuMain Menu",
+            "invalid_option": "Pindura ne1 kuti ubvunze mumwe mubvunzo kana 2 kuti udzokere kumenu huru."
+        }
+
 
 
 
