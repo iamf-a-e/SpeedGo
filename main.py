@@ -2412,9 +2412,9 @@ def faq_pump_followup2(prompt, user_data, phone_id):
 def handle_enter_location_for_quote2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
-    if 'location' in user_data and 'latitude' in user_data['location'] and 'longitude' in user_data['location']:
-        lat = user_data['location']['latitude']
-        lng = user_data['location']['longitude']
+    if 'location2' in user_data and 'latitude' in user_data['location2'] and 'longitude' in user_data['location2']:
+        lat = user_data['location2']['latitude']
+        lng = user_data['location2']['longitude']
         gps_coords2 = f"{lat},{lng}"
         location_name2 = reverse_geocode_location2(gps_coords2)
 
@@ -2440,7 +2440,7 @@ def handle_enter_location_for_quote2(prompt, user_data, phone_id):
             send("Hatina kukwanisa kuona nzvimbo yenyu. Ndapota nyora zita reguta/kanzvimbo nemaoko.", user_data['sender'], phone_id)
             return {'step': 'enter_location_for_quote2', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        location_name = prompt.strip()
+        location_name2 = prompt.strip()
         user.quote_data['location'] = location_name.lower()
         update_user_state(user_data['sender'], {
             'step': 'select_service_quote2',
@@ -2460,7 +2460,7 @@ def handle_enter_location_for_quote2(prompt, user_data, phone_id):
 
 def handle_select_service2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    services = {
+    services2 = {
         "1": "Water survey",
         "2": "Kuchera borehole",
         "3": "Kuiswa kwepombi",
@@ -2468,7 +2468,7 @@ def handle_select_service2(prompt, user_data, phone_id):
         "5": "Kudzika zvakare kwe borehole",
     }
     if prompt in services:
-        user.quote_data['service'] = services[prompt]
+        user.quote_data['service'] = services2[prompt]
         update_user_state(user_data['sender'], {
             'step': 'collect_quote_details2',
             'user': user.to_dict()
@@ -2545,21 +2545,21 @@ def reverse_geocode_location2(gps_coords2):
     # Local fallback mapping
     
     if -22.27 < lat < -22.16 and 29.94 < lng < 30.06:
-        return "Beitbridge Town"
+        return "Beitbridge"
     elif -20.06 < lat < -19.95 and 31.54 < lng < 31.65:
-        return "Nyika Growth Point"
+        return "Nyika"
     elif -17.36 < lat < -17.25 and 31.28 < lng < 31.39:
-        return "Bindura Town"
+        return "Bindura"
     elif -17.68 < lat < -17.57 and 27.29 < lng < 27.40:
-        return "Binga Town"
+        return "Binga"
     elif -19.58 < lat < -19.47 and 28.62 < lng < 28.73:
-        return "Bubi Town/Centre"
+        return "Bubi"
     elif -19.33 < lat < -19.22 and 31.59 < lng < 31.70:
-        return "Murambinda Town"
+        return "Murambinda"
     elif -19.39 < lat < -19.28 and 31.38 < lng < 31.49:
         return "Buhera"
     elif -20.20 < lat < -20.09 and 28.51 < lng < 28.62:
-        return "Bulawayo City/Town"
+        return "Bulawayo"
     elif -19.691 < lat < -19.590 and 31.103 < lng < 31.204:
         return "Gutu"
     elif -20.99 < lat < -20.88 and 28.95 < lng < 29.06:
@@ -2790,13 +2790,13 @@ def handle_booking_confirmation2(prompt, user_data, phone_id):
 
 def handle_select_service_quote2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    location = user.quote_data.get('location')
+    location2 = user.quote_data.get('location2')
     
-    if not location:
+    if not location2:
         send("Ndokumbira utaure nzvimbo yako kutanga usati wasarudza sevhisi.", user_data['sender'], phone_id)
         return {'step': 'enter_location_for_quote2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-    service_map = {
+    service_map2 = {
         "1": "Kuongorora Mvura",
         "2": "Kukorobha Borehole",
         "3": "Kuisa Pampu",
@@ -2804,17 +2804,17 @@ def handle_select_service_quote2(prompt, user_data, phone_id):
         "5": "Kudzika Borehole"
     }
 
-    selected_service = service_map.get(prompt.strip())
+    selected_service2 = service_map2.get(prompt.strip())
 
-    if not selected_service:
+    if not selected_service2:
         send("Sarudzo isiriyo. Ndokumbira upindure ne1, 2, 3, 4 kana 5 kusarudza sevhisi.", user_data['sender'], phone_id)
         return {'step': 'select_service_quote2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # Store selected service
-    user.quote_data['service'] = selected_service
+    user.quote_data['service'] = selected_service2
 
     # Handle Pump Installation separately as it has options
-    if selected_service == "Kuisa Pampu":
+    if selected_service2 == "Kuisa Pampu":
         update_user_state(user_data['sender'], {
             'step': 'select_pump_option2',
             'user': user.to_dict()
@@ -2827,7 +2827,7 @@ def handle_select_service_quote2(prompt, user_data, phone_id):
         return {'step': 'select_pump_option2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # Get pricing for other services
-    pricing_message = get_pricing_for_location_quotes(location, selected_service)
+    pricing_message2 = get_pricing_for_location_quotes2(location, selected_service)
     
     # Ask if user wants to return to main menu or choose another service
     update_user_state(user_data['sender'], {
