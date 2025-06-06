@@ -72,7 +72,19 @@ LANGUAGES = {
             ),
             "custom_question": "Please type your question below, and we'll do our best to assist you.\n",
             "connecting_agent": "Please hold while I connect you to a representative..."
+        },
+            "custom_question": {
+            "empty_prompt": "Please type your question.",
+            "follow_up": (
+                "Would you like to:\n"
+                "1. Ask another question\n"
+                "2. Return to Main Menu"
+            ),
+            "next_question": "Please type your next question.",
+            "response_followup": "Would you like to:\n1. Ask another question\n2. Return to Main Menu",
+            "invalid_option": "Please reply 1 to ask another question or 2 to return to the main menu."
         }
+
 
 
 
