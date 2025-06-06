@@ -125,7 +125,26 @@ LANGUAGES = {
         "location_not_found": "Hatina kukwanisa kuona nzvimbo yenyu. Ndapota nyora zita reguta/kanzvimbo nemaoko.",
         "agent_connect": "Ndatenda. Ndapota mira ndichikubatanidza nemumiriri weSpeedGo...",
         "agent_notification": "👋 Mutengi anoda kutaura newe paWhatsApp.\n\n📱 Nhamba yeMutengi: {customer_number}\n🙋 Zita: {customer_name}\n📩 Mharidzo yekupedzisira: \"{prompt}\"",
-        "new_request": "👋 Chikumbiro chitsva chemutengi paWhatsApp\n\n📱 Nhamba: {customer_number}\n📩 Mharidzo: \"{prompt}\""
+        "new_request": "👋 Chikumbiro chitsva chemutengi paWhatsApp\n\n📱 Nhamba: {customer_number}\n📩 Mharidzo: \"{prompt}\"",
+        "human_agent_followup": {
+            "invalid_option": "Pindura ne1 kuti Main Menu kana 2 kuti ugare pano.",
+            "stay_here": "Zvakanaka. Sununguka kubvunza kana uine chimwe chaunoda."
+        },
+        "faq_menu": {
+            "invalid_option": "Sarudza sarudzo inoshanda (1–5).",
+            "borehole_faqs": (
+                "Heano mibvunzo inowanzo bvunzwa nezvekuchera mabhorehole:\n\n"
+                "1. Marii kuchera borehole?\n"
+                "2. Zvinotora nguva yakareba sei kuchera borehole?\n"
+                "3. Borehole yangu ichadzika sei?\n"
+                "4. Ndinoda mvumo here kuchera borehole?\n"
+                "5. Munoona mvura uye mochera panguva imwe chete here?\n"
+                "6. Ko kana mukaona mvura uye mukashaya mvura?\n"
+                "7. Mishandisi yenyu ndeipi?\n"
+                "8. Dzokera kuFAQ Menu"
+            ),
+        }
+
 
     },
     
