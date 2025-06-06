@@ -45,7 +45,7 @@ LANGUAGES = {
         "still_waiting": "Please hold, we're still connecting you...",
         "human_agent_followup": {
             "invalid_option": "Please reply with 1 for Main Menu or 2 to stay here.",
-            "stay_here": "Okay. Feel free to ask if you need anything else."
+            "stay_here": "Okay. Feel free to ask if you need anything else.",
         },
         "faq_menu": {
             "invalid_option": "Please select a valid option (1–5).",
