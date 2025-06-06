@@ -34,7 +34,18 @@ LANGUAGES = {
         "enter_location": "Please enter your location (City/Town or GPS coordinates) to get started.",
         "location_detected": "Location detected: {}\n\nNow select the service:\n1. Water survey\n2. Borehole drilling\n3. Pump installation\n4. Commercial hole drilling\n5. Borehole Deepening",
         "location_not_found": "We couldn't identify your location. Please type your city/town name manually."
+        "agent_connect": "Thank you. Please hold while I connect you to a SpeedGo representative...",
+        "agent_notification": "👋 A customer would like to talk to you on WhatsApp.\n\n📱 Customer Number: {customer_number}\n🙋 Name: {customer_name}\n📩 Last Message: \"{prompt}\"",
+        "new_request": "👋 New customer request on WhatsApp\n\n📱 Number: {customer_number}\n📩 Message: \"{prompt}\"",
+        "fallback_option": "Alternatively, you can contact us directly at {agent_number}",
+        "followup_question": "Would you like to:\n1. Return to main menu\n2. End conversation",
+        "return_menu": "Returning you to the main menu...",
+        "goodbye": "Thank you! Have a good day.",
+        "invalid_option": "Please reply with 1 for Yes or 2 for No.",
+        "still_waiting": "Please hold, we're still connecting you..."
+
     },
+    
     "Shona": {
         "welcome": "Mhoro! Tigamuchire kuSpeedGo Services yekuchera maburi emvura muZimbabwe. Tinopa maburi emvura anovimbika nemhinduro dzemvura muZimbabwe yose.\n\nSarudza mutauro waunofarira:\n1. Chirungu\n2. Shona\n3. Ndebele",
         "main_menu": "Tinokubatsirai sei nhasi?\n\n1. Kukumbira quotation\n2. Tsvaga Mutengo Uchishandisa Nzvimbo\n3. Tarisa Mamiriro ePurojekiti\n4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n5. Zvimwe Zvatinoita\n6. Taura neMunhu\n\nPindura nenhamba (semuenzaniso, 1)",
@@ -42,6 +53,7 @@ LANGUAGES = {
         "location_detected": "Nzvimbo yawanikwa: {}\n\nZvino sarudza sevhisi yaunoda:\n1. Water survey\n2. Kuchera borehole\n3. Kuiswa kwepombi\n4. Kuchera bhora rezvekutengeserana\n5. Kuchinjwa/kudzika zvakare kwe borehole",
         "location_not_found": "Hatina kukwanisa kuona nzvimbo yenyu. Ndapota nyora zita reguta/kanzvimbo nemaoko."
     },
+    
     "Ndebele": {
         "welcome": "Sawubona! Wamukelekile kwiSpeedGo Services yokumba amaBorehole eZimbabwe. Sinikeza ukumba kwamaBorehole okuthembekile kanye nezixazululo zamanzi kulo lonke iZimbabwe.\n\nKhetha ulimi oluthandayo:\n1. IsiNgisi\n2. IsiNdebele\n3. IsiShona",
         "main_menu": "Singakusiza njani lamuhla?\n\n1. Cela isiphakamiso\n2. Phanda Intengo Ngokusebenzisa Indawo\n3. Bheka Isimo Sephrojekthi\n4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n5. Eminye Imisebenzi\n6. Khuluma Nomuntu\n\nPhendula ngenombolo (umzekeliso: 1)",
