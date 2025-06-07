@@ -1113,6 +1113,97 @@ def human_agent_followup(prompt, user_data, phone_id):
         send(get_message(lang, "human_agent.invalid_option"), user_data['sender'], phone_id)
         return {'step': 'human_agent_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+def handle_quote_and_booking(user, incoming_msg):
+    lang = user.get("language", "en")
+    step = user.get("step", "quote_start")
+    response = ""
+
+    if step == "quote_start":
+        response = get_lang_text("quote_thank_you", lang)
+        user["step"] = "quote_options"
+
+    elif step == "quote_options":
+        if incoming_msg == "1":
+            response = get_lang_text("offer_price_prompt", lang)
+            user["step"] = "offer_price"
+        elif incoming_msg == "2":
+            response = get_lang_text("book_survey_prompt", lang)
+            user["step"] = "collect_booking_details"
+        elif incoming_msg == "3":
+            response = get_lang_text("drilling_confirmed", lang)
+            user["step"] = "drilling_confirmed"
+        elif incoming_msg == "4":
+            response = get_lang_text("connecting_agent", lang)
+            user["step"] = "human_agent"
+        else:
+            response = get_lang_text("invalid_option", lang)
+
+    elif step == "offer_price":
+        if "-" in incoming_msg and "drilling" in incoming_msg.lower():
+            response = get_lang_text("offer_received", lang)
+            user["step"] = "post_offer_options"
+        else:
+            response = get_lang_text("provide_all_info", lang)
+
+    elif step == "post_offer_options":
+        if incoming_msg == "1":
+            response = get_lang_text("offer_accepted", lang)
+            user["step"] = "offer_accepted"
+        elif incoming_msg == "2":
+            response = get_lang_text("connecting_agent", lang)
+            user["step"] = "human_agent"
+        elif incoming_msg == "3":
+            response = get_lang_text("revised_offer_prompt", lang)
+            user["step"] = "offer_price"
+        else:
+            response = get_lang_text("invalid_option", lang)
+
+    elif step == "offer_accepted":
+        if incoming_msg == "1":
+            response = get_lang_text("book_survey_prompt", lang)
+            user["step"] = "collect_booking_details"
+        elif incoming_msg == "2":
+            response = get_lang_text("deposit_info", lang)
+            user["step"] = "awaiting_deposit"
+        elif incoming_msg == "3":
+            response = get_lang_text("drilling_date_info", lang)
+            user["step"] = "drilling_date"
+        else:
+            response = get_lang_text("invalid_option", lang)
+
+    elif step == "collect_booking_details":
+        lines = incoming_msg.strip().split("\n")
+        if len(lines) >= 4 and "submit" in incoming_msg.lower():
+            today = datetime.today().strftime("%d %B %Y")
+            time = "8:00 AM"
+            response = get_lang_text("booking_confirmed", lang).format(date=today, time=time)
+            user["step"] = "survey_scheduled"
+        else:
+            response = get_lang_text("provide_all_info", lang)
+
+    elif step == "survey_scheduled":
+        if incoming_msg == "1":
+            response = get_lang_text("contact_support", lang)
+        elif incoming_msg == "2":
+            response = "Okay. We’ll proceed as scheduled." if lang == "en" else (
+                "Zvakanaka, ticharamba takaronga sezvataita." if lang == "sn" else
+                "Kulungile, sizakuqhubeka ngendlela ebesihlele ngayo."
+            )
+        else:
+            response = get_lang_text("invalid_option", lang)
+
+    elif step == "drilling_confirmed":
+        response = get_lang_text("drilling_confirmed", lang)
+
+    elif step == "human_agent":
+        response = get_lang_text("connecting_agent", lang)
+
+    else:
+        response = "Sorry, I didn’t understand that. Please try again."
+
+    return response, user
+
+
 def faq_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     lang = user.language or "english"
