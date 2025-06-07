@@ -512,10 +512,6 @@ LANGUAGES = {
         ),
         "quote_invalid_option": "Sarudzo isiriyo. Pindura 1 kuti ubvunze nezveimwe sevhisi kana 2 kudzokera kumenu huru kana 3 kana uchida kupa mutengo."
 
-
-
-
-
     },
     
     "Ndebele": {
@@ -652,11 +648,49 @@ LANGUAGES = {
         "invalid_option": "Sicela ukhethe inketho efaneleyo (1 noma 2).",
         "pump_status_request": "Sicela unikeze okungenani igama lakho eliphelele nenombolo yerefreshi noma inombolo yocingo, ngakunye kumugqa omusha.\n\nIsibonelo:\nJane Doe\nREF123456\nOptional: Harare",
         "retrieving_status": "Siyabonga. Sicela ulinde njengoba sithola isimo sephrojekthi yakho...",
-        "project_status": "Nansi isimo sephrojekthi yakho yokufaka ipompo:\n\nIgama lephrojekthi: Ipompo - {full_name}\nIsigaba Samanje: Ukufakwa Kuqediwe\nIsinyathelo Esilandelayo: Ukuhlolwa Kokugcina\nUsuku Olulinganiselwe Lokudluliselwa: {handover_date}\n\nUngathanda ukuthola izibuyekezo ze-WhatsApp uma isimo sakho sishintsha?\nIzinketho: Yebo / Cha"
-
-
-
-
+        "project_status": "Nansi isimo sephrojekthi yakho yokufaka ipompo:\n\nIgama lephrojekthi: Ipompo - {full_name}\nIsigaba Samanje: Ukufakwa Kuqediwe\nIsinyathelo Esilandelayo: Ukuhlolwa Kokugcina\nUsuku Olulinganiselwe Lokudluliselwa: {handover_date}\n\nUngathanda ukuthola izibuyekezo ze-WhatsApp uma isimo sakho sishintsha?\nIzinketho: Yebo / Cha",
+        "pump_updates_yes": "Kulungile! Uzathola izaziso zeWhatsApp njalo lapho isimo sokumba borehole sakho sishintsha.\n\nNgiyabonga ngokusebenzisa insiza yethu.",
+        "pump_updates_no": "Akukho inkinga. Ungahlola isimo futhi uma kudingeka.\n\nNgiyabonga ngokusebenzisa insiza yethu.",
+        "pump_updates_invalid": "Uxolo, angiqondi kahle. Sicela uphendule ngo Yebo noma Cha.",
+        "check_status_menu_options": {
+            "1": "Ukuze ubheke isimo sokumba borehole yakho, sicela unikeze okulandelayo:\n\n- Igama eligcwele olisebenzise ngesikhathi sokubhuka\n- Inombolo yeReferensi yephrojekthi noma Inombolo yefoni\n- Indawo yokumba (uyazikhethela)",
+            "2": "Ukuze ubheke isimo sokufaka ipampu, sicela unikeze okulandelayo:\n\n- Igama eligcwele olisebenzise ngesikhathi sokubhuka\n- Inombolo yeReferensi yephrojekthi noma Inombolo yefoni\n- Indawo yokufaka ipampu (uyazikhethela)",
+            "3": "Sicela linda ngixhume nawe nomunye wamaphoyisa ethu osekelayo.",
+            "invalid": "Inketho engalungile. Sicela ukhethe 1, 2, 3, noma 4."
+        },
+        "main_menu_prompt": (
+            "Singakusiza njani namuhla?\n\n"
+            "1. Cela intengo\n"
+            "2. Sesha intengo usebenzisa indawo\n"
+            "3. Bheka isimo sephrojekthi\n"
+            "4. FAQs noma Funda ngeBorehole Drilling\n"
+            "5. Ezinye izinsiza\n"
+            "6. Khuluma nomuntu\n\n"
+            "Sicela uphendule ngenombolo (isibonelo, 1)"
+        ),
+        "drilling_status_request_incomplete": (
+            "Sicela unikeze igama lakho eligcwele nenombolo yeReferensi noma inombolo yefoni, ngayinye emugqeni ohlukile.\n\n"
+            "Isibonelo:\nJohn Doe\nREF789123 noma 0779876543\nUkuzikhethela: Bulawayo"
+        ),
+        "drilling_status_retrieving": "Ngiyabonga. Sicela ulinde ngithole isimo sephrojekthi yakho...",
+        "drilling_status_result": (
+            "Nansi isimo sephrojekthi yakho yokumba borehole:\n\n"
+            "Igama lePhrojekthi: Borehole - {full_name}\n"
+            "Isigaba Samanje: Ukumba Kuqhubeka\n"
+            "Isinyathelo Esilandelayo: Ukufaka iCasing\n"
+            "Usuku Lokuphela Olulindelekile: 10/06/2025\n\n"
+            "Ungathanda ukuthola izaziso zeWhatsApp uma isimo sishintsha?\nIzinketho: Yebo / Cha"
+        ),
+        "invalid_pump_option": "Inketho engalungile. Sicela ukhethe inketho efanele yokufaka ipampu (1-6).",
+        "quote_select_another_service": (
+            "Khetha enye insiza:\n"
+            "1. Ukuhlola amanzi\n"
+            "2. Ukumba borehole\n"
+            "3. Ukufaka ipampu\n"
+            "4. Ukumba indawo yokuthengisa\n"
+            "5. Ukwandisa ukujula kweborehole"
+        ),
+        "quote_invalid_option": "Inketho engalungile. Phendula 1 ukuze ubuze ngenye insiza noma 2 ukuze ubuyele kumenyu enkulu noma 3 uma ufuna ukwenza isiphakamiso sentengo."
 
     }
 }
