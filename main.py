@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
-import os
-import logging
 from english import english_blueprint
 from shona import shona_blueprint
 from ndebele import ndebele_blueprint
+from utils import get_user_language, set_user_language, send_message, set_user_state
+import os
+import logging
+import json
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -18,7 +20,7 @@ app.register_blueprint(ndebele_blueprint, url_prefix='/ndebele')
 
 @app.route("/", methods=["GET"])
 def index():
-    return "Welcome to SpeedGo WhatsApp Bot"
+    return "SpeedGo WhatsApp Bot is running"
 
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
@@ -47,44 +49,49 @@ def webhook():
                 sender = message.get("from")
                 msg_type = message.get("type")
                 
-                # Get user's current language preference
-                user_language = get_user_language(sender)
+                # Get user's current state and language
+                user_state = get_user_state(sender) or {}
+                user_language = user_state.get('language', None)
                 
-                if not user_language:
+                if not user_language and msg_type == "text":
                     # First time user - ask for language selection
-                    send_language_selection(sender, phone_id)
+                    prompt = message["text"]["body"].strip()
+                    if prompt in ["1", "2", "3"]:
+                        # User selected a language
+                        if prompt == "1":
+                            set_user_language(sender, "english")
+                            from english import handle_select_language
+                            handle_select_language(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
+                        elif prompt == "2":
+                            set_user_language(sender, "shona")
+                            from shona import handle_select_language
+                            handle_select_language(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
+                        elif prompt == "3":
+                            set_user_language(sender, "ndebele")
+                            from ndebele import handle_select_language
+                            handle_select_language(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
+                    else:
+                        send_language_selection(sender, phone_id)
                     return jsonify({"status": "ok"}), 200
                 
                 # Route message to appropriate language handler
-                route_message_to_language(user_language, message, sender, phone_id)
+                if user_language == "english":
+                    from english import message_handler
+                    message_handler(message, sender, phone_id)
+                elif user_language == "shona":
+                    from shona import message_handler
+                    message_handler(message, sender, phone_id)
+                elif user_language == "ndebele":
+                    from ndebele import message_handler
+                    message_handler(message, sender, phone_id)
 
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
 
         return jsonify({"status": "ok"}), 200
 
-def get_user_language(phone_number):
-    """Get user's preferred language from Redis or database"""
-    # This should be implemented based on your storage system
-    # For now, we'll use a simple in-memory dictionary
-    if not hasattr(get_user_language, 'user_languages'):
-        get_user_language.user_languages = {}
-    
-    return get_user_language.user_languages.get(phone_number)
-
-def set_user_language(phone_number, language):
-    """Set user's preferred language in Redis or database"""
-    # This should be implemented based on your storage system
-    # For now, we'll use a simple in-memory dictionary
-    if not hasattr(get_user_language, 'user_languages'):
-        get_user_language.user_languages = {}
-    
-    get_user_language.user_languages[phone_number] = language
-
 def send_language_selection(recipient, phone_id):
     """Send language selection menu to user"""
-    from english import send  # Using English version for language selection
-    
     message = (
         "Hi there! Welcome to SpeedGo Services for borehole drilling in Zimbabwe.\n\n"
         "Choose your preferred language:\n"
@@ -93,29 +100,8 @@ def send_language_selection(recipient, phone_id):
         "3. Ndebele"
     )
     
-    send(message, recipient, phone_id)
+    send_message(message, recipient, phone_id)
     set_user_state(recipient, {'step': 'select_language'})
-
-def route_message_to_language(language, message, sender, phone_id):
-    """Route incoming message to appropriate language handler"""
-    if language == "english":
-        from english import message_handler as english_handler
-        english_handler(message, sender, phone_id)
-    elif language == "shona":
-        from shona import message_handler as shona_handler
-        shona_handler(message, sender, phone_id)
-    elif language == "ndebele":
-        from ndebele import message_handler as ndebele_handler
-        ndebele_handler(message, sender, phone_id)
-
-def set_user_state(phone_number, state_data):
-    """Set user's state in Redis or database"""
-    # This should be implemented based on your storage system
-    # For now, we'll use a simple in-memory dictionary
-    if not hasattr(set_user_state, 'user_states'):
-        set_user_state.user_states = {}
-    
-    set_user_state.user_states[phone_number] = state_data
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
