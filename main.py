@@ -408,7 +408,25 @@ LANGUAGES = {
                        "1. Class 6 – Standard\n"
                        "2. Class 9 – Yakasimba\n"
                        "3. Class 10 – Yakasimba zvikuru\n"
-                       "Ndeipi yaunoda kuona?"
+                       "Ndeipi yaunoda kuona?",
+        "quote_intro": "Ndokumbirawo mutiudze nzvimbo yamunoda kuitirwa basa iri.",
+        "quote_thank_you": "Tatenda! Tagamuchira chikumbiro chenyu.\n\n{0}\n\nMungade kuita chii zvino?\n1. Taurai mari yamunoda kubhadhara\n2. Bhuka kuongorora nzvimbo\n3. Bhuka kuchera\n4. Taura nemumiriri",
+        "select_valid_service": "Ndapota sarudzai chisarudzo chiri pakati pe1 kusvika ku5.",
+        "select_valid_option": "Ndapota sarudzai chisarudzo chiri pakati pe1 kusvika ku4.",
+        "agent_connect": "Ndokumbirawo mirai tichikubatanidzai nemumiriri...",
+        "flushing_cost": "Mutengo wekugezesa mu {location} unotangira pa USD {price}.\nMungade:\n1. Kusimbisa & Bhuka Basa\n2. Dzokera kune Mamwe Mabasa",
+        "pvc_casing_price": "Mutengo we {casing_class} PVC casing mu {location} uri USD {price}.\nMungade:\n1. Kusimbisa & Bhuka\n2. Dzokera kune Mamwe Mabasa",
+        "provide_full_name": "Ndapota nyora zita renyu rizere:",
+        "provide_phone": "Ndapota nyora nhamba yenyu yefoni:",
+        "provide_location": "Ndapota nyora kero yenyu chaiyo kana mugovane GPS pin yenyu:",
+        "provide_booking_date": "Ndapota nyora zuva ramunoda kuti tibhuke (semuenzaniso, 2024-10-15):",
+        "provide_notes": "Kana muine zvimwe zvamunoda kuti tizive, ndapota nyorai izvozvi. Kana zvisina, nyorai 'Kwete':",
+        "booking_confirmation": "Tatenda {full_name}! Bhuking yenyu yasimbiswa.\nReference: {reference}\nChikwata chedu chichakubatai munguva pfupi.\nNyora 'menu' kudzokera kumenu huru.",
+        "invalid_option": "Ndapota sarudzai chisarudzo chiri pakati pe1 kana 2.",
+        "pump_status_request": "Ndapota nyora zita renyu rizere uye nhamba yerefreshi kana nhamba yefoni, imwe neimwe pamutsara mutsva.\n\nMuenzaniso:\nJane Doe\nREF123456\nOptional: Harare",
+        "retrieving_status": "Tatenda. Ndokumbirawo mirai tichitsvaga mamiriro ebasa renyu...",
+        "project_status": "Hezvino mamiriro ebasa renyu rekuisa pombi:\n\nZita reProject: Pombi - {full_name}\nChikamu Chiripo: Kuisa Kwapedzwa\nChinotevera: Kuongorora kwekupedzisira\nZuva Rekuendesa: {handover_date}\n\nMungade kugamuchira zvigadziriso zveWhatsApp kana mamiriro achinja?\nSarudzo: Ehe / Kwete"
+
 
 
 
@@ -531,7 +549,25 @@ LANGUAGES = {
                        "1. Class 6 – Ejwayelekile\n"
                        "2. Class 9 – Eqinile\n"
                        "3. Class 10 – Eqinile kakhulu\n"
-                       "Yikuphi ofuna ukukuhlola?"
+                       "Yikuphi ofuna ukukuhlola?",
+        "quote_intro": "Sicela usitshele indawo ofuna ukwenza insiza kuyo.",
+        "quote_thank_you": "Siyabonga! Sikumukele isicelo sakho.\n\n{0}\n\nUfuna ukwenzani okulandelayo?\n1. Nikeza intengo yakho\n2. Bhuka ukuhlolwa kwendawo\n3. Bhuka ukugawula\n4. Khuluma nommeli",
+        "select_valid_service": "Sicela ukhethe inketho efaneleyo (1-5).",
+        "select_valid_option": "Sicela ukhethe inketho efaneleyo (1-4).",
+        "agent_connect": "Sicela ulinde njengoba sixhumanisa nommeli...",
+        "flushing_cost": "Izindleko zokugeza e {location} ziqala ku-USD {price}.\nUngathanda:\n1. Qinisekisa & Bhuka Umsebenzi\n2. Buyela Kwezinye Izinzuzo",
+        "pvc_casing_price": "Intengo ye {casing_class} PVC casing e {location} yi-USD {price}.\nUngathanda:\n1. Qinisekisa & Bhuka\n2. Buyela Kwezinye Izinzuzo",
+        "provide_full_name": "Sicela unikeze igama lakho eliphelele:",
+        "provide_phone": "Sicela unikeze inombolo yakho yocingo:",
+        "provide_location": "Sicela ufake indawo yakho eqondile noma wabelane nge-GPS pin yakho:",
+        "provide_booking_date": "Sicela ufake usuku oluthandayo lokubhuka (isb., 2024-10-15):",
+        "provide_notes": "Uma uneminye imiyalezo noma izicelo ezikhethekile, sicela ufake manje. Uma kungenjalo, bhala 'Cha':",
+        "booking_confirmation": "Siyabonga {full_name}! Ukubhuka kwakho kuqinisekisiwe.\nIreferensi Yokubhuka: {reference}\nIthimba lethu lizokuthinta maduze.\nThayipha 'menu' ukuze ubuyele kumenyu enkulu.",
+        "invalid_option": "Sicela ukhethe inketho efaneleyo (1 noma 2).",
+        "pump_status_request": "Sicela unikeze okungenani igama lakho eliphelele nenombolo yerefreshi noma inombolo yocingo, ngakunye kumugqa omusha.\n\nIsibonelo:\nJane Doe\nREF123456\nOptional: Harare",
+        "retrieving_status": "Siyabonga. Sicela ulinde njengoba sithola isimo sephrojekthi yakho...",
+        "project_status": "Nansi isimo sephrojekthi yakho yokufaka ipompo:\n\nIgama lephrojekthi: Ipompo - {full_name}\nIsigaba Samanje: Ukufakwa Kuqediwe\nIsinyathelo Esilandelayo: Ukuhlolwa Kokugcina\nUsuku Olulinganiselwe Lokudluliselwa: {handover_date}\n\nUngathanda ukuthola izibuyekezo ze-WhatsApp uma isimo sakho sishintsha?\nIzinketho: Yebo / Cha"
+
 
 
 
