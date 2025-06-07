@@ -1432,6 +1432,149 @@ def human_agent(prompt, user_data, phone_id):
 
     return {'step': 'handle_user_message', 'user': user.to_dict(), 'sender': customer_number}
 
+
+def handle_pump_status_info_request(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.lang if hasattr(user, 'lang') else 'en'
+    texts = LANGUAGES[lang]['pump_status_info_request']
+
+    lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
+
+    if len(lines) < 2:
+        send(texts['incomplete_input'], user_data['sender'], phone_id)
+        return {
+            'step': 'pump_status_info_request',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    full_name = lines[0]
+    reference = lines[1]
+    location = lines[2] if len(lines) >= 3 else texts.get('location_not_provided', 'Not Provided')
+
+    user.project_status_request = {
+        'type': 'pump',
+        'full_name': full_name,
+        'reference': reference,
+        'location': location
+    }
+
+    send(texts['thank_you_wait'], user_data['sender'], phone_id)
+
+    status_message = texts['project_status'].format(
+        full_name=full_name,
+        current_stage=texts.get('current_stage', 'Installation Completed'),
+        next_step=texts.get('next_step', 'Final Inspection'),
+        estimated_hand_over=texts.get('estimated_hand_over', '12/06/2025')
+    )
+
+    send(status_message, user_data['sender'], phone_id)
+    send(texts['ask_updates'], user_data['sender'], phone_id)
+
+    update_user_state(user_data['sender'], {
+        'step': 'pump_status_updates_opt_in',
+        'user': user.to_dict()
+    })
+
+    return {
+        'step': 'pump_status_updates_opt_in',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+
+def handle_pump_status_updates_opt_in(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.lang if hasattr(user, 'lang') else 'en'
+    texts = LANGUAGES[lang]['pump_status_updates_opt_in']
+
+    response = prompt.strip().lower()
+
+    if response in [texts['yes_option'].lower(), 'yes', 'y']:
+        send(texts['opt_in_yes'], user_data['sender'], phone_id)
+    elif response in [texts['no_option'].lower(), 'no', 'n']:
+        send(texts['opt_in_no'], user_data['sender'], phone_id)
+    else:
+        send(texts['invalid_option'], user_data['sender'], phone_id)
+        return {'step': 'pump_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    update_user_state(user_data['sender'], {
+        'step': None,
+        'user': user.to_dict()
+    })
+
+    return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_drilling_status_updates_opt_in(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.lang if hasattr(user, 'lang') else 'en'
+    texts = LANGUAGES[lang]['drilling_status_updates_opt_in']
+
+    response = prompt.strip().lower()
+
+    if response in [texts['yes_option'].lower(), 'yes', 'y']:
+        send(texts['opt_in_yes'], user_data['sender'], phone_id)
+    elif response in [texts['no_option'].lower(), 'no', 'n']:
+        send(texts['opt_in_no'], user_data['sender'], phone_id)
+    else:
+        send(texts['invalid_option'], user_data['sender'], phone_id)
+        return {'step': 'drilling_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    update_user_state(user_data['sender'], {
+        'step': None,
+        'user': user.to_dict()
+    })
+
+    return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_check_project_status_menu(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.lang if hasattr(user, 'lang') else 'en'
+    texts = LANGUAGES[lang]['check_project_status_menu']
+
+    if prompt == "1":
+        update_user_state(user_data['sender'], {
+            'step': 'drilling_status_info_request',
+            'user': user.to_dict()
+        })
+        send(texts['drilling_instructions'], user_data['sender'], phone_id)
+        return {
+            'step': 'drilling_status_info_request',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    elif prompt == "2":
+        update_user_state(user_data['sender'], {
+            'step': 'pump_status_info_request',
+            'user': user.to_dict()
+        })
+        send(texts['pump_instructions'], user_data['sender'], phone_id)
+        return {
+            'step': 'pump_status_info_request',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    elif prompt == "3":
+        update_user_state(user_data['sender'], {
+            'step': 'human_agent',
+            'user': user.to_dict()
+        })
+        send(texts['human_agent_wait'], user_data['sender'], phone_id)
+        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "4":
+        # Assuming handle_main_menu supports multilingual internally
+        return handle_main_menu("", user_data, phone_id)
+
+    else:
+        send(texts['invalid_option'], user_data['sender'], phone_id)
+        return {'step': 'check_project_status_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def notify_agent(customer_number, prompt, agent_number, phone_id, lang='en'):
     agent_message = LANGUAGES[lang]['new_request'].format(
         customer_number=customer_number,
