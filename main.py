@@ -1506,10 +1506,155 @@ def handle_service_flow(prompt, user_data, phone_id):
     return user_data
 
 
+
+
+def handle_pump_status_updates_opt_in(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    response = prompt.strip().lower()
+    lang = user_data.get('lang', 'en')
+
+    yes_responses = {'en': ['yes', 'y'], 'sn': ['ehe', 'y'], 'nd': ['yebo', 'y']}
+    no_responses = {'en': ['no', 'n'], 'sn': ['kwete', 'k'], 'nd': ['cha', 'c']}
+
+    if response in yes_responses.get(lang, ['yes', 'y']):
+        send(get_lang_text(user_data, 'pump_updates_yes'), user_data['sender'], phone_id)
+    elif response in no_responses.get(lang, ['no', 'n']):
+        send(get_lang_text(user_data, 'pump_updates_no'), user_data['sender'], phone_id)
+    else:
+        send(get_lang_text(user_data, 'pump_updates_invalid'), user_data['sender'], phone_id)
+        return {'step': 'pump_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    update_user_state(user_data['sender'], {'step': None, 'user': user.to_dict()})
+    return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_drilling_status_updates_opt_in(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    response = prompt.strip().lower()
+    lang = user_data.get('lang', 'en')
+
+    yes_responses = {'en': ['yes', 'y'], 'sn': ['ehe', 'y'], 'nd': ['yebo', 'y']}
+    no_responses = {'en': ['no', 'n'], 'sn': ['kwete', 'k'], 'nd': ['cha', 'c']}
+
+    if response in yes_responses.get(lang, ['yes', 'y']):
+        send(get_lang_text(user_data, 'pump_updates_yes'), user_data['sender'], phone_id)
+    elif response in no_responses.get(lang, ['no', 'n']):
+        send(get_lang_text(user_data, 'pump_updates_no'), user_data['sender'], phone_id)
+    else:
+        send(get_lang_text(user_data, 'pump_updates_invalid'), user_data['sender'], phone_id)
+        return {'step': 'drilling_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    update_user_state(user_data['sender'], {'step': None, 'user': user.to_dict()})
+    return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_check_project_status_menu(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'en')
+
+    options = get_lang_text(user_data, 'check_status_menu_options')
+
+    if prompt == "1":
+        update_user_state(user_data['sender'], {'step': 'drilling_status_info_request', 'user': user.to_dict()})
+        send(options["1"], user_data['sender'], phone_id)
+        return {'step': 'drilling_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        update_user_state(user_data['sender'], {'step': 'pump_status_info_request', 'user': user.to_dict()})
+        send(options["2"], user_data['sender'], phone_id)
+        return {'step': 'pump_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "3":
+        send(options["3"], user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': None, 'user': user.to_dict()})
+        return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "4":
+        # Return to main menu
+        send(get_lang_text(user_data, 'main_menu_prompt'), user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'main_menu', 'user': user.to_dict()})
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send(options.get("invalid", "Invalid option. Please try again."), user_data['sender'], phone_id)
+        return {'step': 'check_project_status_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_drilling_status_info_request(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'en')
+
+    # We expect at least two lines: full name and ref number or phone number
+    lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
+    if len(lines) < 2:
+        send(get_lang_text(user_data, 'drilling_status_request_incomplete'), user_data['sender'], phone_id)
+        return {'step': 'drilling_status_info_request', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    # Here you'd lookup project info in database using lines[0], lines[1] (and optional lines[2])
+    # Dummy response:
+    full_name = lines[0]
+    # After lookup, respond with status and ask opt-in for updates
+    send(get_lang_text(user_data, 'drilling_status_retrieving'), user_data['sender'], phone_id)
+    import time; time.sleep(1)  # simulate delay
+
+    send(get_lang_text(user_data, 'drilling_status_result', full_name=full_name), user_data['sender'], phone_id)
+    update_user_state(user_data['sender'], {'step': 'drilling_status_updates_opt_in', 'user': user.to_dict()})
+
+    return {'step': 'drilling_status_updates_opt_in', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_pump_installation_option(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'en')
+
+    valid_options = {"1", "2", "3", "4", "5", "6"}
+    if prompt not in valid_options:
+        send(get_lang_text(user_data, 'invalid_pump_option'), user_data['sender'], phone_id)
+        return {'step': 'pump_installation_option', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    # Process selection, e.g., send pricing or next steps
+    # For demo, just send a confirmation
+    send(f"Pump installation option {prompt} selected.", user_data['sender'], phone_id)
+
+    # Then maybe return to main menu or another step
+    send(get_lang_text(user_data, 'main_menu_prompt'), user_data['sender'], phone_id)
+    update_user_state(user_data['sender'], {'step': 'main_menu', 'user': user.to_dict()})
+    return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_quote_menu(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'en')
+
+    if prompt == "1":
+        send(get_lang_text(user_data, 'quote_select_another_service'), user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'quote_select_service', 'user': user.to_dict()})
+        return {'step': 'quote_select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        send(get_lang_text(user_data, 'main_menu_prompt'), user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'main_menu', 'user': user.to_dict()})
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "3":
+        send("Please provide your price offer for the service.", user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'quote_price_offer', 'user': user.to_dict()})
+        return {'step': 'quote_price_offer', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send(get_lang_text(user_data, 'quote_invalid_option'), user_data['sender'], phone_id)
+        return {'step': 'quote_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def get_lang_text(user, key, **kwargs):
     lang = user.language or 'english'
     template = LANGUAGES.get(lang, LANGUAGES['english']).get(key, '')
-    return template.format(**kwargs)
+    if subkey:
+        text = lang_dict.get(key, {}).get(subkey, "")
+    else:
+        text = lang_dict.get(key, "")
+    if kwargs:
+        return text.format(**kwargs)
+    return text
 
 
 def handle_flushing_location(prompt, user_data, phone_id):
