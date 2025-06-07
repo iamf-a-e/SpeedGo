@@ -1248,6 +1248,35 @@ def handle_enter_location_for_quote(prompt, user_data, phone_id):
              user_data['sender'], phone_id)
         return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+def handle_select_service(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    language = getattr(user, 'language', 'english')  # default to English if not set
+
+    services = {
+        "1": LANGUAGES[language]['services']['1'],
+        "2": LANGUAGES[language]['services']['2'],
+        "3": LANGUAGES[language]['services']['3'],
+        "4": LANGUAGES[language]['services']['4'],
+        "5": LANGUAGES[language]['services']['5'],
+    }
+
+    if prompt in services:
+        user.quote_data['service'] = services[prompt]
+        update_user_state(user_data['sender'], {
+            'step': 'collect_quote_details',
+            'user': user.to_dict()
+        })
+        send(
+            LANGUAGES[language]['quote_prompt'],
+            user_data['sender'],
+            phone_id
+        )
+        return {'step': 'handle_select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send(LANGUAGES[language]['invalid_service'], user_data['sender'], phone_id)
+        return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def human_agent(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     customer_number = user_data['sender']
