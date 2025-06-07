@@ -1474,6 +1474,59 @@ def faq_menu(prompt, user_data, phone_id):
         send(get_message(lang, 'faq_menu', 'invalid_option'), user_data['sender'], phone_id)
         return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
+def handle_quote_followup(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    language = getattr(user, 'language', 'english')
+
+    if prompt.strip() == "1":
+        # Stay in quote flow, show services again
+        update_user_state(user_data['sender'], {
+            'step': 'select_service_quote',
+            'user': user.to_dict()
+        })
+        send(LANGUAGES[language]['select_another_service'], user_data['sender'], phone_id)
+        return {
+            'step': 'select_service_quote',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    elif prompt.strip() == "2":
+        # Go back to main menu
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu',
+            'user': user.to_dict()
+        })
+        send(LANGUAGES[language]['main_menu_prompt'], user_data['sender'], phone_id)
+        return {
+            'step': 'main_menu',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    elif prompt.strip() == "3":
+        # Offer price
+        update_user_state(user_data['sender'], {
+            'step': 'collect_offer_details',
+            'user': user.to_dict()
+        })
+        send(LANGUAGES[language]['share_price_offer'], user_data['sender'], phone_id)
+        return {
+            'step': 'collect_offer_details',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    else:
+        send(LANGUAGES[language]['invalid_quote_followup'], user_data['sender'], phone_id)
+        return {
+            'step': 'quote_followup',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+
 def custom_question(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     lang = user.language if hasattr(user, 'language') else 'en'
