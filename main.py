@@ -1857,6 +1857,53 @@ def handle_pump_status_updates_opt_in(prompt, user_data, phone_id):
     return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
+
+def handle_collect_quote_details(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    responses = prompt.split('\n')
+    lang = user.language or 'english'
+    texts = LANGUAGES[lang]
+
+    if len(responses) >= 4:
+        user.quote_data.update({
+            'location': responses[0].strip(),
+            'depth': responses[1].strip(),
+            'purpose': responses[2].strip(),
+            'water_survey': responses[3].strip(),
+            'casing_type': responses[5].strip() if len(responses) > 5 else texts["quote_missing"]
+        })
+
+        quote_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        user.quote_data['quote_id'] = quote_id
+
+        redis.set(f"quote:{quote_id}", json.dumps({
+            'quote_id': quote_id,
+            'user_data': user.to_dict(),
+            'timestamp': datetime.now().isoformat(),
+            'status': 'pending'
+        }))
+
+        update_user_state(user_data['sender'], {
+            'step': 'quote_response',
+            'user': user.to_dict()
+        })
+
+        estimate = texts["quote_estimate"]
+
+        send(
+            f"{texts['quote_thank_you']}\n\n"
+            f"{estimate}\n\n"
+            f"{texts['quote_note']}\n\n"
+            f"{texts['quote_next_options']}",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'quote_response', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send(texts["quote_missing_info"], user_data['sender'], phone_id)
+        return {'step': 'collect_quote_details', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
 def handle_drilling_status_updates_opt_in(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     response = prompt.strip().lower()
