@@ -6,6 +6,15 @@ from ndebele import handle_welcome as handle_welcome_nd, handle_select_language 
 
 app = Flask(__name__)
 
+
+# Environment variables
+wa_token = os.environ.get("WA_TOKEN")
+phone_id = os.environ.get("PHONE_ID")
+gen_api = os.environ.get("GEN_API")
+owner_phone = os.environ.get("OWNER_PHONE")
+GOOGLE_MAPS_API_KEY = "AlzaSyCXDMMhg7FzP|ElKmrlkv1TqtD3HgHwW50"
+
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.get_json()
