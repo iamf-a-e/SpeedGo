@@ -290,6 +290,11 @@ LANGUAGES = {
                     },
                     "human_agent_connect": "Ndapota mira ndichikubatanidza nemumiriri..."
                 },
+        "quote_intro": "Ndokumbirawo mutiudze nzvimbo yamunoda kuitirwa basa iri.",
+        "quote_thank_you": "Tatenda! Tagamuchira chikumbiro chenyu.\n\n{0}\n\nMungade kuita chii zvino?\n1. Taurai mari yamunoda kubhadhara\n2. Bhuka kuongorora nzvimbo\n3. Bhuka kuchera\n4. Taura nemumiriri",
+        "select_valid_service": "Ndapota sarudzai chisarudzo chiri pakati pe1 kusvika ku5.",
+        "select_valid_option": "Ndapota sarudzai chisarudzo chiri pakati pe1 kusvika ku4.",
+        "agent_connect": "Ndokumbirawo mirai tichikubatanidzai nemumiriri..."
 
 
     },
