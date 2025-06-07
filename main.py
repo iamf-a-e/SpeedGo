@@ -468,7 +468,50 @@ LANGUAGES = {
         "invalid_option": "Ndapota sarudzai chisarudzo chiri pakati pe1 kana 2.",
         "pump_status_request": "Ndapota nyora zita renyu rizere uye nhamba yerefreshi kana nhamba yefoni, imwe neimwe pamutsara mutsva.\n\nMuenzaniso:\nJane Doe\nREF123456\nOptional: Harare",
         "retrieving_status": "Tatenda. Ndokumbirawo mirai tichitsvaga mamiriro ebasa renyu...",
-        "project_status": "Hezvino mamiriro ebasa renyu rekuisa pombi:\n\nZita reProject: Pombi - {full_name}\nChikamu Chiripo: Kuisa Kwapedzwa\nChinotevera: Kuongorora kwekupedzisira\nZuva Rekuendesa: {handover_date}\n\nMungade kugamuchira zvigadziriso zveWhatsApp kana mamiriro achinja?\nSarudzo: Ehe / Kwete"
+        "project_status": "Hezvino mamiriro ebasa renyu rekuisa pombi:\n\nZita reProject: Pombi - {full_name}\nChikamu Chiripo: Kuisa Kwapedzwa\nChinotevera: Kuongorora kwekupedzisira\nZuva Rekuendesa: {handover_date}\n\nMungade kugamuchira zvigadziriso zveWhatsApp kana mamiriro achinja?\nSarudzo: Ehe / Kwete",
+        "pump_updates_yes": "Zvakanaka! Iye zvino uchagamuchira zviziviso zveWhatsApp pese panoshanduka mamiriro ekuchera borehole yako.\n\nNdatenda nekushandisa sevhisi yedu.",
+        "pump_updates_no": "Hazvina basa. Unogona kugara uchitarisa mamiriro zvakare kana zvichidiwa.\n\nNdatenda nekushandisa sevhisi yedu.",
+        "pump_updates_invalid": "Ndine urombo, handina kunzwisisa. Ndapota pindura neEhe kana Kwete.",
+        "check_status_menu_options": {
+            "1": "Kuti utarise mamiriro ekuchera borehole yako, ndapota ipa zvinotevera:\n\n- Zita rakazara rawakashandisa pakubhuka\n- Nhamba yekureferensi yeprojekiti kana Nhamba yefoni\n- Nzvimbo yekuchera (zvingasarudzwa)",
+            "2": "Kuti utarise mamiriro ekuisa pombi, ndapota ipa zvinotevera:\n\n- Zita rakazara rawakashandisa pakubhuka\n- Nhamba yekureferensi yeprojekiti kana Nhamba yefoni\n- Nzvimbo yekuisa pombi (zvingasarudzwa)",
+            "3": "Ndapota mirira ndichikubatanidza nemumwe wevashandi vedu vekutsigira.",
+            "invalid": "Sarudzo isiriyo. Ndapota sarudza 1, 2, 3, kana 4."
+        },
+        "main_menu_prompt": (
+            "Tinogona kukubatsira sei nhasi?\n\n"
+            "1. Kumbira mutengo\n"
+            "2. Tsvaga mutengo uchishandisa nzvimbo\n"
+            "3. Tarisa mamiriro eprojekiti\n"
+            "4. FAQs kana Dzidza nezveBorehole Drilling\n"
+            "5. Dzimwe sevhisi\n"
+            "6. Taura nemunhu\n\n"
+            "Ndapota pindura nenhamba (semuenzaniso, 1)"
+        ),
+        "drilling_status_request_incomplete": (
+            "Ndapota ipa zita rako rizere uye nhamba yekureferensi kana nhamba yefoni, imwe neimwe mutsara mutsva.\n\n"
+            "Muenzaniso:\nJohn Doe\nREF789123 kana 0779876543\nZvingasarudzwa: Bulawayo"
+        ),
+        "drilling_status_retrieving": "Ndatenda. Ndapota mirira tichitsvaga mamiriro eprojekiti yako...",
+        "drilling_status_result": (
+            "Heano mamiriro eprojekiti yako yekuchera borehole:\n\n"
+            "Zita reProjekiti: Borehole - {full_name}\n"
+            "Chikamu Chazvino: Kuchera Kwiri Kuitika\n"
+            "Chinotevera: Kuisa Casing\n"
+            "Zuva Rekupedza Rinotarisirwa: 10/06/2025\n\n"
+            "Ungada here kugamuchira zviziviso zveWhatsApp kana mamiriro achichinja?\nSarudzo: Ehe / Kwete"
+        ),
+        "invalid_pump_option": "Sarudzo isiriyo. Ndapota sarudza sarudzo yakakodzera yekuisa pombi (1-6).",
+        "quote_select_another_service": (
+            "Sarudza imwe sevhisi:\n"
+            "1. Kuongorora mvura\n"
+            "2. Kuchera borehole\n"
+            "3. Kuisa pombi\n"
+            "4. Kuchera bhora rekutengesa\n"
+            "5. Kuwedzera kudzika kweborehole"
+        ),
+        "quote_invalid_option": "Sarudzo isiriyo. Pindura 1 kuti ubvunze nezveimwe sevhisi kana 2 kudzokera kumenu huru kana 3 kana uchida kupa mutengo."
+
 
 
 
