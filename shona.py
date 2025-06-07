@@ -2065,10 +2065,10 @@ def get_action2(current_state, prompt, user_data, phone_id):
     return handler(prompt, user_data, phone_id)
 
 
-english_blueprint = Blueprint('shona', __name__)
+shona_blueprint = Blueprint('shona', __name__)
 
-@english_blueprint.route('/message', methods=['POST'])
-def english_message_handler():
+@eshona_blueprint.route('/message', methods=['POST'])
+def shona_message_handler():
     data = request.get_json()
     message = data.get('message')
     sender = data.get('sender')
