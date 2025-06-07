@@ -228,7 +228,50 @@ LANGUAGES = {
         "invalid_option": "Please select a valid option (1 or 2).",
         "pump_status_request": "Please provide at least your full name and reference number or phone number, each on a new line.\n\nExample:\nJane Doe\nREF123456\nOptional: Harare",
         "retrieving_status": "Thank you. Please wait while we retrieve your project status...",
-        "project_status": "Here is your pump installation project status:\n\nProject Name: Pump - {full_name}\nCurrent Stage: Installation Completed\nNext Step: Final Inspection\nEstimated Hand-Over: {handover_date}\n\nWould you like WhatsApp updates when your status changes?\nOptions: Yes / No"
+        "project_status": "Here is your pump installation project status:\n\nProject Name: Pump - {full_name}\nCurrent Stage: Installation Completed\nNext Step: Final Inspection\nEstimated Hand-Over: {handover_date}\n\nWould you like WhatsApp updates when your status changes?\nOptions: Yes / No",
+        "pump_updates_yes": "Great! You'll now receive WhatsApp updates whenever your borehole drilling status changes.\n\nThank you for using our service.",
+        "pump_updates_no": "No problem. You can always check the status again later if needed.\n\nThank you for using our service.",
+        "pump_updates_invalid": "Sorry, I didn't understand that. Please reply with Yes or No.",
+        "check_status_menu_options": {
+            "1": "To check your borehole drilling status, please provide the following:\n\n- Full Name used during booking\n- Project Reference Number or Phone Number\n- Drilling Site Location (optional)",
+            "2": "To check your pump installation status, please provide the following:\n\n- Full Name used during booking\n- Project Reference Number or Phone Number\n- Installation Site Location (optional)",
+            "3": "Please hold while I connect you to one of our support team members.",
+            "invalid": "Invalid option. Please select 1, 2, 3, or 4."
+        },
+        "main_menu_prompt": (
+            "How can we help you today?\n\n"
+            "1. Request a quote\n"
+            "2. Search Price Using Location\n"
+            "3. Check Project Status\n"
+            "4. FAQs or Learn About Borehole Drilling\n"
+            "5. Other services\n"
+            "6. Talk to a Human Agent\n\n"
+            "Please reply with a number (e.g., 1)"
+        ),
+        "drilling_status_request_incomplete": (
+            "Please provide at least your full name and reference number or phone number, each on a new line.\n\n"
+            "Example:\nJohn Doe\nREF789123 or 0779876543\nOptional: Bulawayo"
+        ),
+        "drilling_status_retrieving": "Thank you. Please wait while we retrieve your project status...",
+        "drilling_status_result": (
+            "Here is your borehole drilling project status:\n\n"
+            "Project Name: Borehole - {full_name}\n"
+            "Current Stage: Drilling In Progress\n"
+            "Next Step: Casing\n"
+            "Estimated Completion Date: 10/06/2025\n\n"
+            "Would you like WhatsApp updates when the status changes?\nOptions: Yes / No"
+        ),
+        "invalid_pump_option": "Invalid option. Please select a valid pump installation option (1-6).",
+        "quote_select_another_service": (
+            "Select another service:\n"
+            "1. Water survey\n"
+            "2. Borehole drilling\n"
+            "3. Pump installation\n"
+            "4. Commercial hole drilling\n"
+            "5. Borehole Deepening"
+        ),
+        "quote_invalid_option": "Invalid option. Reply 1 to ask about another service or 2 to return to the main menu or 3 if you want to make a price offer."
+
 
         },
     
