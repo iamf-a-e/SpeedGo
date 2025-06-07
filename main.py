@@ -211,10 +211,24 @@ LANGUAGES = {
                        "1. Class 6 – Standard\n"
                        "2. Class 9 – Stronger\n"
                        "3. Class 10 – Strongest\n"
-                       "Which one would you like to check?"
-        
-
-  
+                       "Which one would you like to check?",
+        "quote_intro": "Please tell us the location where you want the service.",
+        "quote_thank_you": "Thank you! We have received your request.\n\n{0}\n\nWhat would you like to do next?\n1. Offer your own price\n2. Book site survey\n3. Book drilling\n4. Talk to an agent",
+        "select_valid_service": "Please select a valid option (1-5).",
+        "select_valid_option": "Please select a valid option (1-4).",
+        "agent_connect": "Please wait while we connect you to a human agent...",
+        "flushing_cost": "Flushing cost in {location} starts from USD {price}.\nWould you like to:\n1. Confirm & Book Job\n2. Back to Other Services",
+        "pvc_casing_price": "Price for {casing_class} PVC casing in {location} is USD {price}.\nWould you like to:\n1. Confirm & Book\n2. Back to Other Services",
+        "provide_full_name": "Please provide your full name:",
+        "provide_phone": "Please provide your phone number:",
+        "provide_location": "Please enter your exact location/address or share your GPS pin:",
+        "provide_booking_date": "Please enter your preferred booking date (e.g., 2024-10-15):",
+        "provide_notes": "If you have any notes or special requests, please enter them now. Otherwise, type 'No':",
+        "booking_confirmation": "Thank you {full_name}! Your booking is confirmed.\nBooking Reference: {reference}\nOur team will contact you soon.\nType 'menu' to return to the main menu.",
+        "invalid_option": "Please select a valid option (1 or 2).",
+        "pump_status_request": "Please provide at least your full name and reference number or phone number, each on a new line.\n\nExample:\nJane Doe\nREF123456\nOptional: Harare",
+        "retrieving_status": "Thank you. Please wait while we retrieve your project status...",
+        "project_status": "Here is your pump installation project status:\n\nProject Name: Pump - {full_name}\nCurrent Stage: Installation Completed\nNext Step: Final Inspection\nEstimated Hand-Over: {handover_date}\n\nWould you like WhatsApp updates when your status changes?\nOptions: Yes / No"
 
         },
     
@@ -1454,6 +1468,33 @@ def handle_service_flow(prompt, user_data, phone_id):
         send("An agent will join the chat shortly.", user_data['sender'], phone_id)
 
     return user_data
+
+
+def get_lang_text(user, key, **kwargs):
+    lang = user.language or 'english'
+    template = LANGUAGES.get(lang, LANGUAGES['english']).get(key, '')
+    return template.format(**kwargs)
+
+
+def handle_flushing_location(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = prompt.strip()
+    user.quote_data['location'] = location
+
+    flushing_type = user.quote_data.get('flushing_type')
+    diameter = user.quote_data.get('diameter')
+
+    price = get_pricing_for_other_services(location, "borehole_flushing", {
+        'flushing_type': flushing_type,
+        'diameter': diameter
+    })
+
+    message = get_lang_text(user, 'flushing_cost', location=location, price=price)
+    send(message, user_data['sender'], phone_id)
+
+    update_user_state(user_data['sender'], {'step': 'flushing_booking_confirm', 'user': user.to_dict()})
+    return {'step': 'flushing_booking_confirm', 'user': user.to_dict(), 'sender': user_data['sender']}
+
 
 
 
