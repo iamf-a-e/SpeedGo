@@ -2053,6 +2053,170 @@ def handle_flushing_location(prompt, user_data, phone_id):
     return {'step': 'flushing_booking_confirm', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
+def handle_quote_response(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'en')
+    msgs = LANGUAGES[lang]['quote_response']
+
+    if prompt == "1":  # Offer price
+        update_user_state(user_data['sender'], {
+            'step': 'collect_offer_details',
+            'user': user.to_dict()
+        })
+        send(msgs['offer_price'], user_data['sender'], phone_id)
+        return {'step': 'collect_offer_details', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":  # Book site survey
+        update_user_state(user_data['sender'], {
+            'step': 'collect_booking_info',
+            'user': user.to_dict()
+        })
+        send(msgs['book_survey'], user_data['sender'], phone_id)
+        return {'step': 'collect_booking_info', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "3":  # Book for drilling
+        send(msgs['book_drilling'], user_data['sender'], phone_id)
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "4":  # Human Agent
+        send(msgs['human_agent'], user_data['sender'], phone_id)
+        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send(msgs['invalid_option'], user_data['sender'], phone_id)
+        return {'step': 'quote_response', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_collect_offer_details(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'en')
+    msgs = LANGUAGES[lang]['collect_offer_details']
+
+    user.offer_data['offer'] = prompt
+    user.offer_data['status'] = 'pending'
+    quote_id = user.quote_data.get('quote_id')
+
+    if quote_id:
+        q = redis.get(f"quote:{quote_id}")
+        if q:
+            q = json.loads(q)
+            q['offer_data'] = user.offer_data
+            redis.set(f"quote:{quote_id}", json.dumps(q))
+
+    update_user_state(user_data['sender'], {
+        'step': 'offer_response',
+        'user': user.to_dict()
+    })
+    send(msgs, user_data['sender'], phone_id)
+    return {'step': 'offer_response', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_offer_response(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'en')
+    msgs = LANGUAGES[lang]['offer_response']
+
+    quote_id = user.quote_data.get('quote_id')
+
+    if prompt == "1":  # Offer accepted
+        user.offer_data['status'] = 'accepted'
+        if quote_id:
+            q = redis.get(f"quote:{quote_id}")
+            if q:
+                q = json.loads(q)
+                q['offer_data'] = user.offer_data
+                redis.set(f"quote:{quote_id}", json.dumps(q))
+        update_user_state(user_data['sender'], {
+            'step': 'booking_details',
+            'user': user.to_dict()
+        })
+        send(msgs['offer_accepted'], user_data['sender'], phone_id)
+        return {'step': 'booking_details', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        send(msgs['connect_human'], user_data['sender'], phone_id)
+        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "3":
+        update_user_state(user_data['sender'], {
+            'step': 'collect_offer_details',
+            'user': user.to_dict()
+        })
+        send(msgs['revise_offer'], user_data['sender'], phone_id)
+        return {'step': 'collect_offer_details', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send(msgs['invalid_option'], user_data['sender'], phone_id)
+        return {'step': 'offer_response', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_booking_details(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'en')
+    msgs = LANGUAGES[lang]['booking_details']
+
+    if prompt == "1":  # Book site survey
+        update_user_state(user_data['sender'], {
+            'step': 'collect_booking_info',
+            'user': user.to_dict()
+        })
+        send(msgs['collect_booking_info'], user_data['sender'], phone_id)
+        return {'step': 'collect_booking_info', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":  # Pay Deposit
+        send(msgs['pay_deposit'], user_data['sender'], phone_id)
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "3":  # Confirm Drilling Date
+        send(msgs['confirm_drilling'], user_data['sender'], phone_id)
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send(msgs['invalid_option'], user_data['sender'], phone_id)
+        return {'step': 'booking_details', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_collect_booking_info(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'en')
+    msgs = LANGUAGES[lang]['collect_booking_info']
+
+    if prompt.lower().strip() == "submit":
+        user.booking_data['status'] = 'confirmed'
+        user.booking_data['timestamp'] = datetime.now().isoformat()
+        booking_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        user.booking_data['booking_id'] = booking_id
+        redis.set(f"booking:{booking_id}", json.dumps({
+            'booking_id': booking_id,
+            'user_data': user.to_dict(),
+            'timestamp': datetime.now().isoformat(),
+            'status': 'confirmed'
+        }))
+        update_user_state(user_data['sender'], {
+            'step': 'booking_confirmation',
+            'user': user.to_dict()
+        })
+        send(msgs['booking_confirmed'], user_data['sender'], phone_id)
+        return {'step': 'booking_confirmation', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send(msgs['submit_prompt'], user_data['sender'], phone_id)
+        return {'step': 'collect_booking_info', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_booking_confirmation(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'en')
+    msgs = LANGUAGES[lang]['booking_confirmation']
+
+    if prompt == "2":  # No reschedule needed
+        send(msgs['booking_final'], user_data['sender'], phone_id)
+        return {'step': 'welcome', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send(msgs['contact_support'], user_data['sender'], phone_id)
+        return {'step': 'booking_confirmation', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
 action_mapping = {
     "welcome": handle_welcome,
     "select_language": handle_select_language,
