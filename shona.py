@@ -1938,7 +1938,7 @@ def handle_quote_followup2(prompt, user_data, phone_id):
 
 # Action mapping
 action_mapping = {
-    "welcome": handle_welcome,
+    "welcome": handle_welcome2,
     "select_language": handle_select_language,
     "main_menu2": handle_main_menu2,
     "enter_location_for_quote2": handle_enter_location_for_quote2,
