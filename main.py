@@ -1079,6 +1079,54 @@ def handle_select_language(prompt, user_data, phone_id):
         send("Please select a valid language option (1 for English, 2 for Shona, 3 for Ndebele).", user_data['sender'], phone_id)
         return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
+def handle_other_services_menu(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = getattr(user, 'language', 'en')  # default to English if no language set
+    choice = prompt.strip()
+
+    texts = LANGUAGES.get(lang, LANGUAGES['en'])  # fallback to English
+
+    if choice == "1":
+        send(
+            texts['other_services_menu']['borehole_deepening_casing'],
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'borehole_deepening_casing', 'user': user.to_dict()})
+        return {'step': 'borehole_deepening_casing', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        send(
+            texts['other_services_menu']['borehole_flushing_problem'],
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'borehole_flushing_problem', 'user': user.to_dict()})
+        return {'step': 'borehole_flushing_problem', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "3":
+        send(
+            texts['other_services_menu']['pvc_casing_selection'],
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'pvc_casing_selection', 'user': user.to_dict()})
+        return {'step': 'pvc_casing_selection', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "4":
+        update_user_state(user_data['sender'], {'step': 'main_menu', 'user': user.to_dict()})
+        send_main_menu(user_data['sender'], phone_id, lang)
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send(texts['prompt_select_option'], user_data['sender'], phone_id)
+        return {'step': 'other_services_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def send_main_menu(phone_number, phone_id, lang='en'):
+    texts = LANGUAGES.get(lang, LANGUAGES['en'])
+    menu_text = texts['main_menu']
+    send(menu_text, phone_number, phone_id)
+
+
 def handle_main_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     lang = user.language
