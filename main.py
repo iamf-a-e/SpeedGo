@@ -1,5 +1,15 @@
-
-from flask import Flask, request, jsonify
+import os
+import json
+import logging
+import requests
+import random
+import string
+from datetime import datetime
+from flask import Flask, request, jsonify, render_template
+from upstash_redis import Redis
+import google.generativeai as genai
+import threading
+import time
 from english import handle_welcome as handle_welcome_en, handle_select_language as handle_select_language_en, get_user_state as get_user_state_en, update_user_state as update_user_state_en
 from shona import handle_welcome2, handle_select_language2, get_user_state2, update_user_state2
 from ndebele import handle_welcome as handle_welcome_nd, handle_select_language as handle_select_language_nd, get_user_state3, update_user_state3
