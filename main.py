@@ -177,7 +177,42 @@ LANGUAGES = {
                      "4. FAQs or Learn About Borehole Drilling\n"
                      "5. Other services\n"
                      "6. Talk to a Human Agent\n\n"
-                     "Please reply with a number (e.g., 1)"
+                     "Please reply with a number (e.g., 1)",
+        "invalid_option_1_2": "Please select a valid option (1 or 2).",
+        "invalid_option_1_3": "Please select a valid option (1-3).",
+        "invalid_option_1_4": "Please select a valid option (1-4).",
+        "borehole_casing_q": "To check if your borehole can be deepened:\n"
+                             "Was the borehole cased:\n"
+                             "1. Only at the top, with 180mm or larger diameter pipe\n"
+                             "2. Top to bottom with 140mm or smaller diameter pipe",
+        "deepening_qualified": "Your borehole qualifies for deepening.\nPlease enter your location (town, ward, growth point, or GPS pin):",
+        "deepening_not_possible": "Unfortunately, boreholes cased from top to bottom with pipes smaller than 180mm cannot be deepened.\n"
+                                  "Options:\n"
+                                  "1. Back to Other Services\n"
+                                  "2. Talk to Support",
+        "deepening_cost_prompt": "Deepening cost in {location} starts from USD {price} per meter.\n"
+                                 "Would you like to:\n"
+                                 "1. Confirm & Book Job\n"
+                                 "2. Back to Other Services",
+        "booking_name_prompt": "Please provide your full name:",
+        "flush_problem_prompt": "What is the problem with your borehole?\n"
+                                "1. Collapsed Borehole\n"
+                                "2. Dirty Water Borehole",
+        "flush_diameter_prompt": "Do you know the borehole diameter?\n"
+                                 "1. 180mm or larger\n"
+                                 "2. Between 140mm and 180mm\n"
+                                 "3. 140mm or smaller",
+        "flush_dirty_location": "Please enter your location to check the price:",
+        "flush_180mm": "We can flush your borehole using rods with a drilling bit (more effective).\nPlease enter your location to check the price:",
+        "flush_140_180mm": "We can flush borehole with rods, no drilling bit.\nPlease enter your location to check the price:",
+        "flush_below_140mm": "We can flush the borehole using rods only (without drilling bit).\nPlease enter your location to check the price:",
+        "support_connecting": "Connecting you to support...",
+        "pvc_classes": "We offer drilling boreholes following PVC casing pipe classes:\n"
+                       "1. Class 6 – Standard\n"
+                       "2. Class 9 – Stronger\n"
+                       "3. Class 10 – Strongest\n"
+                       "Which one would you like to check?"
+        
 
   
 
