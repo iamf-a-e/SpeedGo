@@ -57,7 +57,7 @@ class User:
 def get_user_state3(phone_number):
     state = redis.get(phone_number)
     if state is None:
-        return {"step": "welcome", "sender": phone_number}
+        return {"step": "welcome3", "sender": phone_number}
     if isinstance(state, str):
         return json.loads(state)
     return state
@@ -335,7 +335,7 @@ def get_pricing_for_location_quotes3(location, service_type, pump_option_selecte
             "Ungathanda yini:\n1. Buza intengo yenye inkonzo\n2. Buyela kuMain Menu\n3. Nika Intengo Yakho")
 
 
-def handle_welcome(prompt, user_data, phone_id):
+def handle_welcome3(prompt, user_data, phone_id):
     send(
         "Siyakwamukela ku-SpeedGo Services, inkampani yokugawula imithombo yamanzi eZimbabwe. "
         "Sinikezela ngezixazululo ezithembekileyo zokumba imithombo yamanzi kuyo yonke iZimbabwe.\n\n"
@@ -349,7 +349,7 @@ def handle_welcome(prompt, user_data, phone_id):
     return {'step': 'select_language3', 'sender': user_data['sender']}
 
 
-def handle_select_language(prompt, user_data, phone_id):
+def handle_select_language3(prompt, user_data, phone_id):
     user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
     if prompt == "1":
         user.language = "English"
@@ -413,7 +413,7 @@ def handle_select_language(prompt, user_data, phone_id):
 
     else:
         send("Sicela ukhethe ulimi olusemthethweni (1 for English, 2 for Shona, 3 for Ndebele).", user_data['sender'], phone_id)
-        return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'select_language3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
 def handle_main_menu3(prompt, user_data, phone_id):
@@ -603,7 +603,7 @@ def human_agent_followup3(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
     if prompt == "1":
-        return handle_select_language("1", user_data, phone_id)
+        return handle_select_language3("1", user_data, phone_id)
 
     elif prompt == "2":
         send("Kulungile. Zizwe ukhululekile ukubuza nxa udinga olunye usizo.", user_data['sender'], phone_id)
@@ -674,7 +674,7 @@ def faq_menu3(prompt, user_data, phone_id):
         return {'step': 'human_agent3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "5":  # Back to Main Menu
-        return handle_select_language("1", user_data, phone_id)
+        return handle_select_language3("1", user_data, phone_id)
 
     else:
         send("Sicela ukhethe inketho efaneleyo (1–5).", user_data['sender'], phone_id)
@@ -722,7 +722,7 @@ def custom_question_followup3(prompt, user_data, phone_id):
         return {'step': 'custom_question3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
-        return handle_select_language("1", user_data, phone_id)
+        return handle_select_language3("1", user_data, phone_id)
 
     else:
         send("Sicela uphendule ngo-1 ukuze ubuze omunye umbuzo noma ngo-2 ukubuyela kuMain Menu.", user_data['sender'], phone_id)
@@ -780,7 +780,7 @@ def faq_borehole_followup3(prompt, user_data, phone_id):
         return {'step': 'faq_borehole3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
-        return handle_select_language("1", user_data, phone_id)
+        return handle_select_language3("1", user_data, phone_id)
 
     else:
         send("Sicela ukhethe 1 ukuze ubuze omunye umbuzo noma 2 ukubuyela kuMain Menu.", user_data['sender'], phone_id)
@@ -835,7 +835,7 @@ def faq_pump_followup3(prompt, user_data, phone_id):
         return {'step': 'faq_pump3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
-        return handle_select_language("1", user_data, phone_id)
+        return handle_select_language3("1", user_data, phone_id)
 
     else:
         send("Sicela ukhethe 1 ukuze ubuze omunye umbuzo noma 2 ukubuyela kuMain Menu.", user_data['sender'], phone_id)
@@ -1874,8 +1874,8 @@ def handle_quote_followup3(prompt, user_data, phone_id):
 
 # Action mapping
 action_mapping = {
-    "welcome": handle_welcome,
-    "select_language": handle_select_language,
+    "welcome3": handle_welcome3,
+    "select_language3": handle_select_language3,
     "main_menu3": handle_main_menu3,
     "enter_location_for_quote3": handle_enter_location_for_quote3,
     "select_service_quote3": handle_select_service_quote3,
@@ -1992,12 +1992,12 @@ def message_handler(prompt, sender, phone_id, message):
         user_data['user'] = User(sender).to_dict()
 
     # Dispatch to the correct step
-    step = user_data.get('step', 'welcome')
+    step = user_data.get('step', 'welcome3')
     next_state = get_action(step, prompt, user_data, phone_id)
     update_user_state(sender, next_state)
 
 def get_action(current_state, prompt, user_data, phone_id):
-    handler = action_mapping.get(current_state, handle_welcome)
+    handler = action_mapping.get(current_state, handle_welcome3)
     return handler(prompt, user_data, phone_id)
 
 ndebele_blueprint = Blueprint('ndebele', __name__)
