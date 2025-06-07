@@ -1358,6 +1358,86 @@ def faq_borehole_followup(prompt, user_data, phone_id):
         send(get_message(lang, "custom_question.invalid_option"), user_data['sender'], phone_id)
         return {'step': 'faq_borehole_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
+def handle_pvc_casing_selection(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'english')  # Default to English if no lang info
+    
+    pvc_map = LANGUAGES[lang]["pvc_casing_options"]
+    choice = prompt.strip()
+    casing_class = pvc_map.get(choice)
+
+    if not casing_class:
+        send(get_text(lang, "invalid_option"), user_data['sender'], phone_id)
+        return {'step': 'pvc_casing_selection', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    user.quote_data['pvc_casing_class'] = casing_class
+
+    send(get_text(lang, "enter_location", casing_class=casing_class), user_data['sender'], phone_id)
+    update_user_state(user_data['sender'], {'step': 'pvc_casing_location', 'user': user.to_dict()})
+
+    return {'step': 'pvc_casing_location', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_pvc_casing_location(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'english')
+    location = prompt.strip()
+    user.quote_data['location'] = location
+    casing_class = user.quote_data.get('pvc_casing_class')
+    price = get_pricing_for_other_services(location, "pvc_casing", {'class': casing_class})
+
+    message = get_text(lang, "price_quote", casing_class=casing_class, location=location, price=price)
+    send(message, user_data['sender'], phone_id)
+    update_user_state(user_data['sender'], {'step': 'pvc_casing_booking_confirm', 'user': user.to_dict()})
+
+    return {'step': 'pvc_casing_booking_confirm', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_pvc_casing_booking_confirm(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'english')
+    choice = prompt.strip()
+
+    if choice == "1":
+        user.booking_data = {}
+        send(get_text(lang, "provide_full_name"), user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'booking_full_name', 'user': user.to_dict()})
+        return {'step': 'booking_full_name', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        return handle_other_services_menu("0", user_data, phone_id)
+
+    else:
+        send(get_text(lang, "confirm_book_prompt"), user_data['sender'], phone_id)
+        return {'step': 'pvc_casing_booking_confirm', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_booking_full_name(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'english')
+    full_name = prompt.strip()
+    user.booking_data['full_name'] = full_name
+
+    send(get_text(lang, "provide_phone"), user_data['sender'], phone_id)
+    update_user_state(user_data['sender'], {'step': 'booking_phone', 'user': user.to_dict()})
+    return {'step': 'booking_phone', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+# Similarly implement phone, location, date, notes handlers...
+
+def handle_booking_notes(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('lang', 'english')
+    notes = prompt.strip()
+    user.booking_data['notes'] = notes
+
+    booking_ref = save_booking(user)
+    send(get_text(lang, "booking_confirmed", full_name=user.booking_data.get('full_name', ''), ref=booking_ref), user_data['sender'], phone_id)
+
+    update_user_state(user_data['sender'], {'step': 'main_menu', 'user': user.to_dict()})
+    return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
 def faq_pump(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     lang = user.language or "english"
