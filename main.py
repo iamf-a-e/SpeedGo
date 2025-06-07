@@ -157,15 +157,12 @@ LANGUAGES = {
             "menu": "Here are the most common questions:\n\n1. Borehole Drilling FAQs\n2. Pump Installation FAQs\n3. Ask a different question\n4. Human agent\n5. Back to Main Menu",
             "invalid_option": "Please select a valid option (1–5).",
             "human_agent_connect": "Please hold while I connect you to a representative..."
-    }
-
-        
-
-        
-                
-
-
-        
+    },
+        "quote_intro": "Please tell us the location where you want the service.",
+        "quote_thank_you": "Thank you! We have received your request.\n\n{0}\n\nWhat would you like to do next?\n1. Offer your own price\n2. Book site survey\n3. Book drilling\n4. Talk to an agent",
+        "select_valid_service": "Please select a valid option (1-5).",
+        "select_valid_option": "Please select a valid option (1-4).",
+        "agent_connect": "Please wait while we connect you to a human agent..."
   
 
         },
@@ -1230,6 +1227,75 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         'user': user.to_dict(),
         'sender': user_data['sender']
     }
+
+
+def handle_service_flow(prompt, user_data, phone_id):
+    user = user_data['user']
+    lang = user.get('language', 'en')
+
+    services = {
+        "1": "Water survey",
+        "2": "Borehole drilling",
+        "3": "Pump installation",
+        "4": "Commercial hole drilling",
+        "5": "Borehole Deepening",
+    }
+
+    step = user_data.get('step', 'select_service')
+
+    if step == 'select_service':
+        if prompt in services:
+            user['quote_data'] = {"service": services[prompt]}
+            user_data.update({'step': 'collect_quote_details', 'user': user})
+            send(LANGUAGES[lang]["quote_intro"], user_data['sender'], phone_id)
+        else:
+            send(LANGUAGES[lang]["select_valid_service"], user_data['sender'], phone_id)
+
+    elif step == 'collect_quote_details':
+        user['quote_data']['location'] = prompt
+        user_data.update({'step': 'quote_response', 'user': user})
+
+        quote_summary = f"Service: {user['quote_data'].get('service')}\nLocation: {user['quote_data'].get('location')}"
+        message = LANGUAGES[lang]["quote_thank_you"].format(quote_summary)
+        send(message, user_data['sender'], phone_id)
+
+    elif step == 'quote_response':
+        if prompt == "1":
+            user_data.update({'step': 'enter_offer_price', 'user': user})
+            send("How much are you willing to offer?", user_data['sender'], phone_id)
+        elif prompt == "2":
+            user_data.update({'step': 'book_site_survey', 'user': user})
+            send("Please share the date you’d like us to come for a survey.", user_data['sender'], phone_id)
+        elif prompt == "3":
+            user_data.update({'step': 'book_drilling', 'user': user})
+            send("Please share the date you'd like us to drill.", user_data['sender'], phone_id)
+        elif prompt == "4":
+            send(LANGUAGES[lang]["agent_connect"], user_data['sender'], phone_id)
+            user_data.update({'step': 'human_agent', 'user': user})
+        else:
+            send(LANGUAGES[lang]["select_valid_option"], user_data['sender'], phone_id)
+
+    elif step == 'enter_offer_price':
+        user['quote_data']['offer_price'] = prompt
+        send("Thank you! We've noted your offer. We'll get back to you soon.", user_data['sender'], phone_id)
+        user_data.update({'step': 'done', 'user': user})
+
+    elif step == 'book_site_survey':
+        user['quote_data']['survey_date'] = prompt
+        send("Thanks! We've booked your site survey. We’ll confirm shortly.", user_data['sender'], phone_id)
+        user_data.update({'step': 'done', 'user': user})
+
+    elif step == 'book_drilling':
+        user['quote_data']['drill_date'] = prompt
+        send("Thank you! We've noted your drilling date. Our team will follow up.", user_data['sender'], phone_id)
+        user_data.update({'step': 'done', 'user': user})
+
+    elif step == 'human_agent':
+        send("An agent will join the chat shortly.", user_data['sender'], phone_id)
+
+    return user_data
+
+
 
 # Flask app setup
 app = Flask(__name__)
