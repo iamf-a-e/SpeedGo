@@ -162,7 +162,23 @@ LANGUAGES = {
         "quote_thank_you": "Thank you! We have received your request.\n\n{0}\n\nWhat would you like to do next?\n1. Offer your own price\n2. Book site survey\n3. Book drilling\n4. Talk to an agent",
         "select_valid_service": "Please select a valid option (1-5).",
         "select_valid_option": "Please select a valid option (1-4).",
-        "agent_connect": "Please wait while we connect you to a human agent..."
+        "agent_connect": "Please wait while we connect you to a human agent...",
+        "booking_confirmed": "Great! Your borehole drilling appointment is now booked.\n\n"
+                             "Date: Thursday, 23 May 2025\n"
+                             "Start Time: 8:00 AM\n"
+                             "Expected Duration: 5 hrs\n"
+                             "Team: 4-5 Technicians\n\n"
+                             "Make sure there is access to the site",
+        "reschedule_message": "Please contact our support team to reschedule.",
+        "main_menu": "How can we help you today?\n\n"
+                     "1. Request a quote\n"
+                     "2. Search Price Using Location\n"
+                     "3. Check Project Status\n"
+                     "4. FAQs or Learn About Borehole Drilling\n"
+                     "5. Other services\n"
+                     "6. Talk to a Human Agent\n\n"
+                     "Please reply with a number (e.g., 1)"
+
   
 
         },
