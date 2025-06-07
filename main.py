@@ -1554,6 +1554,46 @@ def handle_pump_status_updates_opt_in(prompt, user_data, phone_id):
     return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
+def handle_borehole_deepening_casing(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('language', 'en')
+    texts = LANGUAGES[lang]['borehole_deepening_casing']
+    choice = prompt.strip()
+
+    if choice == "1":
+        send(texts['qualifies_deepening'], user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'deepening_location', 'user': user.to_dict()})
+        return {'step': 'deepening_location', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        send(texts['no_deepening_options'], user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'deepening_no_deepening_options', 'user': user.to_dict()})
+        return {'step': 'deepening_no_deepening_options', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send(texts['invalid_option'], user_data['sender'], phone_id)
+        return {'step': 'borehole_deepening_casing', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_deepening_no_deepening_options(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user_data.get('language', 'en')
+    texts = LANGUAGES[lang]['deepening_no_deepening_options']
+    choice = prompt.strip()
+
+    if choice == "1":
+        return handle_other_services_menu("0", user_data, phone_id)
+
+    elif choice == "2":
+        send(texts['connecting_support'], user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'human_agent', 'user': user.to_dict()})
+        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send(texts['invalid_option'], user_data['sender'], phone_id)
+        return {'step': 'deepening_no_deepening_options', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
 def handle_drilling_status_updates_opt_in(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     lang = user.lang if hasattr(user, 'lang') else 'en'
@@ -2031,7 +2071,7 @@ def handle_service_flow(prompt, user_data, phone_id):
 def handle_pump_status_updates_opt_in(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     response = prompt.strip().lower()
-    lang = user_data.get('lang', 'en')
+    lang = user_data.get('lang', 'english')
 
     yes_responses = {'en': ['yes', 'y'], 'sn': ['ehe', 'y'], 'nd': ['yebo', 'y']}
     no_responses = {'en': ['no', 'n'], 'sn': ['kwete', 'k'], 'nd': ['cha', 'c']}
@@ -2098,7 +2138,7 @@ def handle_collect_quote_details(prompt, user_data, phone_id):
 def handle_drilling_status_updates_opt_in(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     response = prompt.strip().lower()
-    lang = user_data.get('lang', 'en')
+    lang = user_data.get('lang', 'english')
 
     yes_responses = {'en': ['yes', 'y'], 'sn': ['ehe', 'y'], 'nd': ['yebo', 'y']}
     no_responses = {'en': ['no', 'n'], 'sn': ['kwete', 'k'], 'nd': ['cha', 'c']}
@@ -2117,7 +2157,7 @@ def handle_drilling_status_updates_opt_in(prompt, user_data, phone_id):
 
 def handle_check_project_status_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    lang = user_data.get('lang', 'en')
+    lang = user_data.get('lang', 'english')
 
     options = get_lang_text(user_data, 'check_status_menu_options')
 
@@ -2148,7 +2188,7 @@ def handle_check_project_status_menu(prompt, user_data, phone_id):
 
 def handle_drilling_status_info_request(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    lang = user_data.get('lang', 'en')
+    lang = user_data.get('lang', 'english')
 
     # We expect at least two lines: full name and ref number or phone number
     lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
@@ -2171,7 +2211,7 @@ def handle_drilling_status_info_request(prompt, user_data, phone_id):
 
 def handle_pump_installation_option(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    lang = user_data.get('lang', 'en')
+    lang = user_data.get('lang', 'english')
 
     valid_options = {"1", "2", "3", "4", "5", "6"}
     if prompt not in valid_options:
@@ -2190,7 +2230,7 @@ def handle_pump_installation_option(prompt, user_data, phone_id):
 
 def handle_quote_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    lang = user_data.get('lang', 'en')
+    lang = user_data.get('lang', 'english')
 
     if prompt == "1":
         send(get_lang_text(user_data, 'quote_select_another_service'), user_data['sender'], phone_id)
@@ -2246,7 +2286,7 @@ def handle_flushing_location(prompt, user_data, phone_id):
 
 def handle_quote_response(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    lang = user_data.get('lang', 'en')
+    lang = user_data.get('lang', 'english')
     msgs = LANGUAGES[lang]['quote_response']
 
     if prompt == "1":  # Offer price
@@ -2280,7 +2320,7 @@ def handle_quote_response(prompt, user_data, phone_id):
 
 def handle_collect_offer_details(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    lang = user_data.get('lang', 'en')
+    lang = user_data.get('lang', 'english')
     msgs = LANGUAGES[lang]['collect_offer_details']
 
     user.offer_data['offer'] = prompt
@@ -2304,7 +2344,7 @@ def handle_collect_offer_details(prompt, user_data, phone_id):
 
 def handle_offer_response(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    lang = user_data.get('lang', 'en')
+    lang = user_data.get('lang', 'english')
     msgs = LANGUAGES[lang]['offer_response']
 
     quote_id = user.quote_data.get('quote_id')
@@ -2343,7 +2383,7 @@ def handle_offer_response(prompt, user_data, phone_id):
 
 def handle_booking_details(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    lang = user_data.get('lang', 'en')
+    lang = user_data.get('lang', 'english')
     msgs = LANGUAGES[lang]['booking_details']
 
     if prompt == "1":  # Book site survey
@@ -2369,7 +2409,7 @@ def handle_booking_details(prompt, user_data, phone_id):
 
 def handle_collect_booking_info(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    lang = user_data.get('lang', 'en')
+    lang = user_data.get('lang', 'english')
     msgs = LANGUAGES[lang]['collect_booking_info']
 
     if prompt.lower().strip() == "submit":
@@ -2396,7 +2436,7 @@ def handle_collect_booking_info(prompt, user_data, phone_id):
 
 def handle_booking_confirmation(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    lang = user_data.get('lang', 'en')
+    lang = user_data.get('lang', 'english')
     msgs = LANGUAGES[lang]['booking_confirmation']
 
     if prompt == "2":  # No reschedule needed
