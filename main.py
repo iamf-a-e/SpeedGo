@@ -1161,6 +1161,96 @@ def human_agent_followup(prompt, user_data, phone_id):
         send(get_message(lang, "human_agent.invalid_option"), user_data['sender'], phone_id)
         return {'step': 'human_agent_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
+def handle_deepening_location(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = prompt.strip()
+    user.quote_data['location'] = location
+    lang = user.language
+
+    price = get_pricing_for_location_quotes(location, "borehole_deepening")
+
+    send(
+        LANGUAGES[lang]["deepening_cost"].format(location=location, price=price),
+        user_data['sender'], phone_id
+    )
+
+    update_user_state(user_data['sender'], {'step': 'deepening_booking_confirm', 'user': user.to_dict()})
+    return {'step': 'deepening_booking_confirm', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_deepening_booking_confirm(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+    lang = user.language
+
+    if choice == "1":
+        user.booking_data = {}
+        send(LANGUAGES[lang]["enter_full_name"], user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'booking_full_name', 'user': user.to_dict()})
+        return {'step': 'booking_full_name', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        return other_services_menu("0", user_data, phone_id)
+
+    else:
+        send(LANGUAGES[lang]["invalid_option_1_2"], user_data['sender'], phone_id)
+        return {'step': 'deepening_booking_confirm', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_borehole_flushing_problem(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+    lang = user.language
+
+    if choice == "1":
+        send(LANGUAGES[lang]["ask_diameter"], user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'flushing_collapsed_diameter', 'user': user.to_dict()})
+        return {'step': 'flushing_collapsed_diameter', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        send(LANGUAGES[lang]["enter_location_price"], user_data['sender'], phone_id)
+        user.quote_data['flushing_type'] = 'dirty_water'
+        update_user_state(user_data['sender'], {'step': 'flushing_location', 'user': user.to_dict()})
+        return {'step': 'flushing_location', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send(LANGUAGES[lang]["invalid_option_1_2"], user_data['sender'], phone_id)
+        return {'step': 'borehole_flushing_problem', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_flushing_collapsed_diameter(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+    lang = user.language
+
+    diameter_map = {
+        "1": "180mm_or_larger",
+        "2": "between_140_and_180mm",
+        "3": "140mm_or_smaller"
+    }
+
+    diameter = diameter_map.get(choice)
+    if not diameter:
+        send(LANGUAGES[lang]["invalid_option_1_3"], user_data['sender'], phone_id)
+        return {'step': 'flushing_collapsed_diameter', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    user.quote_data['flushing_type'] = 'collapsed'
+    user.quote_data['diameter'] = diameter
+
+    if diameter == "180mm_or_larger":
+        send(LANGUAGES[lang]["flushing_180mm_larger"], user_data['sender'], phone_id)
+
+    elif diameter == "between_140_and_180mm":
+        send(LANGUAGES[lang]["flushing_140_180mm"], user_data['sender'], phone_id)
+
+    elif diameter == "140mm_or_smaller":
+        send(LANGUAGES[lang]["flushing_under_140mm"], user_data['sender'], phone_id)
+
+    update_user_state(user_data['sender'], {'step': 'flushing_location', 'user': user.to_dict()})
+    return {'step': 'flushing_location', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def handle_quote_and_booking(user, incoming_msg):
     lang = user.get("language", "en")
     step = user.get("step", "quote_start")
