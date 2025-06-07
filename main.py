@@ -345,7 +345,57 @@ LANGUAGES = {
         "quote_thank_you": "Tatenda! Tagamuchira chikumbiro chenyu.\n\n{0}\n\nMungade kuita chii zvino?\n1. Taurai mari yamunoda kubhadhara\n2. Bhuka kuongorora nzvimbo\n3. Bhuka kuchera\n4. Taura nemumiriri",
         "select_valid_service": "Ndapota sarudzai chisarudzo chiri pakati pe1 kusvika ku5.",
         "select_valid_option": "Ndapota sarudzai chisarudzo chiri pakati pe1 kusvika ku4.",
-        "agent_connect": "Ndokumbirawo mirai tichikubatanidzai nemumiriri..."
+        "agent_connect": "Ndokumbirawo mirai tichikubatanidzai nemumiriri...",
+        "booking_confirmed": "Zvakanaka! Basa rekuvhuvhura borehole rako rabhukidzwa.\n\n"
+                             "Zuva: China, 23 Chivabvu 2025\n"
+                             "Nguva: 8:00 AM\n"
+                             "Inotora: maawa mashanu\n"
+                             "Chikwata: Vanhu 4-5\n\n"
+                             "Ndokumbira uve nechokwadi chekuti nzvimbo yakavhurika",
+        "reschedule_message": "Ndokumbira ubate rutsigiro rwedu kuti tigadzirise rimwe zuva.",
+        "main_menu": "Tinokubatsira sei nhasi?\n\n"
+                     "1. Kumbira mutengo\n"
+                     "2. Tarisa mutengo zvichienderana nenzvimbo\n"
+                     "3. Tarisa mafambiro ebasa\n"
+                     "4. FAQs kana Dzidza nezve Borehole\n"
+                     "5. Mamwe masevhisi\n"
+                     "6. Taura neMumiriri\n\n"
+                     "Ndokumbira upindure nenhamba (semuenzaniso: 1)",
+        "invalid_option_1_2": "Ndokumbira usarudze sarudzo iripo (1 kana 2).",
+        "invalid_option_1_3": "Ndokumbira usarudze sarudzo iripo (1-3).",
+        "invalid_option_1_4": "Ndokumbira usarudze sarudzo iripo (1-4).",
+        "borehole_casing_q": "Kutarisa kana borehole yako ichigona kudzika:\n"
+                             "Yakaiswa pipe sei:\n"
+                             "1. Pakutanga chete ne 180mm kana kupfuura\n"
+                             "2. Kubva pamusoro kusvika pasi ne140mm kana pasi",
+        "deepening_qualified": "Borehole yako inokodzera kudzika.\nNdokumbira nyora nzvimbo yako (guta, ward, kana GPS pin):",
+        "deepening_not_possible": "Nehurombo, boreholes dzakaiswa mapombi madiki kubva pamusoro kusvika pasi hadzigoni kudzika.\n"
+                                  "Sarudza:\n"
+                                  "1. Dzokera kuMamwe Masevhisi\n"
+                                  "2. Taura neSupport",
+        "deepening_cost_prompt": "Mutengo wekuwedzera kudzika mu{location} unotanga paUSD {price} pamita.\n"
+                                 "Ungade:\n"
+                                 "1. Simbisa uye Bhuka Basa\n"
+                                 "2. Dzokera kuMamwe Masevhisi",
+        "booking_name_prompt": "Ndokumbira nyora zita rako rizere:",
+        "flush_problem_prompt": "Chii chiri kunetsa ne borehole yako?\n"
+                                "1. Borehole yakaputsika\n"
+                                "2. Mvura ine tsvina",
+        "flush_diameter_prompt": "Unoziva diameter ye borehole yako here?\n"
+                                 "1. 180mm kana kupfuura\n"
+                                 "2. Pakati pe140mm ne180mm\n"
+                                 "3. 140mm kana pasi",
+        "flush_dirty_location": "Ndokumbira nyora nzvimbo yako kuti titarise mutengo:",
+        "flush_180mm": "Tinogona kushandisa tsvimbo nebiti. Ndokumbira nyora nzvimbo yako:",
+        "flush_140_180mm": "Tinoshandisa tsvimbo pasina biti. Nyora nzvimbo yako:",
+        "flush_below_140mm": "Tinoshandisa tsvimbo chete. Nyora nzvimbo yako:",
+        "support_connecting": "Tiri kukubatanidza ne support...",
+        "pvc_classes": "Tinopa mabasa ePVC casing pipe:\n"
+                       "1. Class 6 – Standard\n"
+                       "2. Class 9 – Yakasimba\n"
+                       "3. Class 10 – Yakasimba zvikuru\n"
+                       "Ndeipi yaunoda kuona?"
+
 
 
     },
