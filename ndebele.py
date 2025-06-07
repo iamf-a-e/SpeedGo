@@ -2003,7 +2003,7 @@ def get_action(current_state, prompt, user_data, phone_id):
 ndebele_blueprint = Blueprint('ndebele', __name__)
 
 @ndebele_blueprint.route('/message', methods=['POST'])
-def english_message_handler():
+def ndebele_message_handler():
     data = request.get_json()
     message = data.get('message')
     sender = data.get('sender')
