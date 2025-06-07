@@ -1009,6 +1009,42 @@ def handle_welcome(prompt, user_data, phone_id):
     update_user_state(user_data['sender'], {'step': 'select_language'})
     return {'step': 'select_language', 'sender': user_data['sender']}
 
+
+def handle_select_pump_option(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    language = getattr(user, 'language', 'english')
+    location = user.quote_data.get('location')
+
+    # Validate prompt
+    if prompt.strip() not in pump_installation_options:
+        send(LANGUAGES[language]['invalid_pump_option'], user_data['sender'], phone_id)
+        return {
+            'step': 'select_pump_option',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    # Store the selected pump option (translated for future clarity if needed)
+    selected_option_label = LANGUAGES[language]['pump_options'][prompt.strip()]
+    user.quote_data['pump_option'] = selected_option_label
+
+    # Get pricing using original numeric input (untranslated)
+    pricing_message = get_pricing_for_location_quotes(location, "Pump Installation", prompt.strip())
+
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup',
+        'user': user.to_dict()
+    })
+
+    send(pricing_message, user_data['sender'], phone_id)
+
+    return {
+        'step': 'quote_followup',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+
 def handle_select_language(prompt, user_data, phone_id):
     user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
     
