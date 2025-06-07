@@ -2000,5 +2000,3 @@ def get_action(current_state, prompt, user_data, phone_id):
     handler = action_mapping.get(current_state, handle_welcome)
     return handler(prompt, user_data, phone_id)
 
-if __name__ == "__main__":
-    app.run(debug=True, port=8000)
