@@ -468,7 +468,56 @@ LANGUAGES = {
         "quote_thank_you": "Siyabonga! Sikumukele isicelo sakho.\n\n{0}\n\nUfuna ukwenzani okulandelayo?\n1. Nikeza intengo yakho\n2. Bhuka ukuhlolwa kwendawo\n3. Bhuka ukugawula\n4. Khuluma nommeli",
         "select_valid_service": "Sicela ukhethe inketho efaneleyo (1-5).",
         "select_valid_option": "Sicela ukhethe inketho efaneleyo (1-4).",
-        "agent_connect": "Sicela ulinde njengoba sixhumanisa nommeli..."
+        "agent_connect": "Sicela ulinde njengoba sixhumanisa nommeli...",
+                "booking_confirmed": "Kuhle! Umsebenzi wakho wokugawula umthombo ubhukhiwe.\n\n"
+                             "Usuku: ULwesine, 23 Meyi 2025\n"
+                             "Isikhathi: 8:00 AM\n"
+                             "Ubude: amahora amahlanu\n"
+                             "Iqembu: Abasebenzi abangu-4 kuya ku-5\n\n"
+                             "Qinisekisa ukuthi indawo iyafinyeleleka",
+        "reschedule_message": "Sicela uxhumane nethimba lethu ukulungisa usuku.",
+        "main_menu": "Singakusiza ngani namhlanje?\n\n"
+                     "1. Cela inani\n"
+                     "2. Hlola intengo ngokwendawo\n"
+                     "3. Hlola isimo sephrojekthi\n"
+                     "4. Imibuzo evamile noma Funda ngokuqhubekisela phambili umthombo\n"
+                     "5. Amanye amasevisi\n"
+                     "6. Khuluma nomuntu ongumsizi\n\n"
+                     "Sicela uphendule ngenombolo (isb: 1)",
+        "invalid_option_1_2": "Sicela ukhethe inketho evumelekile (1 noma 2).",
+        "invalid_option_1_3": "Sicela ukhethe inketho evumelekile (1-3).",
+        "invalid_option_1_4": "Sicela ukhethe inketho evumelekile (1-4).",
+        "borehole_casing_q": "Ukuhlola uma umthombo wakho ungagawulwa:\n"
+                             "Ngabe wawufakwe ipayipi:\n"
+                             "1. Phezulu kuphela, ngepayipi le-180mm noma elikhulu\n"
+                             "2. Kusukela phezulu kuya phansi ngepayipi le-140mm noma elincane",
+        "deepening_qualified": "Umthombo wakho uyakufanelekela ukugawulwa.\nSicela ufake indawo yakho:",
+        "deepening_not_possible": "Uxolo, imithombo efakwe amapayipi amancane kusukela phezulu kuya phansi ayikwazi ukugawulwa.\n"
+                                  "Izinketho:\n"
+                                  "1. Buyela kwezinye izinsizakalo\n"
+                                  "2. Xhumana nethimba",
+        "deepening_cost_prompt": "Izindleko zokugawula e{location} ziqala ku-USD {price} nge-mitha.\n"
+                                 "Ungathanda:\n"
+                                 "1. Qinisekisa & Bhukha Umsebenzi\n"
+                                 "2. Buyela kwezinye izinsizakalo",
+        "booking_name_prompt": "Sicela unikeze igama lakho eligcwele:",
+        "flush_problem_prompt": "Iyini inkinga yomthombo wakho?\n"
+                                "1. Umthombo owadilikayo\n"
+                                "2. Amanzi angcolile",
+        "flush_diameter_prompt": "Uyakwazi ububanzi bomthombo wakho?\n"
+                                 "1. 180mm noma ngaphezulu\n"
+                                 "2. Phakathi kuka-140mm no-180mm\n"
+                                 "3. 140mm noma ngaphansi",
+        "flush_dirty_location": "Sicela ufake indawo yakho ukuze sibheke intengo:",
+        "flush_180mm": "Siyakwazi ukusebenzisa izinduku ne-drill bit. Sicela ufake indawo:",
+        "flush_140_180mm": "Sisebenzisa izinduku kuphela ngaphandle kwe-drill bit. Sicela ufake indawo:",
+        "flush_below_140mm": "Izinduku kuphela. Sicela ufake indawo:",
+        "support_connecting": "Siyakuxhumanisa nosizo...",
+        "pvc_classes": "Sinikezela ngensiza yePVC casing:\n"
+                       "1. Class 6 – Ejwayelekile\n"
+                       "2. Class 9 – Eqinile\n"
+                       "3. Class 10 – Eqinile kakhulu\n"
+                       "Yikuphi ofuna ukukuhlola?"
 
 
 
