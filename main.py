@@ -362,7 +362,12 @@ LANGUAGES = {
                 "7": "Sisebenzisa izinsimbi zokumba ezingochwepheshe kanye ne-percussion drilling rigs, amathuluzi e-GPS, namathuluzi okuhlola geological.",
             }
         }
-    }
+    },
+        "quote_intro": "Sicela usitshele indawo ofuna ukwenza insiza kuyo.",
+        "quote_thank_you": "Siyabonga! Sikumukele isicelo sakho.\n\n{0}\n\nUfuna ukwenzani okulandelayo?\n1. Nikeza intengo yakho\n2. Bhuka ukuhlolwa kwendawo\n3. Bhuka ukugawula\n4. Khuluma nommeli",
+        "select_valid_service": "Sicela ukhethe inketho efaneleyo (1-5).",
+        "select_valid_option": "Sicela ukhethe inketho efaneleyo (1-4).",
+        "agent_connect": "Sicela ulinde njengoba sixhumanisa nommeli..."
 
 
 
