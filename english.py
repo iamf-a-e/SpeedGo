@@ -792,6 +792,19 @@ def handle_other_services_menu(prompt, user_data, phone_id):
         send("Please select a valid option (1-4).", user_data['sender'], phone_id)
         return {'step': 'other_services_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+def handle_welcome(prompt, user_data, phone_id):
+    send(
+        "Hi there! Welcome to SpeedGo Services for borehole drilling in Zimbabwe. "
+        "We provide reliable borehole drilling and water solutions across Zimbabwe.\n\n"
+        "Choose your preferred language:\n"
+        "1. English\n"
+        "2. Shona\n"
+        "3. Ndebele",
+        user_data['sender'], phone_id
+    )
+    update_user_state(user_data['sender'], {'step': 'select_language'})
+    return {'step': 'select_language', 'sender': user_data['sender']}
+
 
 def send_main_menu(phone_number, phone_id):
     menu_text = (
