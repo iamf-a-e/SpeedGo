@@ -867,6 +867,58 @@ def handle_collect_booking_info(prompt, user_data, phone_id):
         send("Please type 'Submit' to confirm your booking.", user_data['sender'], phone_id)
         return {'step': 'collect_booking_info', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
+def handle_enter_location_for_quote(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    
+    # Check if we have a location object from WhatsApp
+    if 'location' in user_data and 'latitude' in user_data['location'] and 'longitude' in user_data['location']:
+        # This is a WhatsApp location message
+        lat = user_data['location']['latitude']
+        lng = user_data['location']['longitude']
+        gps_coords = f"{lat},{lng}"
+        location_name = reverse_geocode_location(gps_coords)
+        
+        if location_name:
+            user.quote_data['location'] = location_name
+            user.quote_data['gps_coords'] = gps_coords
+            update_user_state(user_data['sender'], {
+                'step': 'select_service_quote',
+                'user': user.to_dict()
+            })
+            send(
+                f"Location detected: {location_name.title()}\n\n"
+                "Now select the service:\n"
+                "1. Water survey\n"
+                "2. Borehole drilling\n"
+                "3. Pump installation\n"
+                "4. Commercial hole drilling\n"
+                "5. Borehole Deepening",
+                user_data['sender'], phone_id
+            )
+            return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+        else:
+            send("We couldn't identify your location. Please type your city/town name manually.", user_data['sender'], phone_id)
+            return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        # This is a text message with location name
+        location_name = prompt.strip()
+        user.quote_data['location'] = location_name.lower()
+        update_user_state(user_data['sender'], {
+            'step': 'select_service_quote',
+            'user': user.to_dict()
+        })
+        send(
+            "Now select the service:\n"
+            "1. Water survey\n"
+            "2. Borehole drilling\n"
+            "3. Pump installation\n"
+            "4. Commercial hole drilling\n"
+            "5. Borehole Deepening",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+
 def handle_booking_confirmation(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     if prompt == "2":  # No reschedule needed
