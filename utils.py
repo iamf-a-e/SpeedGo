@@ -51,3 +51,7 @@ def set_user_language(phone_number, language):
     user_data = get_user_state(phone_number) or {}
     user_data['language'] = language
     update_user_state(phone_number, user_data)
+
+def set_user_state(phone_number, state_data):
+    redis.set(phone_number, json.dumps(state_data))
+
