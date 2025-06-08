@@ -226,90 +226,147 @@ def handle_user_message(message, user_data, phone_id):
 
 def handle_select_language(prompt, user_data, phone_id):
     user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
-    
-    # Language configuration mapping
-    language_responses = {
-        "1": {
-            "language": "English",
-            "step": "main_menu",
-            "message": (
-                "Thank you!\n"
-                "How can we help you today?\n\n"
-                "1. Request a quote\n"
-                "2. Search Price Using Location\n"
-                "3. Check Project Status\n"
-                "4. FAQs or Learn About Borehole Drilling\n"
-                "5. Other services\n"
-                "6. Talk to a Human Agent\n\n"
-                "Please reply with a number (e.g., 1)"
-            )
-        },
-        "2": {
-            "language": "Shona",
-            "step": "main_menu",
-            "message": (
-                "Tatenda!\n"
-                "Tinokubatsirai sei nhasi?\n\n"
-                "1. Kukumbira quotation\n"
-                "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
-                "3. Tarisa Mamiriro ePurojekiti\n"
-                "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n"
-                "5. Zvimwe Zvatinoita\n"
-                "6. Taura neMunhu\n\n"
-                "Pindura nenhamba (semuenzaniso, 1)"
-            )
-        },
-        "3": {
-            "language": "Ndebele",
-            "step": "main_menu",
-            "message": (
-                "Siyabonga!\n"
-                "Singakusiza njani lamuhla?\n\n"
-                "1. Cela isiphakamiso\n"
-                "2. Phanda Intengo Ngokusebenzisa Indawo\n"
-                "3. Bheka Isimo Sephrojekthi\n"
-                "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
-                "5. Eminye Imisebenzi\n"
-                "6. Khuluma Nomuntu\n\n"
-                "Phendula ngenombolo (umzekeliso: 1)"
-            )
-        }
-    }
-
-    if prompt in language_responses:
-        config = language_responses[prompt]
-        user.language = config["language"]
-        
+    if prompt == "1":
+        user.language = "English"
         update_user_state(user_data['sender'], {
-            'step': config["step"],
+            'step': 'main_menu',
             'user': user.to_dict()
         })
-        
         send(
-            config["message"],
-            user_data['sender'], 
-            phone_id
+            "Thank you!\n"
+            "How can we help you today?\n\n"
+            "1. Request a quote\n"
+            "2. Search Price Using Location\n"
+            "3. Check Project Status\n"
+            "4. FAQs or Learn About Borehole Drilling\n"
+            "5. Other services\n"
+            "6. Talk to a Human Agent\n\n"
+            "Please reply with a number (e.g., 1)",
+            user_data['sender'], phone_id
         )
-        
-        return {
-            'step': config["step"],
-            'user': user.to_dict(),
-            'sender': user_data['sender']
-        }
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    elif prompt == "2":
+        user.language = "Shona"
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu2',
+            'user': user.to_dict()
+        })
+        send(
+            "Tatenda!\n"
+            "Tinokubatsirai sei nhasi?\n\n"
+            "1. Kukumbira quotation\n"
+            "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
+            "3. Tarisa Mamiriro ePurojekiti\n"
+            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n"
+            "5. Zvimwe Zvatinoita\n"
+            "6. Taura neMunhu\n\n"
+            "Pindura nenhamba (semuenzaniso, 1)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'main_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "3":
+        user.language = "Ndebele"
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu3',
+            'user': user.to_dict()
+        })
+        send(
+            "Siyabonga!\n"
+            "Singakusiza njani lamuhla?\n\n"
+            "1. Cela isiphakamiso\n"
+            "2. Phanda Intengo Ngokusebenzisa Indawo\n"
+            "3. Bheka Isimo Sephrojekthi\n"
+            "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
+            "5. Eminye Imisebenzi\n"
+            "6. Khuluma Nomuntu\n\n"
+            "Phendula ngenombolo (umzekeliso: 1)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'main_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
     else:
+        send("Please select a valid language option (1 for English, 2 for Shona, 3 for Ndebele).", user_data['sender'], phone_id)
+        return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_main_menu(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    if prompt == "1":  # Request a quote
+        update_user_state(user_data['sender'], {
+            'step': 'enter_location_for_quote',
+            'user': user.to_dict()
+        })
+        send("Please enter your location to get started.", user_data['sender'], phone_id)
+        return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":  # Search Price Using Location
+        update_user_state(user_data['sender'], {
+            'step': 'enter_location_for_quote',
+            'user': user.to_dict()
+        })
         send(
-            "Please select a valid language option:\n"
-            "1. English\n"
-            "2. Shona\n"
-            "3. Ndebele",
-            user_data['sender'], 
-            phone_id
+           "To get you pricing, please enter your location (City/Town or GPS coordinates):",
+            user_data['sender'], phone_id
         )
-        return {
-            'step': 'select_language',
-            'user': user.to_dict(),
-            'sender': user_data['sender']
-        }
+        return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "3":  # Check Project Status
+        update_user_state(user_data['sender'], {
+            'step': 'check_project_status_menu',
+            'user': user.to_dict()
+        })
+        send(
+            "Please choose an option:\n"
+            "1. Check status of borehole drilling\n"
+            "2. Check status of pump installation\n"
+            "3. Speak to a human agent\n"
+            "4. Main Menu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'check_project_status_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "4":
+        update_user_state(user_data['sender'], {
+            'step': 'faq_menu',
+            'user': user.to_dict()
+        })
+        send(
+            "Please choose an FAQ category:\n\n"
+            "1. Borehole Drilling FAQs\n"
+            "2. Pump Installation FAQs\n"
+            "3. Ask a different question\n"
+            "4. Speak to a human agent\n"
+            "5. Main Menu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "5":  # Other Services
+        update_user_state(user_data['sender'], {
+            'step': 'other_services_menu',
+            'user': user.to_dict()
+        })
+        send(
+            "Welcome to Other Borehole Services. What service do you need?\n"
+            "1. Borehole Deepening\n"
+            "2. Borehole Flushing\n"
+            "3. PVC Casing Pipe Selection\n"
+            "4. Back to Main Menu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'other_services_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    elif prompt == "6":  # Human agent
+        update_user_state(user_data['sender'], {
+            'step': 'human_agent',
+            'user': user.to_dict()
+        })
+        send("Connecting you to a human agent...", user_data['sender'], phone_id)
+        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    else:
+        send("Please select a valid option (1-6).", user_data['sender'], phone_id)
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
 def human_agent_followup(prompt, user_data, phone_id):
