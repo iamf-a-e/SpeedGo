@@ -12,6 +12,36 @@ redis = Redis(
     token=os.environ["UPSTASH_REDIS_REST_TOKEN"]
 )
 
+
+
+class User:
+    def __init__(self, phone_number):
+        self.phone_number = phone_number
+        self.language = "English"
+        self.quote_data = {}
+        self.booking_data = {}
+        self.offer_data = {}
+
+    def to_dict(self):
+        return {
+            "phone_number": self.phone_number,
+            "language": self.language,
+            "quote_data": self.quote_data,
+            "booking_data": self.booking_data,
+            "offer_data": self.offer_data
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        user = cls(data.get("phone_number"))
+        user.language = data.get("language", "English")
+        user.quote_data = data.get("quote_data", {})
+        user.booking_data = data.get("booking_data", {})
+        user.offer_data = data.get("offer_data", {})
+        return user
+
+
+
 def get_user_state(phone_number):
     state = redis.get(phone_number)
     if state is None:
