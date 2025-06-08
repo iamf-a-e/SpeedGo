@@ -1797,7 +1797,7 @@ action_mapping = {
     "drilling_status_updates_opt_in": handle_drilling_status_updates_opt_in,
     "custom_question": custom_question,
     "custom_question_followup": custom_question_followup,
-    "human_agent": handle_human_agent,  # Use a proper function instead of lambda
+    "human_agent": human_agent,  # Use a proper function instead of lambda
     "waiting_for_human_agent_response": handle_user_message,
     "other_services_menu": handle_other_services_menu,
     "borehole_deepening_casing": handle_borehole_deepening_casing,
