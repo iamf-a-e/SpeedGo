@@ -10,6 +10,11 @@ from upstash_redis import Redis
 import google.generativeai as genai
 import threading
 import time
+from utils import User
+
+
+user = User.from_dict(user_data.get("user", {"phone_number": sender}))
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -26,32 +31,6 @@ redis = Redis(
     token=os.environ["UPSTASH_REDIS_REST_TOKEN"]
 )
 
-# User serialization helpers
-class User:
-    def __init__(self, phone_number):
-        self.phone_number = phone_number
-        self.language = "English"
-        self.quote_data = {}
-        self.booking_data = {}
-        self.offer_data = {}
-
-    def to_dict(self):
-        return {
-            "phone_number": self.phone_number,
-            "language": self.language,
-            "quote_data": self.quote_data,
-            "booking_data": self.booking_data,
-            "offer_data": self.offer_data
-        }
-
-    @classmethod
-    def from_dict(cls, data):
-        user = cls(data.get("phone_number"))
-        user.language = data.get("language", "English")
-        user.quote_data = data.get("quote_data", {})
-        user.booking_data = data.get("booking_data", {})
-        user.offer_data = data.get("offer_data", {})
-        return user
 
 # State helpers
 def get_user_state(phone_number):
