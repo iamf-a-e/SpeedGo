@@ -6,6 +6,15 @@ from utils import get_user_language, set_user_language, send_message, set_user_s
 import os
 import logging
 import json
+import requests
+import random
+import string
+from upstash_redis import Redis
+import google.generativeai as genai
+import threading
+import time
+from datetime import datetime
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
