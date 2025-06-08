@@ -336,7 +336,7 @@ def handle_select_language2(prompt, user_data, phone_id):
     if prompt == "1":
         user.language = "English"
         update_user_state(user_data['sender'], {
-            'step': 'main_menu',
+            'step': 'main_menu2',
             'user': user.to_dict()
         })
         send2(
@@ -351,7 +351,7 @@ def handle_select_language2(prompt, user_data, phone_id):
             "Pindura nenhamba (semuenzaniso: 1)",
             user_data['sender'], phone_id
         )
-        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'main_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
         user.language = "Shona"
