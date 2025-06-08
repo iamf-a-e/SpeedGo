@@ -50,11 +50,12 @@ def get_user_state(phone_number):
         return json.loads(state)
     return state
 
-def update_user_state(phone_number, updates, ttl_seconds=60):
+def update_user_state(phone_number, updates, ttl_seconds=3600):  # 1 hour
     updates['phone_number'] = phone_number
     if 'sender' not in updates:
         updates['sender'] = phone_number
     redis.set(phone_number, json.dumps(updates), ex=ttl_seconds)
+
 
 def send_message(answer, sender, phone_id):
     wa_token = os.environ.get("WA_TOKEN")
