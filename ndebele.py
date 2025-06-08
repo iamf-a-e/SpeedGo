@@ -5,7 +5,7 @@ import requests
 import random
 import string
 from datetime import datetime
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, Blueprint
 from upstash_redis import Redis
 import google.generativeai as genai
 import threading
