@@ -46,9 +46,10 @@ def get_user_state(phone_number):
     state = redis.get(phone_number)
     if state is None:
         return {"step": "welcome", "sender": phone_number}
-    if isinstance(state, str):
-        return json.loads(state)
-    return state
+    if isinstance(state, bytes):
+        state = state.decode("utf-8")
+    return json.loads(state)
+
 
 def update_user_state(phone_number, updates, ttl_seconds=3600):  # 1 hour
     updates['phone_number'] = phone_number
