@@ -1,6 +1,8 @@
 import os
 import json
 from upstash_redis import Redis
+import requests
+import random
 
 # Upstash Redis setup
 redis = Redis(
