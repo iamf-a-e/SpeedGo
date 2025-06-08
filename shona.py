@@ -2067,7 +2067,7 @@ def get_action2(current_state, prompt, user_data, phone_id):
 
 shona_blueprint = Blueprint('shona', __name__)
 
-@eshona_blueprint.route('/message', methods=['POST'])
+@shona_blueprint.route('/message', methods=['POST'])
 def shona_message_handler():
     data = request.get_json()
     message = data.get('message')
