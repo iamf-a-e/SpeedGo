@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from english import english_blueprint
 from shona import shona_blueprint
 from ndebele import ndebele_blueprint
-from utils import get_user_language, set_user_language, send_message, set_user_state
+from utils import get_user_language, set_user_language, send_message, set_user_state, get_user_state
 import os
 import logging
 import json
