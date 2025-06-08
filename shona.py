@@ -12,10 +12,6 @@ import threading
 import time
 from utils import User
 
-
-user = User.from_dict(user_data.get("user", {"phone_number": sender}))
-
-
 logging.basicConfig(level=logging.INFO)
 
 # Environment variables
