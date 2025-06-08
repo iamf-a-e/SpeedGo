@@ -1940,7 +1940,7 @@ def webhook():
                 else:
                     # Unsupported message type
                     logging.warning(f"Unsupported message type: {msg_type}")
-                    send("Please send a text message or share your location using the 📍 button.", sender, phone_id)
+                    send_message(Please send a text message or share your location using the 📍 button.", sender, phone_id)
 
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
