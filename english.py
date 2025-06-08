@@ -224,6 +224,94 @@ def handle_user_message(message, user_data, phone_id):
             return user_data
 
 
+def handle_select_language(prompt, user_data, phone_id):
+    user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
+    
+    # Language configuration mapping
+    language_responses = {
+        "1": {
+            "language": "English",
+            "step": "main_menu",
+            "message": (
+                "Thank you!\n"
+                "How can we help you today?\n\n"
+                "1. Request a quote\n"
+                "2. Search Price Using Location\n"
+                "3. Check Project Status\n"
+                "4. FAQs or Learn About Borehole Drilling\n"
+                "5. Other services\n"
+                "6. Talk to a Human Agent\n\n"
+                "Please reply with a number (e.g., 1)"
+            )
+        },
+        "2": {
+            "language": "Shona",
+            "step": "main_menu",
+            "message": (
+                "Tatenda!\n"
+                "Tinokubatsirai sei nhasi?\n\n"
+                "1. Kukumbira quotation\n"
+                "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
+                "3. Tarisa Mamiriro ePurojekiti\n"
+                "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n"
+                "5. Zvimwe Zvatinoita\n"
+                "6. Taura neMunhu\n\n"
+                "Pindura nenhamba (semuenzaniso, 1)"
+            )
+        },
+        "3": {
+            "language": "Ndebele",
+            "step": "main_menu",
+            "message": (
+                "Siyabonga!\n"
+                "Singakusiza njani lamuhla?\n\n"
+                "1. Cela isiphakamiso\n"
+                "2. Phanda Intengo Ngokusebenzisa Indawo\n"
+                "3. Bheka Isimo Sephrojekthi\n"
+                "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
+                "5. Eminye Imisebenzi\n"
+                "6. Khuluma Nomuntu\n\n"
+                "Phendula ngenombolo (umzekeliso: 1)"
+            )
+        }
+    }
+
+    if prompt in language_responses:
+        config = language_responses[prompt]
+        user.language = config["language"]
+        
+        update_user_state(user_data['sender'], {
+            'step': config["step"],
+            'user': user.to_dict()
+        })
+        
+        send(
+            config["message"],
+            user_data['sender'], 
+            phone_id
+        )
+        
+        return {
+            'step': config["step"],
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+    else:
+        send(
+            "Please select a valid language option:\n"
+            "1. English\n"
+            "2. Shona\n"
+            "3. Ndebele",
+            user_data['sender'], 
+            phone_id
+        )
+        return {
+            'step': 'select_language',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+
 def human_agent_followup(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
