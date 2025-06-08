@@ -318,7 +318,7 @@ def get_pricing_for_location_quotes2(location, service_type, pump_option_selecte
 
 # State handlers
 def handle_welcome2(prompt, user_data, phone_id):
-    send(
+    send2(
         "Mhoro! Mauya kuSpeedGo Services – nyanzvi dzekuchera chibhorani muZimbabwe. "
         "Tinopa mabasa akavimbika ekuchera chibhorani nemhinduro dzemvura munyika yese yeZimbabwe.\n\n"
         "Sarudza mutauro waunoda kushandisa:\n"
@@ -339,7 +339,7 @@ def handle_select_language2(prompt, user_data, phone_id):
             'step': 'main_menu',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Tatenda!\n"
             "Tingakubatsirei nhasi?\n\n"
             "1. Kukumbira mutengo\n"
@@ -359,7 +359,7 @@ def handle_select_language2(prompt, user_data, phone_id):
             'step': 'main_menu2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Tatenda!\n"
             "Tingakubatsirei sei nhasi?\n\n"
             "1. Kukumbira quotation\n"
@@ -379,7 +379,7 @@ def handle_select_language2(prompt, user_data, phone_id):
             'step': 'main_menu3',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Siyabonga!\n"
             "Singakusiza njani lamuhla?\n\n"
             "1. Cela isiphakamiso\n"
@@ -394,7 +394,7 @@ def handle_select_language2(prompt, user_data, phone_id):
         return {'step': 'main_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Ndapota sarudza mutauro wakakodzera (1 English, 2 Shona, 3 Ndebele).", user_data['sender'], phone_id)
+        send2("Ndapota sarudza mutauro wakakodzera (1 English, 2 Shona, 3 Ndebele).", user_data['sender'], phone_id)
         return {'step': 'select_language2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -406,7 +406,7 @@ def handle_main_menu2(prompt, user_data, phone_id):
             'step': 'enter_location_for_quote2',
             'user': user.to_dict()
         })
-        send("Ndapota nyora nzvimbo yako (Guta/Kanzuru kana GPS coordinates) kuti titange.", user_data['sender'], phone_id)
+        send2("Ndapota nyora nzvimbo yako (Guta/Kanzuru kana GPS coordinates) kuti titange.", user_data['sender'], phone_id)
         return {'step': 'enter_location_for_quote2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":  # Tsvaga Mutengo Uchishandisa Nzvimbo
@@ -414,7 +414,7 @@ def handle_main_menu2(prompt, user_data, phone_id):
             'step': 'enter_location_for_quote2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Kuti tikuratidze mutengo, ndapota nyora nzvimbo yako (Guta/Kanzuru kana GPS coordinates):",
             user_data['sender'], phone_id
         )
@@ -425,7 +425,7 @@ def handle_main_menu2(prompt, user_data, phone_id):
             'step': 'check_project_status_menu2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Ndapota sarudza zvaunoda kuita:\n"
             "1. Tarisa mamiriro ekuchera chibhorani\n"
             "2. Tarisa mamiriro ekuiswa kwepombi\n"
@@ -440,7 +440,7 @@ def handle_main_menu2(prompt, user_data, phone_id):
             'step': 'faq_menu2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Ndapota sarudza chikamu cheMibvunzo:\n\n"
             "1. Mibvunzo nezve Kuchera Chibhorani\n"
             "2. Mibvunzo nezve Kuisa Pombi\n"
@@ -456,7 +456,7 @@ def handle_main_menu2(prompt, user_data, phone_id):
             'step': 'other_services_menu2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Mauya kuZvimwe Zvatinoita zveChibhorani. Ndeipi sevhisi yaunoda?\n"
             "1. Kuchera zvakadzika chibhorani chako\n"
             "2. Kubvisa tsvina muChibhorani (Flushing)\n"
@@ -471,11 +471,11 @@ def handle_main_menu2(prompt, user_data, phone_id):
             'step': 'human_agent2',
             'user': user.to_dict()
         })
-        send("Tiri kukubatanidza nemumiriri...", user_data['sender'], phone_id)
+        send2("Tiri kukubatanidza nemumiriri...", user_data['sender'], phone_id)
         return {'step': 'human_agent2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Ndapota sarudza sarudzo iripo (1 kusvika 6).", user_data['sender'], phone_id)
+        send2("Ndapota sarudza sarudzo iripo (1 kusvika 6).", user_data['sender'], phone_id)
         return {'step': 'main_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -486,7 +486,7 @@ def human_agent2(prompt, user_data, phone_id):
     agent_number = "+263719835124"
 
     # Notify the customer immediately
-    send(
+    send2(
         "Tatenda. Ndapota mirira ndichikubatanidza nemumiriri weSpeedGo...",
         customer_number, phone_id
     )
@@ -498,7 +498,7 @@ def human_agent2(prompt, user_data, phone_id):
         f"🙋 Zita: {customer_name}\n"
         f"📩 Mharidzo Yekupedzisira: \"{prompt}\""
     )
-    send(agent_message, agent_number, phone_id)
+    send2(agent_message, agent_number, phone_id)
 
     # Store state with timestamp to track elapsed time
     update_user_state(customer_number, {
@@ -517,15 +517,15 @@ def notify_agent2(customer_number, prompt, agent_number, phone_id):
         f"📱 Nhamba: {customer_number}\n"
         f"📩 Mharidzo: \"{prompt}\""
     )
-    send(agent_message, agent_number, phone_id)
+    send2(agent_message, agent_number, phone_id)
 
 
 def send_fallback_option2(customer_number, phone_id):
     # Check if still waiting
     user_data = get_user_state(customer_number)
     if user_data and user_data.get('step') == 'waiting_for_human_agent_response2':
-        send("Kana zvikatadza kubatana, unogona kutifonera pa +263719835124", customer_number, phone_id)
-        send("Ungade kuita sei:\n1. Dzokera ku main menu\n2. Pedzisa hurukuro", customer_number, phone_id)
+        send2("Kana zvikatadza kubatana, unogona kutifonera pa +263719835124", customer_number, phone_id)
+        send2("Ungade kuita sei:\n1. Dzokera ku main menu\n2. Pedzisa hurukuro", customer_number, phone_id)
         update_user_state(customer_number, {
             'step': 'human_agent_followup2',
             'user': user_data.get('user', {}),
@@ -537,11 +537,11 @@ def send_fallback_option2(customer_number, phone_id):
     # Check if user is still waiting
     user_data = get_user_state(customer_number)
     if user_data.get('step') == 'waiting_for_human_agent_response2':
-        send(
+        send2(
             "Kana zvikatadza, unogonawo kutitumira meseji kana kutifonera pa +263719835124.",
             customer_number, phone_id
         )
-        send(
+        send2(
             "Ungade kudzokera ku menyu huru here?\n1. Ehe\n2. Kwete",
             customer_number, phone_id
         )
@@ -562,11 +562,11 @@ def handle_user_message2(message, user_data, phone_id):
 
         if elapsed >= 10:
             # Send fallback prompt
-            send(
+            send2(
                 "Kana zvikatadza, unogonawo kutitumira meseji kana kutifonera pa +263719835124.",
                 customer_number, phone_id
             )
-            send(
+            send2(
                 "Ungade kudzokera ku menyu huru here?\n1. Ehe\n2. Kwete",
                 customer_number, phone_id
             )
@@ -585,7 +585,7 @@ def handle_user_message2(message, user_data, phone_id):
 
     elif state == 'human_agent_followup2':
         if message.strip() == '1':  # User wants main menu
-            send("Kudzosera kumenyu huru...", customer_number, phone_id)
+            send2("Kudzosera kumenyu huru...", customer_number, phone_id)
             update_user_state(customer_number, {
                 'step': 'main_menu2',
                 'user': user_data['user'],
@@ -595,7 +595,7 @@ def handle_user_message2(message, user_data, phone_id):
             return {'step': 'main_menu2', 'user': user_data['user'], 'sender': customer_number}
 
         elif message.strip() == '2':  # User says No
-            send("Tatenda! Ivai nezuva rakanaka.", customer_number, phone_id)
+            send2("Tatenda! Ivai nezuva rakanaka.", customer_number, phone_id)
             update_user_state(customer_number, {
                 'step': 'end',
                 'user': user_data['user'],
@@ -604,7 +604,7 @@ def handle_user_message2(message, user_data, phone_id):
             return {'step': 'end', 'user': user_data['user'], 'sender': customer_number}
 
         else:
-            send("Ndapota pindura ne 1 kuti zvinge zviri 'Ehe' kana 2 kuti zvinge zviri 'Kwete'.", customer_number, phone_id)
+            send2("Ndapota pindura ne 1 kuti zvinge zviri 'Ehe' kana 2 kuti zvinge zviri 'Kwete'.", customer_number, phone_id)
             return user_data
 
 
@@ -615,11 +615,11 @@ def human_agent_followup2(prompt, user_data, phone_id):
         return handle_select_language2("1", user_data, phone_id)
 
     elif prompt == "2":
-        send("Zvakanaka. Inzwa wakasununguka kubvunza kana paine chaunoda rubatsiro nacho.", user_data['sender'], phone_id)
+        send2("Zvakanaka. Inzwa wakasununguka kubvunza kana paine chaunoda rubatsiro nacho.", user_data['sender'], phone_id)
         return {'step': 'human_agent_followup2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Ndapota pindura ne 1 kuti udzokere ku menyu huru kana 2 kuti urambe uri pano.", user_data['sender'], phone_id)
+        send2("Ndapota pindura ne 1 kuti udzokere ku menyu huru kana 2 kuti urambe uri pano.", user_data['sender'], phone_id)
         return {'step': 'human_agent_followup2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -631,7 +631,7 @@ def faq_menu2(prompt, user_data, phone_id):
             'step': 'faq_borehole2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Mibvunzo inowanzo bvunzwa nezve kuchera maburi emvura:\n\n"
             "1. Kuchera buri remvura kunodhura zvakadini?\n"
             "2. Zvinotora nguva yakareba sei kuchera buri?\n"
@@ -651,7 +651,7 @@ def faq_menu2(prompt, user_data, phone_id):
             'step': 'faq_pump2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Mibvunzo inowanzo bvunzwa nezvekuisa mapombi:\n\n"
             "1. Chii chinosiyanisa mapombi ezuva nemagetsi?\n"
             "2. Munokwanisa kuisa kana ndine zvinhu zvacho kare?\n"
@@ -668,7 +668,7 @@ def faq_menu2(prompt, user_data, phone_id):
             'step': 'custom_question2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Ndapota nyora mubvunzo wako pasi, tichaedza napose patinogona kukubatsira.\n",
             user_data['sender'], phone_id
         )
@@ -680,14 +680,14 @@ def faq_menu2(prompt, user_data, phone_id):
             'user': user.to_dict(),
             'sender': user_data['sender']
         })
-        send("Ndapota chimbomira ndichikubatanidza nemumiriri wedu...", user_data['sender'], phone_id)
+        send2("Ndapota chimbomira ndichikubatanidza nemumiriri wedu...", user_data['sender'], phone_id)
         return {'step': 'human_agent2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "5":  # Back to Main Menu
         return handle_select_language2("1", user_data, phone_id)
 
     else:
-        send("Ndapota sarudza chisarudzo chiri pakati pe 1 kusvika ku 5.", user_data['sender'], phone_id)
+        send2("Ndapota sarudza chisarudzo chiri pakati pe 1 kusvika ku 5.", user_data['sender'], phone_id)
         return {'step': 'faq_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -695,7 +695,7 @@ def custom_question2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
     if not prompt.strip():
-        send("Ndapota nyora mubvunzo wako.", user_data['sender'], phone_id)
+        send2("Ndapota nyora mubvunzo wako.", user_data['sender'], phone_id)
         return {'step': 'custom_question2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     system_prompt = (
@@ -714,9 +714,9 @@ def custom_question2(prompt, user_data, phone_id):
         answer = "Ndine urombo, pane chakanganisika pakupindura mubvunzo wako. Ndapota edzazve gare gare."
         print(f"[Gemini error] {e}")
 
-    send(answer, user_data['sender'], phone_id)
+    send2(answer, user_data['sender'], phone_id)
 
-    send(
+    send2(
         "Ungade:\n"
         "1. Kubvunza rimwe mubvunzo\n"
         "2. Kudzokera ku Menyu Huru",
@@ -730,14 +730,14 @@ def custom_question_followup2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
     if prompt == "1":
-        send("Ndapota nyora mubvunzo wako unotevera.", user_data['sender'], phone_id)
+        send2("Ndapota nyora mubvunzo wako unotevera.", user_data['sender'], phone_id)
         return {'step': 'custom_question2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
         return handle_select_language2("1", user_data, phone_id)
 
     else:
-        send("Ndapota pindura ne 1 kuti ubvunze imwe mibvunzo kana 2 kuti udzokere kuMain Menu.", user_data['sender'], phone_id)
+        send2("Ndapota pindura ne 1 kuti ubvunze imwe mibvunzo kana 2 kuti udzokere kuMain Menu.", user_data['sender'], phone_id)
         return {'step': 'custom_question_followup2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -756,11 +756,11 @@ def faq_borehole2(prompt, user_data, phone_id):
     }
 
     if prompt in responses:
-        send(responses[prompt], user_data['sender'], phone_id)
+        send2(responses[prompt], user_data['sender'], phone_id)
         if prompt == "8":
             return {'step': 'faq_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-        send(
+        send2(
             "Ungada:\n"
             "1. Kubvunza imwe mibvunzo yeBorehole Drilling FAQs\n"
             "2. Kudzokera kuMain Menu",
@@ -769,7 +769,7 @@ def faq_borehole2(prompt, user_data, phone_id):
         return {'step': 'faq_borehole_followup2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Ndapota sarudza chisarudzo chiri pakati pe 1 kusvika ku 8.", user_data['sender'], phone_id)
+        send2("Ndapota sarudza chisarudzo chiri pakati pe 1 kusvika ku 8.", user_data['sender'], phone_id)
         return {'step': 'faq_borehole2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -777,7 +777,7 @@ def faq_borehole_followup2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
     if prompt == "1":
-        send(
+        send2(
             "Ndapota sarudza mubvunzo:\n\n"
             "1. Kuchera borehole kunodhura marii?\n"
             "2. Zvinotora nguva yakareba sei kuchera borehole?\n"
@@ -795,7 +795,7 @@ def faq_borehole_followup2(prompt, user_data, phone_id):
         return handle_select_language2("1", user_data, phone_id)
 
     else:
-        send("Ndapota sarudza 1 kuti ubvunze imwe mibvunzo kana 2 kudzokera kuMain Menu.", user_data['sender'], phone_id)
+        send2("Ndapota sarudza 1 kuti ubvunze imwe mibvunzo kana 2 kudzokera kuMain Menu.", user_data['sender'], phone_id)
         return {'step': 'faq_borehole_followup2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -812,12 +812,12 @@ def faq_pump2(prompt, user_data, phone_id):
     }
 
     if prompt in responses:
-        send(responses[prompt], user_data['sender'], phone_id)
+        send2(responses[prompt], user_data['sender'], phone_id)
 
         if prompt == "6":
             return {'step': 'faq_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-        send(
+        send2(
             "Ungada:\n"
             "1. Kubvunza imwe mibvunzo yePump Installation FAQs\n"
             "2. Kudzokera kuMain Menu",
@@ -826,7 +826,7 @@ def faq_pump2(prompt, user_data, phone_id):
         return {'step': 'faq_pump_followup2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Ndapota sarudza chisarudzo chiri pakati pe 1 kusvika ku 6.", user_data['sender'], phone_id)
+        send2("Ndapota sarudza chisarudzo chiri pakati pe 1 kusvika ku 6.", user_data['sender'], phone_id)
         return {'step': 'faq_pump2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -834,7 +834,7 @@ def faq_pump_followup2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
     if prompt == "1":
-        send(
+        send2(
             "Ndapota sarudza mubvunzo:\n\n"
             "1. Ndezvipi zvakasiyana pakati pemapombi ezuva nemagetsi?\n"
             "2. Munogona kuisa kana ndatotenga zvinhu zvacho?\n"
@@ -850,7 +850,7 @@ def faq_pump_followup2(prompt, user_data, phone_id):
         return handle_select_language2("1", user_data, phone_id)
 
     else:
-        send("Ndapota sarudza 1 kuti ubvunze imwe mibvunzo kana 2 kudzokera kuMain Menu.", user_data['sender'], phone_id)
+        send2("Ndapota sarudza 1 kuti ubvunze imwe mibvunzo kana 2 kudzokera kuMain Menu.", user_data['sender'], phone_id)
         return {'step': 'faq_pump_followup2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -870,7 +870,7 @@ def handle_enter_location_for_quote2(prompt, user_data, phone_id):
                 'step': 'select_service_quote2',
                 'user': user.to_dict()
             })
-            send(
+            send2(
                 f"Nzvimbo yawanikwa: {location_name.title()}\n\n"
                 "Zvino sarudza sevhisi yaunoda:\n"
                 "1. Water survey\n"
@@ -882,7 +882,7 @@ def handle_enter_location_for_quote2(prompt, user_data, phone_id):
             )
             return {'step': 'select_service_quote2', 'user': user.to_dict(), 'sender': user_data['sender']}
         else:
-            send("Hatina kukwanisa kuona nzvimbo yenyu. Ndapota nyora zita reguta/kanzvimbo nemaoko.", user_data['sender'], phone_id)
+            send2("Hatina kukwanisa kuona nzvimbo yenyu. Ndapota nyora zita reguta/kanzvimbo nemaoko.", user_data['sender'], phone_id)
             return {'step': 'enter_location_for_quote2', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
         location_name = prompt.strip()
@@ -891,7 +891,7 @@ def handle_enter_location_for_quote2(prompt, user_data, phone_id):
             'step': 'select_service_quote2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Zvino sarudza sevhisi yaunoda:\n"
             "1. Water survey\n"
             "2. Kuchera borehole\n"
@@ -918,14 +918,14 @@ def handle_select_service2(prompt, user_data, phone_id):
             'step': 'collect_quote_details2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Kuti tikukwanisire mutengo wenguva pfupi, ndapota pindura zvinotevera:\n\n"
             "1. Nzvimbo yenyu (Guta/Kanzvimbo kana GPS):",
             user_data['sender'], phone_id
         )
         return {'step': 'handle_select_service_quote2', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Ndapota sarudza sevhisi yakakodzera (1-5).", user_data['sender'], phone_id)
+        send2("Ndapota sarudza sevhisi yakakodzera (1-5).", user_data['sender'], phone_id)
         return {'step': 'select_service2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -955,7 +955,7 @@ def handle_collect_quote_details2(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         estimate = "Class 6: Mutengo Wakafungidzirwa: $2500\nInosanganisira kuchera, PVC casing 140mm"
-        send(
+        send2(
             f"Maita basa! Zvichibva pane zvamunotaura:\n\n"
             f"{estimate}\n\n"
             f"Cherekedza: Mari yekuisa kaviri casing inobhadharwa zvakawanda kana zvichidikanwa, uye pachibvumirano chemutengi\n\n"
@@ -968,7 +968,7 @@ def handle_collect_quote_details2(prompt, user_data, phone_id):
         )
         return {'step': 'quote_response2', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Ndapota nyora ruzivo rwese rwakumbirwa (anenge mitsara mina).", user_data['sender'], phone_id)
+        send2("Ndapota nyora ruzivo rwese rwakumbirwa (anenge mitsara mina).", user_data['sender'], phone_id)
         return {'step': 'collect_quote_details2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -979,7 +979,7 @@ def handle_quote_response2(prompt, user_data, phone_id):
             'step': 'collect_offer_details2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Zvakanaka! Unogona kutumira mitengo yako pazasi.\n\n"
             "Ndapota pindura nemutengo wako uchishandisa fomati:\n\n"
             "- Kuongorora mvura: $_\n"
@@ -992,7 +992,7 @@ def handle_quote_response2(prompt, user_data, phone_id):
             'step': 'collect_booking_info2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Zvakanaka! Ndapota nyora zvinotevera kuti tipedze kurongwa kwako:\n\n"
             "- Zita rizere:\n"
             "- Zuva raunoda (dd/mm/yyyy):\n"
@@ -1004,13 +1004,13 @@ def handle_quote_response2(prompt, user_data, phone_id):
         )
         return {'step': 'collect_booking_info2', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "3":  # Book for a Drilling
-        send("Mumiriri wedu achakubata kuti apedze kurongwa kwekuchera borehole.", user_data['sender'], phone_id)
+        send2("Mumiriri wedu achakubata kuti apedze kurongwa kwekuchera borehole.", user_data['sender'], phone_id)
         return {'step': 'main_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "4":  # Human Agent
-        send("Tiri kukubatanidza nemumiriri munhu...", user_data['sender'], phone_id)
+        send2("Tiri kukubatanidza nemumiriri munhu...", user_data['sender'], phone_id)
         return {'step': 'human_agent2', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Ndapota sarudza sarudzo yakakodzera (1-4).", user_data['sender'], phone_id)
+        send2("Ndapota sarudza sarudzo yakakodzera (1-4).", user_data['sender'], phone_id)
         return {'step': 'quote_response2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1029,7 +1029,7 @@ def handle_collect_offer_details2(prompt, user_data, phone_id):
         'step': 'offer_response2',
         'user': user.to_dict()
     })
-    send(
+    send2(
         "Chikumbiro chako chatumirwa kumaneja wekutengesa. Tichapindura mukati meawa rimwe.\n\n"
         "Maita basa nekuvimbika kwenyu!\n\n"
         "Chikwata chedu chichachiongorora uye chichapindura munguva pfupi.\n\n"
@@ -1058,7 +1058,7 @@ def handle_offer_response2(prompt, user_data, phone_id):
             'step': 'booking_details2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Nhau dzakanaka! Chipo chako chagamuchirwa.\n\n"
             "Ngatibvumiraneyi nezvokutevera.\n\n"
             "Ungade kuita:\n"
@@ -1069,14 +1069,14 @@ def handle_offer_response2(prompt, user_data, phone_id):
         )
         return {'step': 'booking_details2', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "2":
-        send("Tiri kukuendesa kumumiriri wemunhu...", user_data['sender'], phone_id)
+        send2("Tiri kukuendesa kumumiriri wemunhu...", user_data['sender'], phone_id)
         return {'step': 'human_agent2', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "3":
         update_user_state(user_data['sender'], {
             'step': 'collect_offer_details2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Ndapota pindura nekunyora chipo chako chachinjwa mukutevedzana kwe:\n\n"
             "- Kuongorora Mvura: $_\n"
             "- Kuchera Mvura: $_",
@@ -1084,7 +1084,7 @@ def handle_offer_response2(prompt, user_data, phone_id):
         )
         return {'step': 'collect_offer_details2', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Ndapota sarudza sarudzo iripo (1-3).", user_data['sender'], phone_id)
+        send2("Ndapota sarudza sarudzo iripo (1-3).", user_data['sender'], phone_id)
         return {'step': 'offer_response2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 def handle_booking_details2(prompt, user_data, phone_id):
@@ -1094,7 +1094,7 @@ def handle_booking_details2(prompt, user_data, phone_id):
             'step': 'collect_booking_info2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Zvakanaka! Ndapota ipa ruzivo runotevera kuti tiite hurongwa hwako:\n\n"
             "- Zita Rizere:\n"
             "- Zuva Rawasarudza (dd/mm/yyyy):\n"
@@ -1106,13 +1106,13 @@ def handle_booking_details2(prompt, user_data, phone_id):
         )
         return {'step': 'collect_booking_info2', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "2":  # Kubhadhara Mari Yekuchengetedza
-        send("Ndapota bata hofisi yedu pa0719835124 kuti uronge kubhadhara mari yekuchengetedza.", user_data['sender'], phone_id)
+        send2("Ndapota bata hofisi yedu pa0719835124 kuti uronge kubhadhara mari yekuchengetedza.", user_data['sender'], phone_id)
         return {'step': 'main_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "3":  # Kusimbisa Zuva Rekuchera Mvura
-        send("Mumiriri wedu achakubata kuti asimbise zuva rekuchera mvura.", user_data['sender'], phone_id)
+        send2("Mumiriri wedu achakubata kuti asimbise zuva rekuchera mvura.", user_data['sender'], phone_id)
         return {'step': 'main_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Ndapota sarudza sarudzo iripo (1-3).", user_data['sender'], phone_id)
+        send2("Ndapota sarudza sarudzo iripo (1-3).", user_data['sender'], phone_id)
         return {'step': 'booking_details2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 def handle_collect_booking_info2(prompt, user_data, phone_id):
@@ -1134,7 +1134,7 @@ def handle_collect_booking_info2(prompt, user_data, phone_id):
         })
         booking_date = "25/05/2025"
         booking_time = "10:00 AM"
-        send(
+        send2(
             "Tatenda. Kurongwa kwako kwekuongorora kwasimbiswa, uye tekinoroji achakubata munguva pfupi.\n\n"
             f"Rangarira: Kuongorora kwenzvimbo yako kwakatarwa kusvikira mangwana.\n\n"
             f"Zuva: {booking_date}\n"
@@ -1147,14 +1147,14 @@ def handle_collect_booking_info2(prompt, user_data, phone_id):
         )
         return {'step': 'booking_confirmation2', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Ndapota nyora 'Submit' kuti usimbise kurongwa kwako.", user_data['sender'], phone_id)
+        send2("Ndapota nyora 'Submit' kuti usimbise kurongwa kwako.", user_data['sender'], phone_id)
         return {'step': 'collect_booking_info2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
 def handle_booking_confirmation2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     if prompt == "2":  # No reschedule needed
-        send(
+        send2(
             "Zvakanaka! Ruzivo rwenyu rwekukorobha borehole rwabhuka.\n\n"
             "Zuva: China, 23 Chivabvu 2025\n"
             "Nguva Yekutanga: 8:00 AM\n"
@@ -1165,7 +1165,7 @@ def handle_booking_confirmation2(prompt, user_data, phone_id):
         )
         return {'step': 'welcome2', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Ndokumbira utaure nevanhu vanobatsira kuti uchinje zuva.", user_data['sender'], phone_id)
+        send2("Ndokumbira utaure nevanhu vanobatsira kuti uchinje zuva.", user_data['sender'], phone_id)
         return {'step': 'booking_confirmation2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1174,7 +1174,7 @@ def handle_select_service_quote2(prompt, user_data, phone_id):
     location = user.quote_data.get('location')
     
     if not location:
-        send("Ndokumbira utaure nzvimbo yako kutanga usati wasarudza sevhisi.", user_data['sender'], phone_id)
+        send2("Ndokumbira utaure nzvimbo yako kutanga usati wasarudza sevhisi.", user_data['sender'], phone_id)
         return {'step': 'enter_location_for_quote2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     service_map = {
@@ -1188,7 +1188,7 @@ def handle_select_service_quote2(prompt, user_data, phone_id):
     selected_service = service_map.get(prompt.strip())
 
     if not selected_service:
-        send("Sarudzo isiriyo. Ndokumbira upindure ne1, 2, 3, 4 kana 5 kusarudza sevhisi.", user_data['sender'], phone_id)
+        send2("Sarudzo isiriyo. Ndokumbira upindure ne1, 2, 3, 4 kana 5 kusarudza sevhisi.", user_data['sender'], phone_id)
         return {'step': 'select_service_quote2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # Store selected service
@@ -1204,7 +1204,7 @@ def handle_select_service_quote2(prompt, user_data, phone_id):
         for key, option in pump_installation_options.items():
             desc = option.get('description', 'Hapana tsananguro')
             message_lines.append(f"{key}. {desc}")
-        send("\n".join(message_lines), user_data['sender'], phone_id)
+        send2("\n".join(message_lines), user_data['sender'], phone_id)
         return {'step': 'select_pump_option2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # Get pricing for other services
@@ -1215,7 +1215,7 @@ def handle_select_service_quote2(prompt, user_data, phone_id):
         'step': 'quote_followup2',
         'user': user.to_dict()
     })
-    send(pricing_message, user_data['sender'], phone_id)
+    send2(pricing_message, user_data['sender'], phone_id)
 
     return {
         'step': 'quote_followup2',
@@ -1230,7 +1230,7 @@ def handle_other_services_menu2(prompt, user_data, phone_id):
 
     if choice == "1":
         # Borehole Deepening casing question
-        send(
+        send2(
             "Kuti tione kana borehole yako inogona kudzika:\n"
             "Borehole yakaiswa casing here:\n"
             "1. Pamusoro chete, ne pombi ine dhayamita 180mm kana kukura\n"
@@ -1242,7 +1242,7 @@ def handle_other_services_menu2(prompt, user_data, phone_id):
 
     elif choice == "2":
         # Borehole Flushing problem type
-        send(
+        send2(
             "Chii chiri dambudziko neborehole yako?\n"
             "1. Borehole yakawira pasi\n"
             "2. Mvura yakasviba borehole",
@@ -1253,7 +1253,7 @@ def handle_other_services_menu2(prompt, user_data, phone_id):
 
     elif choice == "3":
         # PVC casing class selection
-        send(
+        send2(
             "Tinopa maborehole ane PVC casing pipe makirasi:\n"
             "1. Kirasi 6 – Yakajairika\n"
             "2. Kirasi 9 – Yakasimba\n"
@@ -1271,7 +1271,7 @@ def handle_other_services_menu2(prompt, user_data, phone_id):
         return {'step': 'main_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Ndokumbira usarudze sarudzo yakakodzera (1-4).", user_data['sender'], phone_id)
+        send2("Ndokumbira usarudze sarudzo yakakodzera (1-4).", user_data['sender'], phone_id)
         return {'step': 'other_services_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1286,7 +1286,7 @@ def send_main_menu2(phone_number, phone_id):
         "6. Taura neMumiriri Wemunhu\n\n"
         "Ndapota pindura nenhamba (semuenzaniso, 1)"
     )
-    send(menu_text, phone_number, phone_id)
+    send2(menu_text, phone_number, phone_id)
     
 
 def handle_borehole_deepening_casing2(prompt, user_data, phone_id):
@@ -1295,14 +1295,14 @@ def handle_borehole_deepening_casing2(prompt, user_data, phone_id):
 
     if choice == "1":
         # Only at top, qualifies for deepening
-        send("Bhuroka rako rinokodzera kuwedzerwa kudzika.\nNdapota nyora nzvimbo yako (guta, ward, growth point, kana GPS pin):",
+        send2("Bhuroka rako rinokodzera kuwedzerwa kudzika.\nNdapota nyora nzvimbo yako (guta, ward, growth point, kana GPS pin):",
              user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'deepening_location2', 'user': user.to_dict()})
         return {'step': 'deepening_location2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif choice == "2":
         # Top to bottom with smaller pipe - no deepening
-        send(
+        send2(
             "Zvinosuruvarisa, maburoka ane pombi diki kupfuura 180mm kubva kumusoro kusvika pasi haagoni kuwedzerwa kudzika.\n"
             "Sarudzo:\n"
             "1. Dzokera kuMamwe Mabasa\n"
@@ -1313,7 +1313,7 @@ def handle_borehole_deepening_casing2(prompt, user_data, phone_id):
         return {'step': 'deepening_no_deepening_options2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Ndapota sarudza sarudzo yakakodzera (1 kana 2).", user_data['sender'], phone_id)
+        send2("Ndapota sarudza sarudzo yakakodzera (1 kana 2).", user_data['sender'], phone_id)
         return {'step': 'borehole_deepening_casing2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1326,12 +1326,12 @@ def handle_deepening_no_deepening_options2(prompt, user_data, phone_id):
         return handle_other_services_menu2("0", user_data, phone_id)  # or send menu prompt directly
 
     elif choice == "2":
-        send("Tiri kukubatanidza nerutsigiro...", user_data['sender'], phone_id)
+        send2("Tiri kukubatanidza nerutsigiro...", user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'human_agent2', 'user': user.to_dict()})
         return {'step': 'human_agent2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Ndapota sarudza sarudzo yakakodzera (1 kana 2).", user_data['sender'], phone_id)
+        send2("Ndapota sarudza sarudzo yakakodzera (1 kana 2).", user_data['sender'], phone_id)
         return {'step': 'deepening_no_deepening_options2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1345,7 +1345,7 @@ def handle_deepening_location2(prompt, user_data, phone_id):
     # Fetch pricing from backend (you must implement this function)
     price = get_pricing_for_location_quotes(location, "borehole_deepening")
 
-    send(
+    send2(
         f"Mutengo wekuwedzera kudzika mu{location} unotangira paUSD {price} pamita.\n"
         "Ungada here:\n"
         "1. Simbisa & Ronga Basa\n"
@@ -1363,7 +1363,7 @@ def handle_deepening_booking_confirm2(prompt, user_data, phone_id):
     if choice == "1":
         # Start booking details collection
         user.booking_data = {}
-        send("Ndapota nyora zita rako rizere:", user_data['sender'], phone_id)
+        send2("Ndapota nyora zita rako rizere:", user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'booking_full_name2', 'user': user.to_dict()})
         return {'step': 'booking_full_name2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
@@ -1372,7 +1372,7 @@ def handle_deepening_booking_confirm2(prompt, user_data, phone_id):
         return other_services_menu2("0", user_data, phone_id)
 
     else:
-        send("Ndapota sarudza sarudzo yakakodzera (1 kana 2).", user_data['sender'], phone_id)
+        send2("Ndapota sarudza sarudzo yakakodzera (1 kana 2).", user_data['sender'], phone_id)
         return {'step': 'deepening_booking_confirm2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1382,7 +1382,7 @@ def handle_borehole_flushing_problem2(prompt, user_data, phone_id):
 
     if choice == "1":
         # Collapsed Borehole
-        send(
+        send2(
             "Unoziva dhayamita yebhuroka here?\n"
             "1. 180mm kana kupfuura\n"
             "2. Pakati pe140mm ne180mm\n"
@@ -1394,13 +1394,13 @@ def handle_borehole_flushing_problem2(prompt, user_data, phone_id):
 
     elif choice == "2":
         # Dirty Water Borehole
-        send("Ndapota nyora nzvimbo yako kuti titarise mutengo:", user_data['sender'], phone_id)
+        send2("Ndapota nyora nzvimbo yako kuti titarise mutengo:", user_data['sender'], phone_id)
         user.quote_data['flushing_type'] = 'dirty_water'
         update_user_state(user_data['sender'], {'step': 'flushing_location2', 'user': user.to_dict()})
         return {'step': 'flushing_location2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Ndapota sarudza sarudzo yakakodzera (1 kana 2).", user_data['sender'], phone_id)
+        send2("Ndapota sarudza sarudzo yakakodzera (1 kana 2).", user_data['sender'], phone_id)
         return {'step': 'borehole_flushing_problem2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1415,26 +1415,26 @@ def handle_flushing_collapsed_diameter2(prompt, user_data, phone_id):
 
     diameter = diameter_map.get(choice)
     if not diameter:
-        send("Ndapota sarudza sarudzo yakakodzera (1-3).", user_data['sender'], phone_id)
+        send2("Ndapota sarudza sarudzo yakakodzera (1-3).", user_data['sender'], phone_id)
         return {'step': 'flushing_collapsed_diameter2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     user.quote_data['flushing_type'] = 'collapsed'
     user.quote_data['diameter'] = diameter
 
     if diameter == "180mm_or_larger":
-        send("Tinogona kugezesa borehole yako tichishandisa madziro ane drilling bit (zvinobudirira zvikuru).\nNdapota nyora nzvimbo yako kuti tione mutengo:",
+        send2("Tinogona kugezesa borehole yako tichishandisa madziro ane drilling bit (zvinobudirira zvikuru).\nNdapota nyora nzvimbo yako kuti tione mutengo:",
              user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'flushing_location2', 'user': user.to_dict()})
         return {'step': 'flushing_location2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif diameter == "between_140_and_180mm":
-        send("Tinogona kugezesa borehole tichishandisa madziro, pasina drilling bit.\nNdapota nyora nzvimbo yako kuti tione mutengo:",
+        send2("Tinogona kugezesa borehole tichishandisa madziro, pasina drilling bit.\nNdapota nyora nzvimbo yako kuti tione mutengo:",
              user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'flushing_location2', 'user': user.to_dict()})
         return {'step': 'flushing_location2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif diameter == "140mm_or_smaller":
-        send("Tinogona kugezesa borehole tichishandisa madziro chete (pasina drilling bit).\nNdapota nyora nzvimbo yako kuti tione mutengo:",
+        send2("Tinogona kugezesa borehole tichishandisa madziro chete (pasina drilling bit).\nNdapota nyora nzvimbo yako kuti tione mutengo:",
              user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'flushing_location2', 'user': user.to_dict()})
         return {'step': 'flushing_location2', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -1468,7 +1468,7 @@ def handle_flushing_location2(prompt, user_data, phone_id):
         'diameter': diameter
     })
 
-    send(
+    send2(
         f"Mutengo wekugezesa borehole munzvimbo ye {location} unotangira pa USD {price}.\n"
         "Ungada here:\n"
         "1. Kusimbisa & Kurodha Basa\n"
@@ -1485,7 +1485,7 @@ def handle_flushing_booking_confirm2(prompt, user_data, phone_id):
 
     if choice == "1":
         user.booking_data = {}
-        send("Ndapota nyora zita rako rizere:", user_data['sender'], phone_id)
+        send2("Ndapota nyora zita rako rizere:", user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'booking_full_name2', 'user': user.to_dict()})
         return {'step': 'booking_full_name2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
@@ -1493,7 +1493,7 @@ def handle_flushing_booking_confirm2(prompt, user_data, phone_id):
         return handle_other_services_menu2("0", user_data, phone_id)
 
     else:
-        send("Ndapota sarudza sarudzo yakakodzera (1 kana 2).", user_data['sender'], phone_id)
+        send2("Ndapota sarudza sarudzo yakakodzera (1 kana 2).", user_data['sender'], phone_id)
         return {'step': 'flushing_booking_confirm2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1508,12 +1508,12 @@ def handle_pvc_casing_selection2(prompt, user_data, phone_id):
 
     casing_class = pvc_map.get(choice)
     if not casing_class:
-        send("Ndapota sarudza sarudzo yakakodzera (1-3).", user_data['sender'], phone_id)
+        send2("Ndapota sarudza sarudzo yakakodzera (1-3).", user_data['sender'], phone_id)
         return {'step': 'pvc_casing_selection2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     user.quote_data['pvc_casing_class'] = casing_class
 
-    send(f"Mutengo we {casing_class} PVC casing unotsamira panzvimbo yako.\nNdapota nyora nzvimbo yako:",
+    send2(f"Mutengo we {casing_class} PVC casing unotsamira panzvimbo yako.\nNdapota nyora nzvimbo yako:",
          user_data['sender'], phone_id)
     update_user_state(user_data['sender'], {'step': 'pvc_casing_location2', 'user': user.to_dict()})
     return {'step': 'pvc_casing_location2', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -1528,7 +1528,7 @@ def handle_pvc_casing_location2(prompt, user_data, phone_id):
 
     price = get_pricing_for_other_services(location, "pvc_casing", {'class': casing_class})
 
-    send(
+    send2(
         f"Mutengo we {casing_class} PVC casing munzvimbo ye {location} uri USD {price}.\n"
         "Ungada here:\n"
         "1. Kusimbisa & Kurodha\n"
@@ -1545,7 +1545,7 @@ def handle_pvc_casing_booking_confirm2(prompt, user_data, phone_id):
 
     if choice == "1":
         user.booking_data = {}
-        send("Ndokumbirawo upe zita rako rizere:", user_data['sender'], phone_id)
+        send2("Ndokumbirawo upe zita rako rizere:", user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'booking_full_name2', 'user': user.to_dict()})
         return {'step': 'booking_full_name2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
@@ -1553,7 +1553,7 @@ def handle_pvc_casing_booking_confirm2(prompt, user_data, phone_id):
         return handle_other_services_menu2("0", user_data, phone_id)
 
     else:
-        send("Ndokumbirawo usarudze sarudzo chaiyo (1 kana 2).", user_data['sender'], phone_id)
+        send2("Ndokumbirawo usarudze sarudzo chaiyo (1 kana 2).", user_data['sender'], phone_id)
         return {'step': 'pvc_casing_booking_confirm2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1561,7 +1561,7 @@ def handle_booking_full_name2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     full_name = prompt.strip()
     user.booking_data['full_name'] = full_name
-    send("Ndokumbirawo upe nhamba yako yefoni:", user_data['sender'], phone_id)
+    send2("Ndokumbirawo upe nhamba yako yefoni:", user_data['sender'], phone_id)
     update_user_state(user_data['sender'], {'step': 'booking_phone2', 'user': user.to_dict()})
     return {'step': 'booking_phone2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
@@ -1570,7 +1570,7 @@ def handle_booking_phon2e(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     phone = prompt.strip()
     user.booking_data['phone'] = phone
-    send("Ndokumbirawo nyora nzvimbo yako chaiyo/kero kana kuti tumira GPS pin yako:", user_data['sender'], phone_id)
+    send2("Ndokumbirawo nyora nzvimbo yako chaiyo/kero kana kuti tumira GPS pin yako:", user_data['sender'], phone_id)
     update_user_state(user_data['sender'], {'step': 'booking_location2', 'user': user.to_dict()})
     return {'step': 'booking_location2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
@@ -1579,7 +1579,7 @@ def handle_booking_location2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     location = prompt.strip()
     user.booking_data['location'] = location
-    send("Ndokumbirawo nyora zuva raunoda kusungira basa (semuenzaniso, 2024-10-15):", user_data['sender'], phone_id)
+    send2("Ndokumbirawo nyora zuva raunoda kusungira basa (semuenzaniso, 2024-10-15):", user_data['sender'], phone_id)
     update_user_state(user_data['sender'], {'step': 'booking_date2', 'user': user.to_dict()})
     return {'step': 'booking_date2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
@@ -1588,7 +1588,7 @@ def handle_booking_date2(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     booking_date = prompt.strip()
     user.booking_data['date'] = booking_date
-    send("Kana uine zvimwe zvinyorwa kana zvikumbiro, nyora zvino. Kana usina, nyora 'Kwete':", user_data['sender'], phone_id)
+    send2("Kana uine zvimwe zvinyorwa kana zvikumbiro, nyora zvino. Kana usina, nyora 'Kwete':", user_data['sender'], phone_id)
     update_user_state(user_data['sender'], {'step': 'booking_notes2', 'user': user.to_dict()})
     return {'step': 'booking_notes2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
@@ -1601,7 +1601,7 @@ def handle_booking_notes2(prompt, user_data, phone_id):
     # At this point, save booking to database or call booking API
     booking_confirmation_number = save_booking(user.booking_data)  # You must implement save_booking
 
-    send(
+    send2(
         f"Tinotenda {user.booking_data['full_name']}! Kusungirwa kwako kwasimbiswa.\n"
         f"Reference yeBooking: {booking_confirmation_number}\n"
         "Chikwata chedu chichakutaurira munguva pfupi.\n"
@@ -1618,7 +1618,7 @@ def handle_pump_status_info_request2(prompt, user_data, phone_id):
     lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
 
     if len(lines) < 2:
-        send(
+        send2(
             "Ndokumbirawo upe zita rako rizere uye reference number kana nhamba yefoni, imwe neimwe mutsara mutsva.\n\n"
             "Muenzaniso:\n"
             "Jane Doe\nREF123456\nZvingasarudzwa: Harare",
@@ -1641,9 +1641,9 @@ def handle_pump_status_info_request2(prompt, user_data, phone_id):
         'location': location
     }
 
-    send("Tinotenda. Ndapota mirira apo tiri kutora ruzivo nezve chimiro cheprojekiti yako...", user_data['sender'], phone_id)
+    send2("Tinotenda. Ndapota mirira apo tiri kutora ruzivo nezve chimiro cheprojekiti yako...", user_data['sender'], phone_id)
 
-    send(
+    send2(
         f"Heano mamiriro eprojekiti yako yepombi:\n\n"
         f"Zita rePurojekiti: Pombi - {full_name}\n"
         f"Chikamu Chazvino: Kuisa Kwapedzwa\n"
@@ -1670,19 +1670,19 @@ def handle_pump_status_updates_opt_in2(prompt, user_data, phone_id):
     response = prompt.strip().lower()
 
     if response in ['yes', 'y', 'ehe']:
-        send(
+        send2(
             "Zvakanaka! Iwe zvino uchagamuchira zviziviso paWhatsApp pese paanochinja chimiro chekuvaka borehole yako.\n\n"
             "Tinotenda nekushandisa sevhisi yedu.",
             user_data['sender'], phone_id
         )
     elif response in ['no', 'n', 'kwete']:
-        send(
+        send2(
             "Hazvina basa. Unogona kugara uchitarisa chimiro zvakare kana zvichidikanwa.\n\n"
             "Tinotenda nekushandisa sevhisi yedu.",
             user_data['sender'], phone_id
         )
     else:
-        send("Ndine urombo, handina kunzwisisa. Ndokumbirawo upindure neEhe kana Kwete.", user_data['sender'], phone_id)
+        send2("Ndine urombo, handina kunzwisisa. Ndokumbirawo upindure neEhe kana Kwete.", user_data['sender'], phone_id)
         return {'step': 'pump_status_updates_opt_in2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     update_user_state(user_data['sender'], {
@@ -1699,19 +1699,19 @@ def handle_drilling_status_updates_opt_in2(prompt, user_data, phone_id):
     response = prompt.strip().lower()
 
     if response in ['yes', 'y']:
-        send(
+        send2(
             "Zvakanaka! Iwe zvino unozogamuchira WhatsApp zvinovandudzwa pese panoshanduka mamiriro ekuchera borehole yako.\n\n"
             "Tatenda nekushandisa sevhisi yedu.",
             user_data['sender'], phone_id
         )
     elif response in ['no', 'n']:
-        send(
+        send2(
             "Hazvina mhosva. Unogona kugara uchiongorora mamiriro zvakare gare gare kana zvichidikanwa.\n\n"
             "Tatenda nekushandisa sevhisi yedu.",
             user_data['sender'], phone_id
         )
     else:
-        send("Ndine urombo, handina kunzwisisa. Ndokumbira upindure neEhe kana Kwete.", user_data['sender'], phone_id)
+        send2("Ndine urombo, handina kunzwisisa. Ndokumbira upindure neEhe kana Kwete.", user_data['sender'], phone_id)
         return {'step': 'drilling_status_updates_opt_in2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     update_user_state(user_data['sender'], {
@@ -1731,7 +1731,7 @@ def handle_check_project_status_menu2(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
 
-        send(
+        send2(
             "Kuti utarise mamiriro echero borehole yako, ndapota upe zvinotevera:\n\n"
             "- Zita rakazara rawakashandisa pakuodha\n"
             "- Nhamba yereferensi yeprojekiti kana Nhamba yefoni\n"
@@ -1749,7 +1749,7 @@ def handle_check_project_status_menu2(prompt, user_data, phone_id):
             'step': 'pump_status_info_request2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Kuti utarise mamiriro ekuisirwa pombi yako, ndapota upe zvinotevera:\n\n"
             "- Zita rakazara rawakashandisa pakuodha\n"
             "- Nhamba yereferensi yeprojekiti kana Nhamba yefoni\n"
@@ -1767,14 +1767,14 @@ def handle_check_project_status_menu2(prompt, user_data, phone_id):
             'step': 'human_agent2',
             'user': user.to_dict()
         })
-        send("Ndokumbira mirira ndichakubatanidza kune mumwe wevashandi vedu vekutsigira.", user_data['sender'], phone_id)
+        send2("Ndokumbira mirira ndichakubatanidza kune mumwe wevashandi vedu vekutsigira.", user_data['sender'], phone_id)
         return {'step': 'human_agent2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "4":
         return handle_main_menu2("", user_data, phone_id)
 
     else:
-        send("Sarudzo isiriyo. Ndokumbira usarudze 1, 2, 3, kana 4.", user_data['sender'], phone_id)
+        send2("Sarudzo isiriyo. Ndokumbira usarudze 1, 2, 3, kana 4.", user_data['sender'], phone_id)
         return {'step': 'check_project_status_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1784,7 +1784,7 @@ def handle_drilling_status_info_request2(prompt, user_data, phone_id):
     lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
 
     if len(lines) < 2:
-        send(
+        send2(
             "Ndapota ipa zita rako rakazara uye nhamba yereferensi kana nhamba yefoni, rimwe pamsara mutsva.\n\n"
             "Muenzaniso:\n"
             "John Doe\nREF789123 kana 0779876543\nZvingasarudzwa: Bulawayo",
@@ -1807,9 +1807,9 @@ def handle_drilling_status_info_request2(prompt, user_data, phone_id):
         'location': location
     }
 
-    send("Tatenda. Ndokumbira mirira tichitsvaga mamiriro eprojekiti yako...", user_data['sender'], phone_id)
+    send2("Tatenda. Ndokumbira mirira tichitsvaga mamiriro eprojekiti yako...", user_data['sender'], phone_id)
 
-    send(
+    send2(
         f"Heino mamiriro eprojekiti yako yekuchera borehole:\n\n"
         f"Zita reprojekiti: Borehole - {full_name}\n"
         f"Chikamu Chazvino: Kuchera Kurikuitwa\n"
@@ -1836,7 +1836,7 @@ def handle_select_pump_option2(prompt, user_data, phone_id):
     location = user.quote_data.get('location')
     
     if prompt.strip() not in pump_installation_options:
-        send("Sarudzo isiriyo. Ndokumbira usarudze sarudzo yemhando yepombi yekuisa (1-6).", user_data['sender'], phone_id)
+        send2("Sarudzo isiriyo. Ndokumbira usarudze sarudzo yemhando yepombi yekuisa (1-6).", user_data['sender'], phone_id)
         return {'step': 'select_pump_option2', 'user': user.to_dict(), 'sender': user_data['sender']}
     
     user.quote_data['pump_option'] = prompt.strip()
@@ -1847,7 +1847,7 @@ def handle_select_pump_option2(prompt, user_data, phone_id):
         'step': 'quote_followup2',
         'user': user.to_dict()
     })
-    send(pricing_message, user_data['sender'], phone_id)
+    send2(pricing_message, user_data['sender'], phone_id)
     
     return {
         'step': 'quote_followup2',
@@ -1865,7 +1865,7 @@ def handle_quote_followup2(prompt, user_data, phone_id):
             'step': 'select_service_quote2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Sarudza imwe sevhisi:\n"
             "1. Kuongorora kwemvura\n"
             "2. Kuchera borehole\n"
@@ -1882,7 +1882,7 @@ def handle_quote_followup2(prompt, user_data, phone_id):
             'step': 'main_menu2',
             'user': user.to_dict()
         })
-        send(
+        send2(
             "Tinokubatsirei nhasi?\n\n"
             "1. Kumbira mutengo\n"
             "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
@@ -1901,14 +1901,14 @@ def handle_quote_followup2(prompt, user_data, phone_id):
             'step': 'collect_offer_details2',
             'user': user.to_dict()    
         })
-        send(
+        send2(
             "Zvakanaka! Unogona kugovera mutengo waunofunga pazasi.\n\n",
             user_data['sender'], phone_id
         )
         return {'step': 'collect_offer_details2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Sarudzo isiriyo. Pindura 1 kuti ubvunze nezveshumiro imwe, 2 kudzokera kumenu huru, kana 3 kana uchida kupa mutengo.", user_data['sender'], phone_id)
+        send2("Sarudzo isiriyo. Pindura 1 kuti ubvunze nezveshumiro imwe, 2 kudzokera kumenu huru, kana 3 kana uchida kupa mutengo.", user_data['sender'], phone_id)
         return {'step': 'quote_followup2', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1951,7 +1951,7 @@ action_mapping = {
     "pvc_casing_selection2": handle_pvc_casing_selection2,
     "deepening_location2": handle_deepening_location2,
     "human_agent2": lambda prompt, user_data, phone_id: (
-        send("Maneja anoona nezvevatengi achakufonera munguva pfupi.", user_data['sender'], phone_id)
+        send2("Maneja anoona nezvevatengi achakufonera munguva pfupi.", user_data['sender'], phone_id)
         or {'step': 'main_menu2', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
     ),
 }
@@ -2003,7 +2003,7 @@ def webhook():
                 else:
                     # Unsupported message type
                     logging.warning(f"Unsupported message type: {msg_type}")
-                    send_message("Ndapota tumira meseji yakanyorwa kana kugovera nzvimbo yako uchishandisa bhatani 📍.", sender, phone_id)
+                    send2("Ndapota tumira meseji yakanyorwa kana kugovera nzvimbo yako uchishandisa bhatani 📍.", sender, phone_id)
 
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
