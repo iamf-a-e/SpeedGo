@@ -73,11 +73,11 @@ def webhook():
                             handle_select_language(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
                         elif prompt == "2":
                             set_user_language(sender, "shona")
-                            from shona import handle_select_language
+                            from shona import handle_select_language2
                             handle_select_language(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
                         elif prompt == "3":
                             set_user_language(sender, "ndebele")
-                            from ndebele import handle_select_language
+                            from ndebele import handle_select_language3
                             handle_select_language(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
                     else:
                         send_language_selection(sender, phone_id)
@@ -88,10 +88,10 @@ def webhook():
                     from english import message_handler
                     message_handler(message, sender, phone_id)
                 elif user_language == "shona":
-                    from shona import message_handler
+                    from shona import message_handler2
                     message_handler(message, sender, phone_id)
                 elif user_language == "ndebele":
-                    from ndebele import message_handler
+                    from ndebele import message_handler3
                     message_handler(message, sender, phone_id)
 
         except Exception as e:
