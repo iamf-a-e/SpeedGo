@@ -2,6 +2,9 @@ from flask import Flask, request, jsonify
 from english import english_blueprint
 from shona import shona_blueprint
 from ndebele import ndebele_blueprint
+from english import handle_select_language
+from shona import handle_select_language2
+from ndebele import handle_select_language3
 from utils import get_user_language, set_user_language, send_message, set_user_state, get_user_state
 import os
 import logging
@@ -69,16 +72,13 @@ def webhook():
                         # User selected a language
                         if prompt == "1":
                             set_user_language(sender, "english")
-                            from english import handle_select_language as handle_select_language
                             handle_select_language(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
                         elif prompt == "2":
                             set_user_language(sender, "shona")
-                            from shona import handle_select_language2
-                            handle_select_language(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
+                            handle_select_language2(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
                         elif prompt == "3":
                             set_user_language(sender, "ndebele")
-                            from ndebele import handle_select_language3
-                            handle_select_language(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
+                            handle_select_language3(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
                     else:
                         send_language_selection(sender, phone_id)
                     return jsonify({"status": "ok"}), 200
