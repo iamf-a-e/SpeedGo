@@ -333,12 +333,12 @@ def handle_welcome2(prompt, user_data, phone_id):
 
 def handle_select_language2(prompt, user_data, phone_id):
     user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
-    if prompt == "1":
-        user.language = "English"
+    if prompt == "2":
+        user.language = "Shona"
         update_user_state(user_data['sender'], {
             'step': 'main_menu2',
             'user': user.to_dict()
-        })
+        }), ttl_seconds=3600)
         send2(
             "Tatenda!\n"
             "Tingakubatsirei nhasi?\n\n"
