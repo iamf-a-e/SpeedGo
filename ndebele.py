@@ -1970,7 +1970,7 @@ def webhook():
 
         return jsonify({"status": "ok"}), 200
 
-def message_handler(prompt, sender, phone_id, message):
+def message_handler3(prompt, sender, phone_id, message):
     user_data = get_user_state(sender)
     user_data['sender'] = sender
 
