@@ -395,6 +395,290 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         'sender': user_data['sender']
     }
 
+
+
+def handle_select_pump_option(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language
+    location = user.quote_data.get('location')
+    
+    if not location:
+        send("Please provide your location first before selecting a service.", user_data['sender'], phone_id)
+        return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    if prompt not in pump_installation_options:
+        message_lines = ["Invalid option. Please select a valid pump installation option:"]
+        for key, option in pump_installation_options.items():
+            desc = option.get('description', 'No description')
+            message_lines.append(f"{key}. {desc}")
+        send("\n".join(message_lines), user_data['sender'], phone_id)
+        return {'step': 'select_pump_option', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    user.quote_data['pump_option'] = prompt
+    pricing_message = get_pricing_for_location_quotes(location, "Pump Installation", prompt)
+    
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
+
+    return {
+        'step': 'quote_followup',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+def handle_quote_followup(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language
+    
+    if prompt == "1":  # Ask pricing for another service
+        update_user_state(user_data['sender'], {
+            'step': 'select_service_quote',
+            'user': user.to_dict()
+        })
+        send(LANGUAGES[lang]["location_detected"].format(user.quote_data['location'].title()), 
+             user_data['sender'], phone_id)
+        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    elif prompt == "2":  # Return to Main Menu
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu',
+            'user': user.to_dict()
+        })
+        send(LANGUAGES[lang]["main_menu"], user_data['sender'], phone_id)
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    elif prompt == "3":  # Offer Price
+        # Save the offer data
+        user.offer_data = {
+            'location': user.quote_data.get('location'),
+            'service': user.quote_data.get('service'),
+            'pump_option': user.quote_data.get('pump_option'),
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        update_user_state(user_data['sender'], {
+            'step': 'confirm_offer',
+            'user': user.to_dict()
+        })
+        
+        # Format the offer message
+        service = user.quote_data.get('service')
+        location = user.quote_data.get('location', '').title()
+        message = f"📌 Offer Summary ({location}):\n"
+        message += f"Service: {service}\n"
+        
+        if service == "Pump Installation":
+            option = pump_installation_options.get(user.quote_data.get('pump_option', ''))
+            if option:
+                message += f"Option: {option.get('description')}\n"
+                message += f"Price: ${option.get('price')}\n"
+        else:
+            pricing = get_pricing_for_location_quotes(location.lower(), service)
+            message += f"Pricing: {pricing.split('\n')[0]}\n"
+        
+        message += "\nWould you like to:\n1. Confirm this offer\n2. Modify request\n3. Cancel"
+        
+        send(message, user_data['sender'], phone_id)
+        return {'step': 'confirm_offer', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    else:
+        send("Invalid option. Please reply with 1, 2 or 3.", user_data['sender'], phone_id)
+        return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_confirm_offer(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language
+    
+    if prompt == "1":  # Confirm offer
+        # Save the booking
+        booking_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        user.booking_data = {
+            'booking_id': booking_id,
+            'status': 'pending',
+            'details': user.offer_data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu',
+            'user': user.to_dict()
+        })
+        
+        # Send confirmation to user
+        confirmation_msg = (f"✅ Booking Confirmed!\n"
+                          f"Reference: {booking_id}\n"
+                          f"Location: {user.offer_data.get('location', '').title()}\n"
+                          f"Service: {user.offer_data.get('service')}\n\n"
+                          f"An agent will contact you shortly.")
+        send(confirmation_msg, user_data['sender'], phone_id)
+        
+        # Send notification to owner
+        owner_msg = (f"📢 New Booking!\n"
+                    f"From: {user_data['sender']}\n"
+                    f"Ref: {booking_id}\n"
+                    f"Location: {user.offer_data.get('location', '').title()}\n"
+                    f"Service: {user.offer_data.get('service')}")
+        send(owner_msg, owner_phone, phone_id)
+        
+        send(LANGUAGES[lang]["main_menu"], user_data['sender'], phone_id)
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    elif prompt == "2":  # Modify request
+        update_user_state(user_data['sender'], {
+            'step': 'enter_location_for_quote',
+            'user': user.to_dict()
+        })
+        send(LANGUAGES[lang]["enter_location"], user_data['sender'], phone_id)
+        return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    elif prompt == "3":  # Cancel
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu',
+            'user': user.to_dict()
+        })
+        send("Offer cancelled. Let us know if you need anything else.", user_data['sender'], phone_id)
+        send(LANGUAGES[lang]["main_menu"], user_data['sender'], phone_id)
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    else:
+        send("Invalid option. Please reply with 1, 2 or 3.", user_data['sender'], phone_id)
+        return {'step': 'confirm_offer', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_check_project_status(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language
+    
+    if not user.booking_data:
+        send("You don't have any active bookings. Would you like to request a new quote?", user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu',
+            'user': user.to_dict()
+        })
+        send(LANGUAGES[lang]["main_menu"], user_data['sender'], phone_id)
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    status_msg = (f"📋 Booking Status\n"
+                 f"Reference: {user.booking_data.get('booking_id')}\n"
+                 f"Status: {user.booking_data.get('status', 'pending').title()}\n"
+                 f"Location: {user.booking_data.get('details', {}).get('location', '').title()}\n"
+                 f"Service: {user.booking_data.get('details', {}).get('service')}\n\n"
+                 f"Last updated: {datetime.fromisoformat(user.booking_data.get('timestamp')).strftime('%Y-%m-%d %H:%M')}")
+    
+    send(status_msg, user_data['sender'], phone_id)
+    update_user_state(user_data['sender'], {
+        'step': 'main_menu',
+        'user': user.to_dict()
+    })
+    send(LANGUAGES[lang]["main_menu"], user_data['sender'], phone_id)
+    return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_faqs(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language
+    
+    faqs = {
+        "English": [
+            "1. How long does borehole drilling take?",
+            "2. What's the average depth for a borehole?",
+            "3. Do I need a water survey first?",
+            "4. What maintenance is required?",
+            "5. Return to Main Menu"
+        ],
+        "Shona": [
+            "1. Zvinotora nguva yakareba sei kuchera borehole?",
+            "2. Ndeapi marefu avhareji eborehole?",
+            "3. Ndinoda kuongororwa kwemvura kutanga here?",
+            "4. Ndezvei zvinodiwa kugadzirisa?",
+            "5. Dzokera kuMain Menu"
+        ],
+        "Ndebele": [
+            "1. Kuthathela isikhathi esingakanani ukubha i-borehole?",
+            "2. Ujule ophakathi nendawo lwe-borehole?",
+            "3. Ngidinga ukuhlolwa kwamanzi kuqala?",
+            "4. Yiziphi izinto ezidingekayo zokugcina?",
+            "5. Buyela ku-Main Menu"
+        ]
+    }
+    
+    update_user_state(user_data['sender'], {
+        'step': 'handle_faq_selection',
+        'user': user.to_dict()
+    })
+    
+    send("\n".join(faqs[lang]), user_data['sender'], phone_id)
+    return {'step': 'handle_faq_selection', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_faq_selection(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language
+    
+    faq_answers = {
+        "English": {
+            "1": "Borehole drilling typically takes 1-3 days depending on depth and ground conditions.",
+            "2": "Average depth is 40-60 meters, but varies by location and water table.",
+            "3": "Yes, a water survey helps determine the best location and depth for drilling.",
+            "4": "Regular pump maintenance and occasional water quality testing are recommended."
+        },
+        "Shona": {
+            "1": "Kuchera borehole kunowanzo torera mazuva 1-3 zvichienderana nekudzika uye mamiriro epasi.",
+            "2": "Avhareji yekudzika ndeye 40-60 metres, asi inosiyana nenzvimbo uye tafura yemvura.",
+            "3": "Hongu, kuongororwa kwemvura kunobatsira kuona nzvimbo yakanaka uye kudzika kwekuchera.",
+            "4": "Kugadzirisa pombi nguva dzose uye kuyedza kunowanzoitwa kwemhando yemvura zvinokurudzirwa."
+        },
+        "Ndebele": {
+            "1": "Ukubha i-borehole kuthatha usuku 1-3 kuya ngejule kanye nezimo zomhlabathi.",
+            "2": "Ujule ophakathi nendawo ngu-40-60 metres, kodwa uyahluka ngendawo netafula yamanzi.",
+            "3": "Yebo, ukuhlolwa kwamanzi kusiza ukunquma indawo enhle nejule lokubha.",
+            "4": "Ukugcinwa kwepump njalo kanye nokuhlolwa kwekhwalithi yamanzi kuyanconywa."
+        }
+    }
+    
+    if prompt == "5":
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu',
+            'user': user.to_dict()
+        })
+        send(LANGUAGES[lang]["main_menu"], user_data['sender'], phone_id)
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    answer = faq_answers[lang].get(prompt)
+    if answer:
+        send(answer, user_data['sender'], phone_id)
+        # Return to FAQs menu
+        return handle_faqs("", user_data, phone_id)
+    else:
+        send("Invalid option. Please select a valid FAQ number.", user_data['sender'], phone_id)
+        return {'step': 'handle_faq_selection', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_talk_to_agent(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    lang = user.language
+    
+    # Notify owner
+    owner_msg = (f"👋 Agent Request\n"
+                f"From: {user_data['sender']}\n"
+                f"Language: {lang}\n"
+                f"Current step: {user_data.get('step')}")
+    send(owner_msg, owner_phone, phone_id)
+    
+    # Confirm to user
+    confirmation_msg = {
+        "English": "An agent will contact you shortly. Is there anything else we can help with?",
+        "Shona": "Mumiririri achakubata munguva pfupi. Pane chimwe chatingakubatsire nacho here?",
+        "Ndebele": "Ummeleli uzokuthinta kunge kungenzeka. Kukhona enye into esingakusiza ngayo?"
+    }
+    
+    update_user_state(user_data['sender'], {
+        'step': 'main_menu',
+        'user': user.to_dict()
+    })
+    send(confirmation_msg[lang], user_data['sender'], phone_id)
+    send(LANGUAGES[lang]["main_menu"], user_data['sender'], phone_id)
+    return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
 # Flask app setup
 app = Flask(__name__)
 
