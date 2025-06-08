@@ -18,8 +18,8 @@ import threading
 import time
 from datetime import datetime
 from utils import User
-from shona import send_message
-from ndebele import send_message
+from shona import send2
+from ndebele import send3
 
 
 
