@@ -76,15 +76,21 @@ def webhook():
                         # User selected a language
                         if prompt == "1":
                             set_user_language(sender, "english")
-                            handle_select_language(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
+                            existing_state = get_user_state(sender)
+                            existing_state['sender'] = sender
+                            handle_select_language(prompt, existing_state, phone_id)
                             return jsonify({"status": "ok"}), 200
                         elif prompt == "2":
                             set_user_language(sender, "shona")
-                            handle_select_language2(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
+                            existing_state = get_user_state(sender)
+                            existing_state['sender'] = sender
+                            handle_select_language2(prompt, existing_state, phone_id)
                             return jsonify({"status": "ok"}), 200
                         elif prompt == "3":
                             set_user_language(sender, "ndebele")
-                            handle_select_language3(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
+                            existing_state = get_user_state(sender)
+                            existing_state['sender'] = sender
+                            handle_select_language3(prompt, existing_state, phone_id)
                             return jsonify({"status": "ok"}), 200
                     else:
                         send_language_selection(sender, phone_id)
