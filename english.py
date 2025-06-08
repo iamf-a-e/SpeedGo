@@ -290,6 +290,144 @@ def handle_select_language(prompt, user_data, phone_id):
         send("Please select a valid language option (1 for English, 2 for Shona, 3 for Ndebele).", user_data['sender'], phone_id)
         return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
+def handle_select_service_quote(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    
+    if not location:
+        send("Please provide your location first before selecting a service.", user_data['sender'], phone_id)
+        return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    service_map = {
+        "1": "Water Survey",
+        "2": "Borehole Drilling",
+        "3": "Pump Installation",
+        "4": "Commercial Hole Drilling",
+        "5": "Borehole Deepening"
+    }
+
+    selected_service = service_map.get(prompt.strip())
+
+    if not selected_service:
+        send("Invalid option. Please reply with 1, 2, 3, 4 or 5 to choose a service.", user_data['sender'], phone_id)
+        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    # Store selected service
+    user.quote_data['service'] = selected_service
+
+    # Handle Pump Installation separately as it has options
+    if selected_service == "Pump Installation":
+        update_user_state(user_data['sender'], {
+            'step': 'select_pump_option',
+            'user': user.to_dict()
+        })
+        message_lines = [f"💧 Pump Installation Options:\n"]
+        for key, option in pump_installation_options.items():
+            desc = option.get('description', 'No description')
+            message_lines.append(f"{key}. {desc}")
+        send("\n".join(message_lines), user_data['sender'], phone_id)
+        return {'step': 'select_pump_option', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    # Get pricing for other services
+    pricing_message = get_pricing_for_location_quotes(location, selected_service)
+    
+    # Ask if user wants to return to main menu or choose another service
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
+
+    return {
+        'step': 'quote_followup',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+
+def handle_select_pump_option(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    
+    if prompt.strip() not in pump_installation_options:
+        send("Invalid option. Please select a valid pump installation option (1-6).", user_data['sender'], phone_id)
+        return {'step': 'select_pump_option', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    # Store the selected pump option
+    user.quote_data['pump_option'] = prompt.strip()
+    
+    # Get pricing for the selected pump option
+    pricing_message = get_pricing_for_location_quotes(location, "Pump Installation", prompt.strip())
+    
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
+    
+    return {
+        'step': 'quote_followup',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+def handle_quote_followup(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt.strip() == "1":
+        # Stay in quote flow, show services again
+        update_user_state(user_data['sender'], {
+            'step': 'select_service_quote',
+            'user': user.to_dict()
+        })
+        send(
+            "Select another service:\n"
+            "1. Water survey\n"
+            "2. Borehole drilling\n"
+            "3. Pump installation\n"
+            "4. Commercial hole drilling\n"
+            "5. Borehole Deepening",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt.strip() == "2":
+        # Go back to main menu
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu',
+            'user': user.to_dict()
+        })
+        send(
+            "How can we help you today?\n\n"
+            "1. Request a quote\n"
+            "2. Search Price Using Location\n"
+            "3. Check Project Status\n"
+            "4. FAQs or Learn About Borehole Drilling\n"
+            "5. Other services\n"
+            "6. Talk to a Human Agent\n\n"
+            "Please reply with a number (e.g., 1)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt.strip() == "3":
+        # Offer price
+        update_user_state(user_data['sender'], {
+            'step': 'collect_offer_details',
+            'user': user.to_dict()    
+        })
+        send(
+            "Sure! You can share your proposed price below.\n\n",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'collect_offer_details', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Invalid option. Reply 1 to ask about another service or 2 to return to the main menu or 3 if you want to make a price offer.", user_data['sender'], phone_id)
+        return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def handle_main_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     if prompt == "1":  # Request a quote
