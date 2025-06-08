@@ -313,7 +313,7 @@ def get_pricing_for_location_quotes3(location, service_type, pump_option_selecte
 
 
 def handle_welcome3(prompt, user_data, phone_id):
-    send(
+    send3(
         "Siyakwamukela ku-SpeedGo Services, inkampani yokugawula imithombo yamanzi eZimbabwe. "
         "Sinikezela ngezixazululo ezithembekileyo zokumba imithombo yamanzi kuyo yonke iZimbabwe.\n\n"
         "Khetha ulimi olukuthokozisayo:\n"
@@ -334,7 +334,7 @@ def handle_select_language3(prompt, user_data, phone_id):
             'step': 'main_menu',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Thank you!\n"
             "How can we help you today?\n\n"
             "1. Request a quote\n"
@@ -354,7 +354,7 @@ def handle_select_language3(prompt, user_data, phone_id):
             'step': 'main_menu2',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Tatenda!\n"
             "Tinokubatsirai sei nhasi?\n\n"
             "1. Kukumbira quotation\n"
@@ -374,7 +374,7 @@ def handle_select_language3(prompt, user_data, phone_id):
             'step': 'main_menu3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Siyabonga!\n"
             "Singakusiza njani lamuhla?\n\n"
             "1. Cela isiphakamiso\n"
@@ -389,7 +389,7 @@ def handle_select_language3(prompt, user_data, phone_id):
         return {'step': 'main_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Sicela ukhethe ulimi olusemthethweni (1 for English, 2 for Shona, 3 for Ndebele).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe ulimi olusemthethweni (1 for English, 2 for Shona, 3 for Ndebele).", user_data['sender'], phone_id)
         return {'step': 'select_language3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -401,7 +401,7 @@ def handle_main_menu3(prompt, user_data, phone_id):
             'step': 'enter_location_for_quote3',
             'user': user.to_dict()
         })
-        send("Sicela ufake indawo yakho (Idolobha/Idolobhana noma i-GPS) ukuze siqale.", user_data['sender'], phone_id)
+        send3("Sicela ufake indawo yakho (Idolobha/Idolobhana noma i-GPS) ukuze siqale.", user_data['sender'], phone_id)
         return {'step': 'enter_location_for_quote3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":  # Search Price Using Location
@@ -409,7 +409,7 @@ def handle_main_menu3(prompt, user_data, phone_id):
             'step': 'enter_location_for_quote3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Ukuze sikunikeze intengo, sicela ufake indawo yakho (Idolobha/Idolobhana noma i-GPS):",
             user_data['sender'], phone_id
         )
@@ -420,7 +420,7 @@ def handle_main_menu3(prompt, user_data, phone_id):
             'step': 'check_project_status_menu3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Sicela ukhethe inketho:\n"
             "1. Bheka isimo sokumba iborehole\n"
             "2. Bheka isimo sokufaka iphampu\n"
@@ -435,7 +435,7 @@ def handle_main_menu3(prompt, user_data, phone_id):
             'step': 'faq_menu3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Sicela ukhethe isigaba se-FAQ:\n\n"
             "1. Imibuzo yeBorehole Drilling\n"
             "2. Imibuzo yePump Installation\n"
@@ -451,7 +451,7 @@ def handle_main_menu3(prompt, user_data, phone_id):
             'step': 'other_services_menu3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Siyakwamukela kwezinye izinsiza zeBorehole. Yiziphi ofuna ukuzithola?\n"
             "1. Ukwandisa ukujula kweBorehole\n"
             "2. Ukugeza iBorehole (Flushing)\n"
@@ -466,11 +466,11 @@ def handle_main_menu3(prompt, user_data, phone_id):
             'step': 'human_agent3',
             'user': user.to_dict()
         })
-        send("Siyakuxhumanisa lomsebenzi wabantu...", user_data['sender'], phone_id)
+        send3("Siyakuxhumanisa lomsebenzi wabantu...", user_data['sender'], phone_id)
         return {'step': 'human_agent3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Sicela ukhethe inketho efaneleyo (1-6).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1-6).", user_data['sender'], phone_id)
         return {'step': 'main_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -481,7 +481,7 @@ def human_agent3(prompt, user_data, phone_id):
     agent_number = "+263719835124"
 
     # Notify the customer immediately
-    send(
+    send3(
         "Siyabonga. Sicela ulinde ngenkathi sixhumanisa wena lommeleli we-SpeedGo...",
         customer_number, phone_id
     )
@@ -493,7 +493,7 @@ def human_agent3(prompt, user_data, phone_id):
         f"🙋 Ibizo: {customer_name}\n"
         f"📩 Umlayezo wokugcina: \"{prompt}\""
     )
-    send(agent_message, agent_number, phone_id)
+    send3(agent_message, agent_number, phone_id)
 
     update_user_state(customer_number, {
         'step': 'waiting_for_human_agent_response3',
@@ -511,14 +511,14 @@ def notify_agent3(customer_number, prompt, agent_number, phone_id):
         f"📱 Inombolo: {customer_number}\n"
         f"📩 Umlayezo: \"{prompt}\""
     )
-    send(agent_message, agent_number, phone_id)
+    send3(agent_message, agent_number, phone_id)
 
 
 def send_fallback_option3(customer_number, phone_id):
     user_data = get_user_state(customer_number)
     if user_data and user_data.get('step') == 'waiting_for_human_agent_response3':
-        send("Nxa ungathanda, ungaxhumana nathi ngqo ku-+263719835124.", customer_number, phone_id)
-        send("Ungathanda ukubuyela kuMain Menu?\n1. Yebo\n2. Hatshi", customer_number, phone_id)
+        send3("Nxa ungathanda, ungaxhumana nathi ngqo ku-+263719835124.", customer_number, phone_id)
+        send3("Ungathanda ukubuyela kuMain Menu?\n1. Yebo\n2. Hatshi", customer_number, phone_id)
         update_user_state(customer_number, {
             'step': 'human_agent_followup3',
             'user': user_data.get('user', {}),
@@ -535,11 +535,11 @@ def handle_user_message3(message, user_data, phone_id):
         elapsed = time.time() - prompt_time
 
         if elapsed >= 10:
-            send(
+            send3(
                 "Ungathanda, ungathumela umlayezo noma usifonele ngqo ku-+263719835124.",
                 customer_number, phone_id
             )
-            send(
+            send3(
                 "Ungathanda ukubuyela kuMain Menu?\n1. Yebo\n2. Hatshi",
                 customer_number, phone_id
             )
@@ -554,7 +554,7 @@ def handle_user_message3(message, user_data, phone_id):
 
     elif state == 'human_agent_followup3':
         if message.strip() == '1':
-            send("Sibuyisela wena kuMain Menu...", customer_number, phone_id)
+            send3("Sibuyisela wena kuMain Menu...", customer_number, phone_id)
             update_user_state(customer_number, {
                 'step': 'main_menu3',
                 'user': user_data['user'],
@@ -564,7 +564,7 @@ def handle_user_message3(message, user_data, phone_id):
             return {'step': 'main_menu3', 'user': user_data['user'], 'sender': customer_number}
 
         elif message.strip() == '2':
-            send("Siyabonga! Usuku oluhle kuwe.", customer_number, phone_id)
+            send3("Siyabonga! Usuku oluhle kuwe.", customer_number, phone_id)
             update_user_state(customer_number, {
                 'step': 'end',
                 'user': user_data['user'],
@@ -572,7 +572,7 @@ def handle_user_message3(message, user_data, phone_id):
             })
             return {'step': 'end', 'user': user_data['user'], 'sender': customer_number}
         else:
-            send("Sicela uphendule ngo 1 (Yebo) kumbe 2 (Hatshi).", customer_number, phone_id)
+            send3("Sicela uphendule ngo 1 (Yebo) kumbe 2 (Hatshi).", customer_number, phone_id)
             return user_data
 
 
@@ -583,11 +583,11 @@ def human_agent_followup3(prompt, user_data, phone_id):
         return handle_select_language3("1", user_data, phone_id)
 
     elif prompt == "2":
-        send("Kulungile. Zizwe ukhululekile ukubuza nxa udinga olunye usizo.", user_data['sender'], phone_id)
+        send3("Kulungile. Zizwe ukhululekile ukubuza nxa udinga olunye usizo.", user_data['sender'], phone_id)
         return {'step': 'human_agent_followup3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Sicela uphendule ngo 1 ukuze ubuyele kuMain Menu noma ngo 2 ukuhlala lapha.", user_data['sender'], phone_id)
+        send3("Sicela uphendule ngo 1 ukuze ubuyele kuMain Menu noma ngo 2 ukuhlala lapha.", user_data['sender'], phone_id)
         return {'step': 'human_agent_followup3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -599,7 +599,7 @@ def faq_menu3(prompt, user_data, phone_id):
             'step': 'faq_borehole3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Nansi imibuzo evame ukubuzwa mayelana lokumba iBorehole:\n\n"
             "1. Kubiza malini ukumba iBorehole?\n"
             "2. Kuthatha isikhathi esingakanani ukumba iBorehole?\n"
@@ -618,7 +618,7 @@ def faq_menu3(prompt, user_data, phone_id):
             'step': 'faq_pump3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Nansi imibuzo evamile mayelana lokufakwa kwepampu:\n\n"
             "1. Kuyini okuhlukanisayo phakathi kwepampu yeSolar leye-Electric?\n"
             "2. Lingayifaka yini nxa sengilalezinto zonke?\n"
@@ -635,7 +635,7 @@ def faq_menu3(prompt, user_data, phone_id):
             'step': 'custom_question3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Sicela bhala umbuzo wakho ngezansi, sizazama ukukusiza kangcono.\n",
             user_data['sender'], phone_id
         )
@@ -647,14 +647,14 @@ def faq_menu3(prompt, user_data, phone_id):
             'user': user.to_dict(),
             'sender': user_data['sender']
         })
-        send("Sicela ulinde ngenkathi sixhumanisa lawe lommeleli...", user_data['sender'], phone_id)
+        send3("Sicela ulinde ngenkathi sixhumanisa lawe lommeleli...", user_data['sender'], phone_id)
         return {'step': 'human_agent3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "5":  # Back to Main Menu
         return handle_select_language3("1", user_data, phone_id)
 
     else:
-        send("Sicela ukhethe inketho efaneleyo (1–5).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1–5).", user_data['sender'], phone_id)
         return {'step': 'faq_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -662,7 +662,7 @@ def custom_question3(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
     if not prompt.strip():
-        send("Sicela ubhale umbuzo wakho.", user_data['sender'], phone_id)
+        send3("Sicela ubhale umbuzo wakho.", user_data['sender'], phone_id)
         return {'step': 'custom_question3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     system_prompt = (
@@ -679,9 +679,9 @@ def custom_question3(prompt, user_data, phone_id):
         answer = "Uxolo, kube lephutha ekuphenduleni umbuzo wakho. Zama futhi emuva kwesikhatshana."
         print(f"[Gemini error] {e}")
 
-    send(answer, user_data['sender'], phone_id)
+    send3(answer, user_data['sender'], phone_id)
 
-    send(
+    send3(
         "Ungathanda:\n"
         "1. Ukubuza omunye umbuzo\n"
         "2. Ukubuyela kuMain Menu",
@@ -695,14 +695,14 @@ def custom_question_followup3(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
     if prompt == "1":
-        send("Sicela ubhale omunye umbuzo wakho.", user_data['sender'], phone_id)
+        send3("Sicela ubhale omunye umbuzo wakho.", user_data['sender'], phone_id)
         return {'step': 'custom_question3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
         return handle_select_language3("1", user_data, phone_id)
 
     else:
-        send("Sicela uphendule ngo-1 ukuze ubuze omunye umbuzo noma ngo-2 ukubuyela kuMain Menu.", user_data['sender'], phone_id)
+        send3("Sicela uphendule ngo-1 ukuze ubuze omunye umbuzo noma ngo-2 ukubuyela kuMain Menu.", user_data['sender'], phone_id)
         return {'step': 'custom_question_followup3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -721,11 +721,11 @@ def faq_borehole3(prompt, user_data, phone_id):
     }
 
     if prompt in responses:
-        send(responses[prompt], user_data['sender'], phone_id)
+        send3(responses[prompt], user_data['sender'], phone_id)
         if prompt == "8":
             return {'step': 'faq_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-        send(
+        send3(
             "Ungathanda:\n"
             "1. Ukubuza omunye umbuzo ku-Borehole Drilling FAQs\n"
             "2. Ukubuyela kuMain Menu",
@@ -734,7 +734,7 @@ def faq_borehole3(prompt, user_data, phone_id):
         return {'step': 'faq_borehole_followup3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Sicela ukhethe inketho efaneleyo (1–8).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1–8).", user_data['sender'], phone_id)
         return {'step': 'faq_borehole3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -742,7 +742,7 @@ def faq_borehole_followup3(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
     if prompt == "1":
-        send(
+        send3(
             "Sicela ukhethe umbuzo:\n\n"
             "1. Kubiza malini ukumba iBorehole?\n"
             "2. Kuthatha isikhathi esingakanani ukumba iBorehole?\n"
@@ -760,7 +760,7 @@ def faq_borehole_followup3(prompt, user_data, phone_id):
         return handle_select_language3("1", user_data, phone_id)
 
     else:
-        send("Sicela ukhethe 1 ukuze ubuze omunye umbuzo noma 2 ukubuyela kuMain Menu.", user_data['sender'], phone_id)
+        send3("Sicela ukhethe 1 ukuze ubuze omunye umbuzo noma 2 ukubuyela kuMain Menu.", user_data['sender'], phone_id)
         return {'step': 'faq_borehole_followup3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -777,12 +777,12 @@ def faq_pump3(prompt, user_data, phone_id):
     }
 
     if prompt in responses:
-        send(responses[prompt], user_data['sender'], phone_id)
+        send3(responses[prompt], user_data['sender'], phone_id)
 
         if prompt == "6":
             return {'step': 'faq_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-        send(
+        send3(
             "Ungathanda:\n"
             "1. Ukubuza omunye umbuzo kuPump Installation FAQs\n"
             "2. Ukubuyela kuMain Menu",
@@ -791,7 +791,7 @@ def faq_pump3(prompt, user_data, phone_id):
         return {'step': 'faq_pump_followup3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Sicela ukhethe inketho efaneleyo (1–6).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1–6).", user_data['sender'], phone_id)
         return {'step': 'faq_pump3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -799,7 +799,7 @@ def faq_pump_followup3(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
     if prompt == "1":
-        send(
+        send3(
             "Sicela ukhethe umbuzo:\n\n"
             "1. Kuyini umehluko phakathi kwepampu ye-solar leye-electric?\n"
             "2. Lingayifaka yini nxa sengilalezinto zonke?\n"
@@ -815,7 +815,7 @@ def faq_pump_followup3(prompt, user_data, phone_id):
         return handle_select_language3("1", user_data, phone_id)
 
     else:
-        send("Sicela ukhethe 1 ukuze ubuze omunye umbuzo noma 2 ukubuyela kuMain Menu.", user_data['sender'], phone_id)
+        send3("Sicela ukhethe 1 ukuze ubuze omunye umbuzo noma 2 ukubuyela kuMain Menu.", user_data['sender'], phone_id)
         return {'step': 'faq_pump_followup3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -835,7 +835,7 @@ def handle_enter_location_for_quote3(prompt, user_data, phone_id):
                 'step': 'select_service_quote3',
                 'user': user.to_dict()
             })
-            send(
+            send3(
                 f"Indawo etholakele: {location_name.title()}\n\n"
                 "Sicela ukhethe inkonzo ofunayo:\n"
                 "1. Ukuhlolwa kwamanzi\n"
@@ -847,7 +847,7 @@ def handle_enter_location_for_quote3(prompt, user_data, phone_id):
             )
             return {'step': 'select_service_quote3', 'user': user.to_dict(), 'sender': user_data['sender']}
         else:
-            send("Asikwazanga ukuhlonza indawo yakho. Sicela bhala igama ledolobho/lindawo yakho ngesandla.", user_data['sender'], phone_id)
+            send3("Asikwazanga ukuhlonza indawo yakho. Sicela bhala igama ledolobho/lindawo yakho ngesandla.", user_data['sender'], phone_id)
             return {'step': 'enter_location_for_quote3', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
         location_name = prompt.strip()
@@ -856,7 +856,7 @@ def handle_enter_location_for_quote3(prompt, user_data, phone_id):
             'step': 'select_service_quote3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Sicela ukhethe inkonzo ofunayo:\n"
             "1. Ukuhlolwa kwamanzi\n"
             "2. Ukumba iBorehole\n"
@@ -883,14 +883,14 @@ def handle_select_service3(prompt, user_data, phone_id):
             'step': 'collect_quote_details3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Ukuthi sikunikeze inani elilinganiselweyo, sicela uphendule okulandelayo:\n\n"
             "1. Indawo okuyo (Idolobho/lok GPS):\n",
             user_data['sender'], phone_id
         )
         return {'step': 'handle_select_service_quote3', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Sicela ukhethe inketho efaneleyo (1–5).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1–5).", user_data['sender'], phone_id)
         return {'step': 'select_service3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -918,7 +918,7 @@ def handle_collect_quote_details3(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         estimate = "Class 6: Estimated Cost: $2500\nIncludes drilling, PVC casing 140mm"
-        send(
+        send3(
             f"Siyabonga! Ngokusekelwe kulokho osikhiphile:\n\n"
             f"{estimate}\n\n"
             f"Qaphela: Uma kudingeka casing kabili, lokhu kuzongezwa njengesindleko esengezelelweyo ngemvumo yakho.\n\n"
@@ -931,7 +931,7 @@ def handle_collect_quote_details3(prompt, user_data, phone_id):
         )
         return {'step': 'quote_response3', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Sicela uphephe konke okufunekayo (okungenani imigqa engu-4).", user_data['sender'], phone_id)
+        send3("Sicela uphephe konke okufunekayo (okungenani imigqa engu-4).", user_data['sender'], phone_id)
         return {'step': 'collect_quote_details3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -942,7 +942,7 @@ def handle_quote_response3(prompt, user_data, phone_id):
             'step': 'collect_offer_details3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Kulungile! Ungabelana ngezintengo ozicabangayo ngezansi.\n\n"
             "Sicela uphendule ngendlela engezansi:\n\n"
             "- Ukuhlolwa kwamanzi: $_\n"
@@ -956,7 +956,7 @@ def handle_quote_response3(prompt, user_data, phone_id):
             'step': 'collect_booking_info3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Kuhle! Sicela unikeze ulwazi olulandelayo ukuze siqedele ukubhuka kwakho:\n\n"
             "- Igama eliphelele:\n"
             "- Usuku olukhethwayo (dd/mm/yyyy):\n"
@@ -969,15 +969,15 @@ def handle_quote_response3(prompt, user_data, phone_id):
         return {'step': 'collect_booking_info3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "3":
-        send("Umuntu wethu uzokuthinta ukuze aqedele ukubhuka kokumba.", user_data['sender'], phone_id)
+        send3("Umuntu wethu uzokuthinta ukuze aqedele ukubhuka kokumba.", user_data['sender'], phone_id)
         return {'step': 'main_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "4":
-        send("Sikuxhumanisa lomsebenzi weSpeedGo...", user_data['sender'], phone_id)
+        send3("Sikuxhumanisa lomsebenzi weSpeedGo...", user_data['sender'], phone_id)
         return {'step': 'human_agent3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Sicela ukhethe inketho efaneleyo (1–4).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1–4).", user_data['sender'], phone_id)
         return {'step': 'quote_response3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -996,7 +996,7 @@ def handle_collect_offer_details3(prompt, user_data, phone_id):
         'step': 'offer_response3',
         'user': user.to_dict()
     })
-    send(
+    send3(
         "Isiphakamiso sakho sesithunyelwe kumphathi wezokuthengisa. Sizokuphendula kungakapheli ihora eli-1.\n\n"
         "Siyabonga ngesiphakamiso sakho!\n\n"
         "Iqembu lethu lizasibuyekeza likuphendule ngokushesha.\n\n"
@@ -1025,7 +1025,7 @@ def handle_offer_response3(prompt, user_data, phone_id):
             'step': 'booking_details3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Izindaba ezinhle! Isiphakamiso sakho samukelwe.\n\n"
             "Asiqinisekise igxathu elilandelayo.\n\n"
             "Ungathanda:\n"
@@ -1037,7 +1037,7 @@ def handle_offer_response3(prompt, user_data, phone_id):
         return {'step': 'booking_details3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
-        send("Sikuxhumanisa lomsebenzi weSpeedGo...", user_data['sender'], phone_id)
+        send3("Sikuxhumanisa lomsebenzi weSpeedGo...", user_data['sender'], phone_id)
         return {'step': 'human_agent3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "3":
@@ -1045,7 +1045,7 @@ def handle_offer_response3(prompt, user_data, phone_id):
             'step': 'collect_offer_details3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Sicela uphendule ngesiphakamiso esilungisiwe ngendlela engezansi:\n\n"
             "- Ukuhlolwa kwamanzi: $_\n"
             "- Ukumba iBorehole: $_",
@@ -1054,7 +1054,7 @@ def handle_offer_response3(prompt, user_data, phone_id):
         return {'step': 'collect_offer_details3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Sicela ukhethe inketho efaneleyo (1–3).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1–3).", user_data['sender'], phone_id)
         return {'step': 'offer_response3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1065,7 +1065,7 @@ def handle_booking_details3(prompt, user_data, phone_id):
             'step': 'collect_booking_info3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Kuhle! Sicela unikeze ulwazi olulandelayo ukuze siqedele ukubhuka kwakho:\n\n"
             "- Igama eliphelele:\n"
             "- Usuku olukhethwayo (dd/mm/yyyy):\n"
@@ -1078,15 +1078,15 @@ def handle_booking_details3(prompt, user_data, phone_id):
         return {'step': 'collect_booking_info3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":
-        send("Sicela uthinte ihhovisi lethu ku-077xxxxxxx ukuze uhlele inkokhelo yeDeposit.", user_data['sender'], phone_id)
+        send3("Sicela uthinte ihhovisi lethu ku-077xxxxxxx ukuze uhlele inkokhelo yeDeposit.", user_data['sender'], phone_id)
         return {'step': 'main_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "3":
-        send("Umsebenzi wethu uzokuthinta ukuze aqinisekise usuku lokumba.", user_data['sender'], phone_id)
+        send3("Umsebenzi wethu uzokuthinta ukuze aqinisekise usuku lokumba.", user_data['sender'], phone_id)
         return {'step': 'main_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Sicela ukhethe inketho efaneleyo (1–3).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1–3).", user_data['sender'], phone_id)
         return {'step': 'booking_details3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1109,7 +1109,7 @@ def handle_collect_booking_info3(prompt, user_data, phone_id):
         })
         booking_date = "25/05/2025"
         booking_time = "10:00 AM"
-        send(
+        send3(
             "Siyabonga. Ukuqokwa kwakho sekugunyaziwe, futhi uchwepheshe uzokuthinta maduze.\n\n"
             f"Isikhumbuzo: Ukuhlolwa kwendawo kuhlelwe kusasa.\n\n"
             f"Usuku: {booking_date}\n"
@@ -1122,14 +1122,14 @@ def handle_collect_booking_info3(prompt, user_data, phone_id):
         )
         return {'step': 'booking_confirmation3', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Sicela ubhale 'Submit' ukuze uqinisekise ukubhuka kwakho.", user_data['sender'], phone_id)
+        send3("Sicela ubhale 'Submit' ukuze uqinisekise ukubhuka kwakho.", user_data['sender'], phone_id)
         return {'step': 'collect_booking_info3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
 def handle_booking_confirmation3(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     if prompt == "2":
-        send(
+        send3(
             "Kuhle! Ukuqokwa kwakho kokumba iborehole sekubhukiwe.\n\n"
             "Usuku: ULwesine, 23 May 2025\n"
             "Isikhathi sokuqala: 8:00 AM\n"
@@ -1140,7 +1140,7 @@ def handle_booking_confirmation3(prompt, user_data, phone_id):
         )
         return {'step': 'welcome', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Sicela uxhumane neqembu lethu ukuze ulungise isikhathi sokuhlolwa.", user_data['sender'], phone_id)
+        send3("Sicela uxhumane neqembu lethu ukuze ulungise isikhathi sokuhlolwa.", user_data['sender'], phone_id)
         return {'step': 'booking_confirmation3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1149,7 +1149,7 @@ def handle_select_service_quote3(prompt, user_data, phone_id):
     location = user.quote_data.get('location')
 
     if not location:
-        send("Sicela uqale unikeze indawo yakho ngaphambi kokukhetha insiza.", user_data['sender'], phone_id)
+        send3("Sicela uqale unikeze indawo yakho ngaphambi kokukhetha insiza.", user_data['sender'], phone_id)
         return {'step': 'enter_location_for_quote3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     service_map = {
@@ -1163,7 +1163,7 @@ def handle_select_service_quote3(prompt, user_data, phone_id):
     selected_service = service_map.get(prompt.strip())
 
     if not selected_service:
-        send("Inketho engavumelekile. Sicela uphendule ngo-1, 2, 3, 4 noma 5 ukukhetha insiza.", user_data['sender'], phone_id)
+        send3("Inketho engavumelekile. Sicela uphendule ngo-1, 2, 3, 4 noma 5 ukukhetha insiza.", user_data['sender'], phone_id)
         return {'step': 'select_service_quote3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     user.quote_data['service'] = selected_service
@@ -1177,7 +1177,7 @@ def handle_select_service_quote3(prompt, user_data, phone_id):
         for key, option in pump_installation_options3.items():
             desc = option.get('description', 'Akukho incazelo')
             message_lines.append(f"{key}. {desc}")
-        send("\n".join(message_lines), user_data['sender'], phone_id)
+        send3("\n".join(message_lines), user_data['sender'], phone_id)
         return {'step': 'select_pump_option3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     pricing_message = get_pricing_for_location_quotes(location, selected_service)
@@ -1186,7 +1186,7 @@ def handle_select_service_quote3(prompt, user_data, phone_id):
         'step': 'quote_followup3',
         'user': user.to_dict()
     })
-    send(pricing_message, user_data['sender'], phone_id)
+    send3(pricing_message, user_data['sender'], phone_id)
 
     return {
         'step': 'quote_followup3',
@@ -1200,7 +1200,7 @@ def handle_other_services_menu3(prompt, user_data, phone_id):
     choice = prompt.strip()
 
     if choice == "1":
-        send(
+        send3(
             "Ukuze sihlolisise ukuthi iborehole yakho ingajuliswa yini:\n"
             "Ingabe iborehole yafakelwa amapayipi:\n"
             "1. Phezulu kuphela, ngepayipi elingange-180mm noma elikhulu\n"
@@ -1211,7 +1211,7 @@ def handle_other_services_menu3(prompt, user_data, phone_id):
         return {'step': 'borehole_deepening_casing3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif choice == "2":
-        send(
+        send3(
             "Iyiphi inkinga ngeborehole yakho?\n"
             "1. Iborehole eye yabhidlika\n"
             "2. Amanzi angcolile ephuma eborehole",
@@ -1221,7 +1221,7 @@ def handle_other_services_menu3(prompt, user_data, phone_id):
         return {'step': 'borehole_flushing_problem3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif choice == "3":
-        send(
+        send3(
             "Sihlinzeka ngokumba iBorehole sisebenzisa amapayipi ePVC alandelayo:\n"
             "1. Class 6 – Ejwayelekile\n"
             "2. Class 9 – Eqinile\n"
@@ -1238,7 +1238,7 @@ def handle_other_services_menu3(prompt, user_data, phone_id):
         return {'step': 'main_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Sicela ukhethe inketho efaneleyo (1–4).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1–4).", user_data['sender'], phone_id)
         return {'step': 'other_services_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1253,7 +1253,7 @@ def send_main_menu3(phone_number, phone_id):
         "6. Khuluma lomuntu\n\n"
         "Sicela uphendule ngenombolo (isb. 1)"
     )
-    send(menu_text, phone_number, phone_id)
+    send3(menu_text, phone_number, phone_id)
 
 
 def handle_borehole_deepening_casing3(prompt, user_data, phone_id):
@@ -1261,13 +1261,13 @@ def handle_borehole_deepening_casing3(prompt, user_data, phone_id):
     choice = prompt.strip()
 
     if choice == "1":
-        send("Iborehole yakho iyafaneleka ukuba ijuliswe.\nSicela ufake indawo yakho (idolobha, i-ward, i-growth point, noma i-GPS pin):",
+        send3("Iborehole yakho iyafaneleka ukuba ijuliswe.\nSicela ufake indawo yakho (idolobha, i-ward, i-growth point, noma i-GPS pin):",
              user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'deepening_location3', 'user': user.to_dict()})
         return {'step': 'deepening_location3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif choice == "2":
-        send(
+        send3(
             "Ngokudabukisayo, ama-borehole afakwe amapayipi avela phezulu aze phansi ngepayipi elincane kune-180mm awakwazi ukujuliswa.\n"
             "Izinketho:\n"
             "1. Buyela kwezinye izinsiza\n"
@@ -1278,7 +1278,7 @@ def handle_borehole_deepening_casing3(prompt, user_data, phone_id):
         return {'step': 'deepening_no_deepening_options3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Sicela ukhethe inketho efaneleyo (1 noma 2).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1 noma 2).", user_data['sender'], phone_id)
         return {'step': 'borehole_deepening_casing3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1289,11 +1289,11 @@ def handle_deepening_no_deepening_options3(prompt, user_data, phone_id):
     if choice == "1":
         return handle_other_services_menu3("0", user_data, phone_id)
     elif choice == "2":
-        send("Sizakuxhumanisa lethimba elisekelayo...", user_data['sender'], phone_id)
+        send3("Sizakuxhumanisa lethimba elisekelayo...", user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'human_agent3', 'user': user.to_dict()})
         return {'step': 'human_agent3', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Sicela ukhethe inketho efaneleyo (1 noma 2).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1 noma 2).", user_data['sender'], phone_id)
         return {'step': 'deepening_no_deepening_options3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1303,7 +1303,7 @@ def handle_deepening_location3(prompt, user_data, phone_id):
     user.quote_data['location'] = location
     price = get_pricing_for_location_quotes(location, "borehole_deepening")
 
-    send(
+    send3(
         f"Intengo yokujulisa e-{location} iqala ku-USD {price} nge-meter.\n"
         "Ungathanda:\n"
         "1. Ukuqinisekisa lokubhuka umsebenzi\n"
@@ -1320,13 +1320,13 @@ def handle_deepening_booking_confirm3(prompt, user_data, phone_id):
 
     if choice == "1":
         user.booking_data = {}
-        send("Sicela unikeze igama lakho eliphelele:", user_data['sender'], phone_id)
+        send3("Sicela unikeze igama lakho eliphelele:", user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'booking_full_name3', 'user': user.to_dict()})
         return {'step': 'booking_full_name3', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif choice == "2":
         return other_services_menu3("0", user_data, phone_id)
     else:
-        send("Sicela ukhethe inketho efaneleyo (1 noma 2).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1 noma 2).", user_data['sender'], phone_id)
         return {'step': 'deepening_booking_confirm3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1335,7 +1335,7 @@ def handle_borehole_flushing_problem3(prompt, user_data, phone_id):
     choice = prompt.strip()
 
     if choice == "1":
-        send(
+        send3(
             "Uyakwazi ububanzi be-borehole yakho?\n"
             "1. 180mm noma okukhulu\n"
             "2. Phakathi kuka-140mm no-180mm\n"
@@ -1345,12 +1345,12 @@ def handle_borehole_flushing_problem3(prompt, user_data, phone_id):
         update_user_state(user_data['sender'], {'step': 'flushing_collapsed_diameter3', 'user': user.to_dict()})
         return {'step': 'flushing_collapsed_diameter3', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif choice == "2":
-        send("Sicela ufake indawo yakho ukuze sihlolise intengo:", user_data['sender'], phone_id)
+        send3("Sicela ufake indawo yakho ukuze sihlolise intengo:", user_data['sender'], phone_id)
         user.quote_data['flushing_type'] = 'dirty_water'
         update_user_state(user_data['sender'], {'step': 'flushing_location3', 'user': user.to_dict()})
         return {'step': 'flushing_location3', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Sicela ukhethe inketho efaneleyo (1 noma 2).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1 noma 2).", user_data['sender'], phone_id)
         return {'step': 'borehole_flushing_problem3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1365,20 +1365,20 @@ def handle_flushing_collapsed_diameter3(prompt, user_data, phone_id):
 
     diameter = diameter_map.get(choice)
     if not diameter:
-        send("Sicela ukhethe inketho efaneleyo (1-3).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1-3).", user_data['sender'], phone_id)
         return {'step': 'flushing_collapsed_diameter3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     user.quote_data['flushing_type'] = 'collapsed'
     user.quote_data['diameter'] = diameter
 
     if diameter == "180mm_or_larger":
-        send("Singakwazi ukuhlanza i-borehole yakho sisebenzisa ama-rods kanye ne-drilling bit (kusebenza kangcono).\nSicela ufake indawo yakho ukuze sihlolise intengo:",
+        send3("Singakwazi ukuhlanza i-borehole yakho sisebenzisa ama-rods kanye ne-drilling bit (kusebenza kangcono).\nSicela ufake indawo yakho ukuze sihlolise intengo:",
              user_data['sender'], phone_id)
     elif diameter == "between_140_and_180mm":
-        send("Singakwazi ukuhlanza i-borehole sisebenzisa ama-rods kuphela, ngaphandle kwe-drilling bit.\nSicela ufake indawo yakho ukuze sihlolise intengo:",
+        send3("Singakwazi ukuhlanza i-borehole sisebenzisa ama-rods kuphela, ngaphandle kwe-drilling bit.\nSicela ufake indawo yakho ukuze sihlolise intengo:",
              user_data['sender'], phone_id)
     elif diameter == "140mm_or_smaller":
-        send("Sisebenzisa ama-rods kuphela ngaphandle kwe-drilling bit ukuhlanza i-borehole.\nSicela ufake indawo yakho ukuze sihlolise intengo:",
+        send3("Sisebenzisa ama-rods kuphela ngaphandle kwe-drilling bit ukuhlanza i-borehole.\nSicela ufake indawo yakho ukuze sihlolise intengo:",
              user_data['sender'], phone_id)
 
     update_user_state(user_data['sender'], {'step': 'flushing_location3', 'user': user.to_dict()})
@@ -1412,7 +1412,7 @@ def handle_flushing_location3(prompt, user_data, phone_id):
         'diameter': diameter
     })
 
-    send(
+    send3(
         f"Intengo yokugeza iborehole e-{location} iqala ku-USD {price}.\n"
         "Ungathanda:\n"
         "1. Ukuqinisekisa & Bhuka Umsebenzi\n"
@@ -1429,7 +1429,7 @@ def handle_flushing_booking_confirm3(prompt, user_data, phone_id):
 
     if choice == "1":
         user.booking_data = {}
-        send("Sicela unikeze igama lakho eliphelele:", user_data['sender'], phone_id)
+        send3("Sicela unikeze igama lakho eliphelele:", user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'booking_full_name3', 'user': user.to_dict()})
         return {'step': 'booking_full_name3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
@@ -1437,7 +1437,7 @@ def handle_flushing_booking_confirm3(prompt, user_data, phone_id):
         return handle_other_services_menu3("0", user_data, phone_id)
 
     else:
-        send("Sicela ukhethe inketho efaneleyo (1 noma 2).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1 noma 2).", user_data['sender'], phone_id)
         return {'step': 'flushing_booking_confirm3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1452,12 +1452,12 @@ def handle_pvc_casing_selection3(prompt, user_data, phone_id):
 
     casing_class = pvc_map.get(choice)
     if not casing_class:
-        send("Sicela ukhethe inketho efaneleyo (1-3).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1-3).", user_data['sender'], phone_id)
         return {'step': 'pvc_casing_selection3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     user.quote_data['pvc_casing_class'] = casing_class
 
-    send(f"Intengo ye-{casing_class} PVC casing ixhomeke endaweni okuyo.\nSicela ufake indawo yakho:",
+    send3(f"Intengo ye-{casing_class} PVC casing ixhomeke endaweni okuyo.\nSicela ufake indawo yakho:",
          user_data['sender'], phone_id)
     update_user_state(user_data['sender'], {'step': 'pvc_casing_location3', 'user': user.to_dict()})
     return {'step': 'pvc_casing_location3', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -1472,7 +1472,7 @@ def handle_pvc_casing_location3(prompt, user_data, phone_id):
 
     price = get_pricing_for_other_services3(location, "pvc_casing", {'class': casing_class})
 
-    send(
+    send3(
         f"Intengo ye-{casing_class} PVC casing e-{location} i-USD {price}.\n"
         "Ungathanda:\n"
         "1. Ukuqinisekisa & Bhuka\n"
@@ -1489,7 +1489,7 @@ def handle_pvc_casing_booking_confirm3(prompt, user_data, phone_id):
 
     if choice == "1":
         user.booking_data = {}
-        send("Sicela unikeze igama lakho eliphelele:", user_data['sender'], phone_id)
+        send3("Sicela unikeze igama lakho eliphelele:", user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'booking_full_name3', 'user': user.to_dict()})
         return {'step': 'booking_full_name3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
@@ -1497,7 +1497,7 @@ def handle_pvc_casing_booking_confirm3(prompt, user_data, phone_id):
         return handle_other_services_menu3("0", user_data, phone_id)
 
     else:
-        send("Sicela ukhethe inketho efaneleyo (1 noma 2).", user_data['sender'], phone_id)
+        send3("Sicela ukhethe inketho efaneleyo (1 noma 2).", user_data['sender'], phone_id)
         return {'step': 'pvc_casing_booking_confirm3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1505,7 +1505,7 @@ def handle_booking_full_name3(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     full_name = prompt.strip()
     user.booking_data['full_name'] = full_name
-    send("Sicela unikeze inombolo yakho yocingo:", user_data['sender'], phone_id)
+    send3("Sicela unikeze inombolo yakho yocingo:", user_data['sender'], phone_id)
     update_user_state(user_data['sender'], {'step': 'booking_phone3', 'user': user.to_dict()})
     return {'step': 'booking_phone3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
@@ -1514,7 +1514,7 @@ def handle_booking_phone3(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     phone = prompt.strip()
     user.booking_data['phone'] = phone
-    send("Sicela ufake indawo yakho noma idilesi ngokuphelele, noma wabelane nge-GPS pin yakho:", user_data['sender'], phone_id)
+    send3("Sicela ufake indawo yakho noma idilesi ngokuphelele, noma wabelane nge-GPS pin yakho:", user_data['sender'], phone_id)
     update_user_state(user_data['sender'], {'step': 'booking_location3', 'user': user.to_dict()})
     return {'step': 'booking_location3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
@@ -1523,7 +1523,7 @@ def handle_booking_location3(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     location = prompt.strip()
     user.booking_data['location'] = location
-    send("Sicela ufake usuku olufunayo lokubhuka (isb: 2024-10-15):", user_data['sender'], phone_id)
+    send3("Sicela ufake usuku olufunayo lokubhuka (isb: 2024-10-15):", user_data['sender'], phone_id)
     update_user_state(user_data['sender'], {'step': 'booking_date3', 'user': user.to_dict()})
     return {'step': 'booking_date3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
@@ -1532,7 +1532,7 @@ def handle_booking_date3(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     booking_date = prompt.strip()
     user.booking_data['date'] = booking_date
-    send("Uma unama-notes noma izicelo ezikhethekileyo, sicela uzifake manje. Noma bhala 'Hatshi':", user_data['sender'], phone_id)
+    send3("Uma unama-notes noma izicelo ezikhethekileyo, sicela uzifake manje. Noma bhala 'Hatshi':", user_data['sender'], phone_id)
     update_user_state(user_data['sender'], {'step': 'booking_notes3', 'user': user.to_dict()})
     return {'step': 'booking_notes3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
@@ -1544,7 +1544,7 @@ def handle_booking_notes3(prompt, user_data, phone_id):
 
     booking_confirmation_number = save_booking(user.booking_data)
 
-    send(
+    send3(
         f"Siyabonga {user.booking_data['full_name']}! Ukubhuka kwakho kuqinisekisiwe.\n"
         f"Inombolo Yokubhaliswa: {booking_confirmation_number}\n"
         "Iqembu lethu lizokuthinta kungekudala.\n"
@@ -1561,7 +1561,7 @@ def handle_pump_status_info_request3(prompt, user_data, phone_id):
     lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
 
     if len(lines) < 2:
-        send(
+        send3(
             "Sicela unikeze okungenani igama lakho eliphelele kanye nenombolo yesithenjwa noma inombolo yefoni, ngakunye kulayini ohlukile.\n\n"
             "Isibonelo:\n"
             "Jane Doe\nREF123456\nKuyakhethwa: eHarare",
@@ -1584,9 +1584,9 @@ def handle_pump_status_info_request3(prompt, user_data, phone_id):
         'location': location
     }
 
-    send("Siyabonga. Sicela ulinde sithathe isimo sephrojekthi yakho...", user_data['sender'], phone_id)
+    send3("Siyabonga. Sicela ulinde sithathe isimo sephrojekthi yakho...", user_data['sender'], phone_id)
 
-    send(
+    send3(
         f"Nansi imininingwane yephrojekthi yakho yokufakwa kwepompo:\n\n"
         f"Igama Lephrojekthi: Pompo - {full_name}\n"
         f"Isiteji Samanje: Ukufakwa Kuqediwe\n"
@@ -1613,19 +1613,19 @@ def handle_pump_status_updates_opt_in3(prompt, user_data, phone_id):
     response = prompt.strip().lower()
 
     if response in ['yebo', 'yes', 'y']:
-        send(
+        send3(
             "Kuhle! Uzothola izibuyekezo ze-WhatsApp njalo uma isimo sephrojekthi yakho sishintsha.\n\n"
             "Siyabonga ngokusebenzisa insiza yethu.",
             user_data['sender'], phone_id
         )
     elif response in ['hatshi', 'no', 'n']:
-        send(
+        send3(
             "Kulungile. Ungahlola isimo futhi noma kunini uma kudingeka.\n\n"
             "Siyabonga ngokusebenzisa insiza yethu.",
             user_data['sender'], phone_id
         )
     else:
-        send("Uxolo, angiqondanga. Sicela uphendule ngo 'Yebo' noma 'Hatshi'.", user_data['sender'], phone_id)
+        send3("Uxolo, angiqondanga. Sicela uphendule ngo 'Yebo' noma 'Hatshi'.", user_data['sender'], phone_id)
         return {'step': 'pump_status_updates_opt_in3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     update_user_state(user_data['sender'], {
@@ -1642,19 +1642,19 @@ def handle_drilling_status_updates_opt_in3(prompt, user_data, phone_id):
     response = prompt.strip().lower()
 
     if response in ['yes', 'y', 'yebo']:
-        send(
+        send3(
             "Kuhle! Uzothola izibuyekezo ze-WhatsApp njalo uma isimo sokugawula ibhodi lishintsha.\n\n"
             "Siyabonga ngokusebenzisa insiza yethu.",
             user_data['sender'], phone_id
         )
     elif response in ['no', 'n', 'hatshi']:
-        send(
+        send3(
             "Akusikho inkinga. Ungahlola isimo futhi noma kunini uma kudingeka.\n\n"
             "Siyabonga ngokusebenzisa insiza yethu.",
             user_data['sender'], phone_id
         )
     else:
-        send("Uxolo, angiqondanga lokho. Sicela uphendule ngo 'Yebo' noma 'Hatshi'.", user_data['sender'], phone_id)
+        send3("Uxolo, angiqondanga lokho. Sicela uphendule ngo 'Yebo' noma 'Hatshi'.", user_data['sender'], phone_id)
         return {'step': 'drilling_status_updates_opt_in3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     update_user_state(user_data['sender'], {
@@ -1674,7 +1674,7 @@ def handle_check_project_status_menu3(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
 
-        send(
+        send3(
             "Ukuze uhlolisise isimo sokugawula ibhodi lakho, sicela unikeze imininingwane elandelayo:\n\n"
             "- Igama eligcwele olalisebenzisa ngesikhathi ubhuka\n"
             "- Inombolo yesithenjwa sephrojekthi noma inombolo yefoni\n"
@@ -1692,7 +1692,7 @@ def handle_check_project_status_menu3(prompt, user_data, phone_id):
             'step': 'pump_status_info_request3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Ukuze uhlolisise isimo sokufakwa kwepompo yakho, sicela unikeze okulandelayo:\n\n"
             "- Igama eligcwele olalisebenzisa ngesikhathi ubhuka\n"
             "- Inombolo yesithenjwa sephrojekthi noma inombolo yefoni\n"
@@ -1710,14 +1710,14 @@ def handle_check_project_status_menu3(prompt, user_data, phone_id):
             'step': 'human_agent3',
             'user': user.to_dict()
         })
-        send("Sicela ulinde ngenkathi sikuxhumanisa nelunga leqembu lethu lokusekela.", user_data['sender'], phone_id)
+        send3("Sicela ulinde ngenkathi sikuxhumanisa nelunga leqembu lethu lokusekela.", user_data['sender'], phone_id)
         return {'step': 'human_agent3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "4":
         return handle_main_menu3("", user_data, phone_id)
 
     else:
-        send("Inketho engavumelekile. Sicela ukhethe u-1, 2, 3, noma u-4.", user_data['sender'], phone_id)
+        send3("Inketho engavumelekile. Sicela ukhethe u-1, 2, 3, noma u-4.", user_data['sender'], phone_id)
         return {'step': 'check_project_status_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1728,7 +1728,7 @@ def handle_drilling_status_info_request3(prompt, user_data, phone_id):
     lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
 
     if len(lines) < 2:
-        send(
+        send3(
             "Sicela unikeze okungenani igama lakho eligcwele kanye lenombolo yesithenjwa noma inombolo yefoni, okuhleliwe umugqa ngamunye.\n\n"
             "Isibonelo:\n"
             "John Dube\nREF789123 noma 0779876543\nOzithandayo: Bulawayo",
@@ -1751,9 +1751,9 @@ def handle_drilling_status_info_request3(prompt, user_data, phone_id):
         'location': location
     }
 
-    send("Siyabonga. Sicela ulinde njengoba silanda ulwazi lwephrojekthi yakho...", user_data['sender'], phone_id)
+    send3("Siyabonga. Sicela ulinde njengoba silanda ulwazi lwephrojekthi yakho...", user_data['sender'], phone_id)
 
-    send(
+    send3(
         f"Nansi inkcazelo yephrojekthi yakho yokugawula ibhodi:\n\n"
         f"Igama lePhrojekthi: Borehole - {full_name}\n"
         f"Isigaba Samanje: Ukuqhafaza Kuyaqhubeka\n"
@@ -1780,7 +1780,7 @@ def handle_select_pump_option3(prompt, user_data, phone_id):
     location = user.quote_data.get('location')
 
     if prompt.strip() not in pump_installation_options3:
-        send("Inketho engavumelekile. Sicela ukhethe inketho yokufakwa kwepompo engu-1 kuze kube ngu-6.", user_data['sender'], phone_id)
+        send3("Inketho engavumelekile. Sicela ukhethe inketho yokufakwa kwepompo engu-1 kuze kube ngu-6.", user_data['sender'], phone_id)
         return {'step': 'select_pump_option3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     user.quote_data['pump_option'] = prompt.strip()
@@ -1790,7 +1790,7 @@ def handle_select_pump_option3(prompt, user_data, phone_id):
         'step': 'quote_followup3',
         'user': user.to_dict()
     })
-    send(pricing_message, user_data['sender'], phone_id)
+    send3(pricing_message, user_data['sender'], phone_id)
 
     return {
         'step': 'quote_followup3',
@@ -1807,7 +1807,7 @@ def handle_quote_followup3(prompt, user_data, phone_id):
             'step': 'select_service_quote3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Khetha olunye usizo:\n"
             "1. Ucwaningo lwamanzi\n"
             "2. Ukugawula ibhodi\n"
@@ -1823,7 +1823,7 @@ def handle_quote_followup3(prompt, user_data, phone_id):
             'step': 'main_menu3',
             'user': user.to_dict()
         })
-        send(
+        send3(
             "Singakusiza njani lamuhla?\n\n"
             "1. Cela isiphakamiso\n"
             "2. Phanda Intengo Ngokusebenzisa Indawo\n"
@@ -1841,11 +1841,11 @@ def handle_quote_followup3(prompt, user_data, phone_id):
             'step': 'collect_offer_details3',
             'user': user.to_dict()
         })
-        send("Kulungile! Ungabelana ngenani ofuna ukulikhokha ngezansi.\n\n", user_data['sender'], phone_id)
+        send3("Kulungile! Ungabelana ngenani ofuna ukulikhokha ngezansi.\n\n", user_data['sender'], phone_id)
         return {'step': 'collect_offer_details3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Inketho engavumelekile. Phendula ngo-1 ukuze ubuze ngenye insiza, ngo-2 ukuze ubuyele kumenu enkulu, noma ngo-3 ukuze unikeze inani lakho.", user_data['sender'], phone_id)
+        send3("Inketho engavumelekile. Phendula ngo-1 ukuze ubuze ngenye insiza, ngo-2 ukuze ubuyele kumenu enkulu, noma ngo-3 ukuze unikeze inani lakho.", user_data['sender'], phone_id)
         return {'step': 'quote_followup3', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
@@ -1888,7 +1888,7 @@ action_mapping = {
     "pvc_casing_selection3": handle_pvc_casing_selection3,
     "deepening_location3": handle_deepening_location3,
     "human_agent3": lambda prompt, user_data, phone_id: (
-        send("Umsebenzi wabantu uzakuxhumana lawe ngokushesha", user_data['sender'], phone_id)
+        send3("Umsebenzi wabantu uzakuxhumana lawe ngokushesha", user_data['sender'], phone_id)
         or {'step': 'main_menu3', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
     ),
 }
@@ -1940,7 +1940,7 @@ def webhook():
                 else:
                     # Unsupported message type
                     logging.warning(f"Unsupported message type: {msg_type}")
-                    send_message("Sicela uthumele umbhalo noma wabelane ngendawo yakho usebenzisa inkinobho ethi 📍.", sender, phone_id)
+                    send3("Sicela uthumele umbhalo noma wabelane ngendawo yakho usebenzisa inkinobho ethi 📍.", sender, phone_id)
 
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
