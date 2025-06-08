@@ -990,3 +990,52 @@ def notify_agent(customer_number, message, agent_number, phone_id, lang='English
     )
     send(notification, agent_number, phone_id)
 
+
+# Flask app setup
+app = Flask(__name__)
+
+@app.route('/webhook', methods=['GET', 'POST'])
+def webhook():
+    if request.method == 'GET':
+        mode = request.args.get('hub.mode')
+        token = request.args.get('hub.verify_token')
+        challenge = request.args.get('hub.challenge')
+        
+        if mode and token:
+            if mode == 'subscribe' and token == os.environ.get("VERIFY_TOKEN"):
+                return challenge, 200
+        return 'Verification failed', 403
+
+    if request.method == 'POST':
+        data = request.get_json()
+        
+        if data.get('object') == 'whatsapp_business_account':
+            entries = data.get('entry', [])
+            for entry in entries:
+                changes = entry.get('changes', [])
+                for change in changes:
+                    value = change.get('value', {})
+                    messages = value.get('messages', [])
+                    for message in messages:
+                        phone_number = message.get('from')
+                        user_data = get_user_state(phone_number)
+                        current_step = user_data.get('step', 'welcome')
+                        
+                        # Handle location messages
+                        if message.get('type') == 'location':
+                            user_data['location'] = message['location']
+                            handler = globals().get(f'handle_{current_step}')
+                            if handler:
+                                handler("", user_data, phone_id)
+                            continue
+                            
+                        # Handle text messages
+                        if message.get('type') == 'text':
+                            text = message['text'].get('body', '').strip()
+                            handler = globals().get(f'handle_{current_step}')
+                            if handler:
+                                handler(text, user_data, phone_id)
+        return 'OK', 200
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
