@@ -5,7 +5,7 @@ from ndebele import ndebele_blueprint
 from english import handle_select_language
 from shona import handle_select_language2
 from ndebele import handle_select_language3
-from utils import get_user_language, set_user_language, send_message, set_user_state, get_user_state
+from utils import get_user_language, set_user_language, send_message, set_user_state, get_user_state, update_user_state
 import os
 import logging
 import json
