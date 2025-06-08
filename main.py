@@ -17,6 +17,12 @@ import google.generativeai as genai
 import threading
 import time
 from datetime import datetime
+from utils import User
+
+
+
+user = User.from_dict(user_data.get("user", {"phone_number": sender}))
+
 
 
 # Configure logging
