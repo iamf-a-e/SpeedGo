@@ -1805,7 +1805,7 @@ action_mapping = {
     "pvc_casing_selection": handle_pvc_casing_selection,
     "deepening_location": handle_deepening_location
 }
-}
+
 
 # Flask app
 app = Flask(__name__)
