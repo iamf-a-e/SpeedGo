@@ -69,7 +69,7 @@ def webhook():
                         # User selected a language
                         if prompt == "1":
                             set_user_language(sender, "english")
-                            from english import handle_select_language
+                            from english import handle_select_language as handle_select_language
                             handle_select_language(prompt, {'sender': sender, 'step': 'select_language'}, phone_id)
                         elif prompt == "2":
                             set_user_language(sender, "shona")
