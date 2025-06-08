@@ -1556,42 +1556,41 @@ def faq_pump_followup(prompt, user_data, phone_id):
         send(get_message(lang, "custom_question.invalid_option"), user_data['sender'], phone_id)
         return {'step': 'faq_pump_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-
 def handle_enter_location_for_quote(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     lang = user.language
     
-    # Check if we have a location object from WhatsApp
-    if 'location' in user_data and 'latitude' in user_data['location'] and 'longitude' in user_data['location']:
-        lat = user_data['location']['latitude']
-        lng = user_data['location']['longitude']
-        gps_coords = f"{lat},{lng}"
-        location_name = reverse_geocode_location(gps_coords)
-        
-        if location_name:
-            user.quote_data['location'] = location_name
-            user.quote_data['gps_coords'] = gps_coords
-            update_user_state(user_data['sender'], {
-                'step': 'select_service_quote',
-                'user': user.to_dict()
-            })
-            send(LANGUAGES[lang]["location_detected"].format(location_name.title()), 
-                 user_data['sender'], phone_id)
-            return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
-        else:
-            send(LANGUAGES[lang]["location_not_found"], user_data['sender'], phone_id)
-            return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
-    else:
-        # This is a text message with location name
-        location_name = prompt.strip()
-        user.quote_data['location'] = location_name.lower()
-        update_user_state(user_data['sender'], {
-            'step': 'select_service_quote',
-            'user': user.to_dict()
-        })
-        send(LANGUAGES[lang]["location_detected"].format(location_name.title()), 
-             user_data['sender'], phone_id)
-        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+    # Check if prompt is GPS coordinates (lat,lng)
+    if ',' in prompt and len(prompt.split(',')) == 2:
+        try:
+            lat, lng = map(float, prompt.split(','))
+            location_name = reverse_geocode_location(prompt)
+            
+            if location_name:
+                user.quote_data['location'] = location_name
+                user.quote_data['gps_coords'] = prompt
+                update_user_state(user_data['sender'], {
+                    'step': 'select_service_quote',
+                    'user': user.to_dict()
+                })
+                send(LANGUAGES[lang]["location_detected"].format(location_name.title()), 
+                     user_data['sender'], phone_id)
+                return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+            
+        except ValueError:
+            pass  # Handle invalid coordinates
+    
+    # Fallback to text location handling
+    location_name = prompt.strip()
+    user.quote_data['location'] = location_name.lower()
+    update_user_state(user_data['sender'], {
+        'step': 'select_service_quote',
+        'user': user.to_dict()
+    })
+    send(LANGUAGES[lang]["location_detected"].format(location_name.title()), 
+         user_data['sender'], phone_id)
+    return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+
 
 def handle_select_service(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
@@ -2797,10 +2796,15 @@ def webhook():
                         
                         # Handle location messages
                         if message.get('type') == 'location':
-                            user_data['location'] = message['location']
+                            location = message['location']
+                            gps_coords = f"{location['latitude']},{location['longitude']}"
+                            user_data['location'] = {'latitude': location['latitude'], 'longitude': location['longitude']}
+                            
+                            # Get the current handler
                             handler = globals().get(f'handle_{current_step}')
                             if handler:
-                                handler("", user_data, phone_id)
+                                # Pass the GPS coordinates as the prompt
+                                handler(gps_coords, user_data, phone_id)
                             continue
                             
                         # Handle text messages
