@@ -338,7 +338,7 @@ def handle_select_language2(prompt, user_data, phone_id):
         update_user_state(user_data['sender'], {
             'step': 'main_menu2',
             'user': user.to_dict()
-        }), ttl_seconds=3600)
+        }, ttl_seconds=3600)
         send2(
             "Tatenda!\n"
             "Tingakubatsirei nhasi?\n\n"
