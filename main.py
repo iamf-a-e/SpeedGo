@@ -75,27 +75,18 @@ def webhook():
                     if prompt in ["1", "2", "3"]:
                         # User selected a language
                         if prompt.strip() == "1":
-                            user_state = get_user_state(sender)
-                            user_state['sender'] = sender
-                            handle_select_language("1", user_state, phone_id)
                             set_user_language(sender, "english")
                             existing_state = get_user_state(sender)
                             existing_state['sender'] = sender
                             handle_select_language(prompt, existing_state, phone_id)
                             return jsonify({"status": "ok"}), 200
                         elif prompt.strip() == "2":
-                            user_state = get_user_state(sender)
-                            user_state['sender'] = sender
-                            handle_select_language("2", user_state, phone_id)
                             set_user_language(sender, "shona")
                             existing_state = get_user_state(sender)
                             existing_state['sender'] = sender
                             handle_select_language2(prompt, existing_state, phone_id)
                             return jsonify({"status": "ok"}), 200
                         elif prompt.strip() == "3":
-                            user_state = get_user_state(sender)
-                            user_state['sender'] = sender
-                            handle_select_language("3", user_state, phone_id)
                             set_user_language(sender, "ndebele")
                             existing_state = get_user_state(sender)
                             existing_state['sender'] = sender
