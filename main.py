@@ -2473,15 +2473,15 @@ def get_pricing_for_location_quotes_shona(location, service_type, pump_option_se
             message += "\nUnoda here:\n1. Kukumbira mitengo yeimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako"
             return message
 
-    loc_data = location_pricing.get(location_key)
-    if not loc_data:
+    loc_data_shona = location_pricing_shona.get(location_key)
+    if not loc_data_shona:
         return "Ndine urombo, hatina mitengo yenzvimbo iyi."
 
     service_key_shona = SERVICE_KEY_MAP_SHONA.get(service_key_shona)
     if not service_key_shona:
         return "Ndine urombo, sevhisi yamakasarudza haina kuzivikanwa."
 
-    price = loc_data.get(service_key_shona)
+    price = loc_data_shona.get(service_key_shona)
     if not price:
         return f"Ndine urombo, hatina mutengo we {service_key_shona} mu {location.title()}."
 
