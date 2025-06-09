@@ -2446,9 +2446,9 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
 
 def get_pricing_for_location_quotes_shona(location, service_type, pump_option_selected=None):
     location_key = location.strip().lower()
-    service_key = service_type.strip()
+    service_key_shona = service_type.strip()
 
-    SERVICE_KEY_MAP = {
+    SERVICE_KEY_MAP_SHONA = {
         "Kuongorora mvura": "Water Survey",
         "Kudzika borehole": "Borehole Drilling",
         "Kuchera maburi ekutengesa": "Commercial Hole Drilling",
@@ -2456,7 +2456,7 @@ def get_pricing_for_location_quotes_shona(location, service_type, pump_option_se
         "Kuiswa kwepombi": "Kuiswa kwepombi"
     }
 
-    if service_key == "Kuiswa kwepombi":
+    if service_key_shona == "Kuiswa kwepombi":
         if pump_option_selected is None:
             message_lines = [f"💧 Sarudzo dzekuiswa kwepombi:\n"]
             for key, option in pump_installation_options.items():
@@ -2477,20 +2477,20 @@ def get_pricing_for_location_quotes_shona(location, service_type, pump_option_se
     if not loc_data:
         return "Ndine urombo, hatina mitengo yenzvimbo iyi."
 
-    service_key_english = SERVICE_KEY_MAP.get(service_key)
-    if not service_key_english:
+    service_key_shona = SERVICE_KEY_MAP_SHONA.get(service_key_shona)
+    if not service_key_shona:
         return "Ndine urombo, sevhisi yamakasarudza haina kuzivikanwa."
 
-    price = loc_data.get(service_key_english)
+    price = loc_data.get(service_key_shona)
     if not price:
-        return f"Ndine urombo, hatina mutengo we {service_key} mu {location.title()}."
+        return f"Ndine urombo, hatina mutengo we {service_key_shona} mu {location.title()}."
 
     if isinstance(price, dict):
         included_depth = price.get("included_depth_m", "N/A")
         extra_rate = price.get("extra_per_m", "N/A")
 
         classes = {k: v for k, v in price.items() if k.startswith("class")}
-        message_lines = [f"💧 Mitengo ye {service_key} mu {location.title()}:"]
+        message_lines = [f"💧 Mitengo ye {service_key_shona} mu {location.title()}:"]
         for cls, amt in classes.items():
             message_lines.append(f"- {cls.title()}: ${amt}")
         message_lines.append(f"- Inosanganisira kudzika kusvika {included_depth}m")
@@ -2498,8 +2498,8 @@ def get_pricing_for_location_quotes_shona(location, service_type, pump_option_se
         message_lines.append("Unoda here:\n1. Kukumbira mitengo yeimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako")
         return "\n".join(message_lines)
 
-    unit = "pamita" if service_key in ["Kuchera maburi ekutengesa", "Kuwedzera kudzika borehole"] else "mutengo wakafanira"
-    return (f"{service_key} mu {location.title()}: ${price} {unit}\n\n"
+    unit = "pamita" if service_key_shona in ["Kuchera maburi ekutengesa", "Kuwedzera kudzika borehole"] else "mutengo wakafanira"
+    return (f"{service_key_shona} mu {location.title()}: ${price} {unit}\n\n"
             "Unoda here:\n1. Kukumbira mitengo yeimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako")
 
 
