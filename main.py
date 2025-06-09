@@ -2216,6 +2216,18 @@ def handle_quote_followup_shona(prompt, user_data, phone_id):
         send("Sarudzo isiriyo. Pindura ne1 kubvunza nezveimwe sevhisi kana 2 kudzokera kumenu huru kana 3 kana uchida kuita mutengo.", user_data['sender'], phone_id)
         return {'step': 'quote_followup_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
+def custom_question_followup_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    # Basic response for follow-up in Shona
+    response = (
+        "Tatambira mhinduro yenyu. Kana muchida kudzokera kumenu huru, tumirai 0.\n"
+        "Kana muchida kubvunza imwe nyaya, nyorai mubvunzo wenyu."
+    )
+    send(response, user_data['sender'], phone_id)
+    return {'step': 'main_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def handle_main_menu_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     if prompt == "1":  # Request a quote
