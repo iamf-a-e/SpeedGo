@@ -5060,6 +5060,54 @@ def handle_main_menu_ndebele(prompt, user_data, phone_id):
         send("Sicela ukhethe okulungile (1-6).", user_data['sender'], phone_id)
         return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
+def handle_quote_response_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    if prompt == "1":  # Offer price
+        update_user_state(user_data['sender'], {
+            'step': 'collect_offer_details_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Kulungile! Unganikezela ngamanani owaphakamisayo ngezansi.\n\n"
+            "Sicela uphendule ulandele le fomethi:\n\n"
+            "- Ukuhlolwa kwamanzi: $_\n"
+            "- Ukubhoboza umthombo: $_",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'collect_offer_details_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    elif prompt == "2":  # Book site survey
+        update_user_state(user_data['sender'], {
+            'step': 'collect_booking_info_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Kuhle! Sicela unikeze imininingwane elandelayo ukuze uqedele ukubhukha kwakho:\n\n"
+            "- Igama lakho eliphelele:\n"
+            "- Usuku olukhethayo (dd/mm/yyyy):\n"
+            "- Ikheli lesayithi: GPS noma ikheli:\n"
+            "- Inombolo yefoni:\n"
+            "- Indlela yokukhokha (Prepayment / Cash at site):\n\n"
+            "Thayipha: Submit",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'collect_booking_info_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    elif prompt == "3":  # Book for Drilling
+        send("I-ejenti yethu izokuthinta ukuze uqedele ukubhukha kokubhoboza.", user_data['sender'], phone_id)
+        return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    elif prompt == "4":  # Human Agent
+        send("Siyakuxhumanisa nommeli womuntu... sicela ulinde.", user_data['sender'], phone_id)
+        return {'step': 'human_agent_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    else:
+        send("Sicela ukhethe inketho evumelekileyo (1-4).", user_data['sender'], phone_id)
+        return {'step': 'quote_response_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
 def human_agent_ndebele(prompt, user_data, phone_id):
     customer_number = user_data['sender']
     
