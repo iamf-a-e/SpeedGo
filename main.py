@@ -2515,6 +2515,8 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
     return (
         f"{service_key_shona} mu {location.title()}: ${price} {unit}\n\n"
         "Unoda here:\n1. Kukumbira mitengo yeimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako"
+        print(f"Looking up service: '{service_key_shona}' in location: '{location_key}'")
+        print(f"Available services: {list(loc_data_shona.keys())}")
     )
 
 
