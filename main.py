@@ -2451,15 +2451,20 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
     if not loc_data_shona:
         return "Ndine urombo, hatina mitengo yenzvimbo iyi."
 
+    # Map textual service names and numeric options to internal keys
     SERVICE_KEY_MAP_SHONA = {
+        "1": "Ongororo Yemvura",
         "kuongorora mvura": "Ongororo Yemvura",
+        "2": "Kuchera chibhorani",
         "kudzika borehole": "Kuchera chibhorani",
+        "3": "Kuchera chibhorani ReBhizinesi",
         "kuchera maburi ekutengesa": "Kuchera chibhorani ReBhizinesi",
+        "4": "Kuwedzera Udzamu hwechibhorani",
         "kuwedzera kudzika borehole": "Kuwedzera Udzamu hwechibhorani",
+        "5": "Kuiswa kwepombi",
         "kuiswa kwepombi": "Kuiswa kwepombi"
     }
 
-    # Normalize user input
     service_key_raw = service_key_input.strip().lower()
     service_key_shona = SERVICE_KEY_MAP_SHONA.get(service_key_raw)
 
@@ -2468,7 +2473,7 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
 
     if service_key_shona == "Kuiswa kwepombi":
         if pump_option_selected is None:
-            message_lines = [f"💧 Sarudzo dzekuiswa kwepombi:\n"]
+            message_lines = ["💧 Sarudzo dzekuiswa kwepombi:\n"]
             for key, option in pump_installation_options.items():
                 desc = option.get('description', 'Hapana tsananguro')
                 message_lines.append(f"{key}. {desc}")
@@ -2479,8 +2484,14 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
                 return "Ndine urombo, sarudzo yekuiswa kwepombi haina kushanda."
             desc = option.get('description', 'Hapana tsananguro')
             price = option.get('price', 'N/A')
-            message = f"💧 Mitengo yesarudzo {pump_option_selected}:\n{desc}\nMutengo: ${price}\n"
-            message += "\nUnoda here:\n1. Kukumbira mitengo yeimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako"
+            message = (
+                f"💧 Mitengo yesarudzo {pump_option_selected}:\n"
+                f"{desc}\nMutengo: ${price}\n\n"
+                "Unoda here:\n"
+                "1. Kukumbira mitengo yeimwe sevhisi\n"
+                "2. Kudzokera kuMain Menu\n"
+                "3. Kupa mutengo wako"
+            )
             return message
 
     price = loc_data_shona.get(service_key_shona)
@@ -2501,8 +2512,10 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
         return "\n".join(message_lines)
 
     unit = "pamita" if service_key_shona in ["Kuchera chibhorani ReBhizinesi", "Kuwedzera Udzamu hwechibhorani"] else "mutengo wakafanira"
-    return (f"{service_key_shona} mu {location.title()}: ${price} {unit}\n\n"
-            "Unoda here:\n1. Kukumbira mitengo yeimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako")
+    return (
+        f"{service_key_shona} mu {location.title()}: ${price} {unit}\n\n"
+        "Unoda here:\n1. Kukumbira mitengo yeimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako"
+    )
 
 
 location_pricing_shona = {
