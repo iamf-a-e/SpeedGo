@@ -2443,12 +2443,21 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
         'sender': user_data['sender']
     }
 
+
 def get_pricing_for_location_quotes_shona(location, service_type, pump_option_selected=None):
     location_key = location.strip().lower()
     service_key = service_type.strip()
 
+    SERVICE_KEY_MAP = {
+        "Kuongorora mvura": "Water Survey",
+        "Kudzika borehole": "Borehole Drilling",
+        "Kuchera maburi ekutengesa": "Commercial Hole Drilling",
+        "Kuwedzera kudzika borehole": "Borehole Deepening",
+        "Kuiswa kwepombi": "Kuiswa kwepombi"
+    }
+
     if service_key == "Kuiswa kwepombi":
-        if pump_option_selected is None:            
+        if pump_option_selected is None:
             message_lines = [f"💧 Sarudzo dzekuiswa kwepombi:\n"]
             for key, option in pump_installation_options.items():
                 desc = option.get('description', 'Hapana tsananguro')
@@ -2468,7 +2477,11 @@ def get_pricing_for_location_quotes_shona(location, service_type, pump_option_se
     if not loc_data:
         return "Ndine urombo, hatina mitengo yenzvimbo iyi."
 
-    price = loc_data.get(service_key)
+    service_key_english = SERVICE_KEY_MAP.get(service_key)
+    if not service_key_english:
+        return "Ndine urombo, sevhisi yamakasarudza haina kuzivikanwa."
+
+    price = loc_data.get(service_key_english)
     if not price:
         return f"Ndine urombo, hatina mutengo we {service_key} mu {location.title()}."
 
@@ -2477,7 +2490,7 @@ def get_pricing_for_location_quotes_shona(location, service_type, pump_option_se
         extra_rate = price.get("extra_per_m", "N/A")
 
         classes = {k: v for k, v in price.items() if k.startswith("class")}
-        message_lines = [f"Mitengo ye {service_key} mu {location.title()}:"]
+        message_lines = [f"💧 Mitengo ye {service_key} mu {location.title()}:"]
         for cls, amt in classes.items():
             message_lines.append(f"- {cls.title()}: ${amt}")
         message_lines.append(f"- Inosanganisira kudzika kusvika {included_depth}m")
@@ -2485,9 +2498,150 @@ def get_pricing_for_location_quotes_shona(location, service_type, pump_option_se
         message_lines.append("Unoda here:\n1. Kukumbira mitengo yeimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako")
         return "\n".join(message_lines)
 
-    unit = "pamita" if service_key in ["Kuchera maburi ekutengesa", "Kudzika borehole"] else "mutengo wakafanira"
+    unit = "pamita" if service_key in ["Kuchera maburi ekutengesa", "Kuwedzera kudzika borehole"] else "mutengo wakafanira"
     return (f"{service_key} mu {location.title()}: ${price} {unit}\n\n"
             "Unoda here:\n1. Kukumbira mitengo yeimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako")
+
+
+location_pricing_shona = {
+    "beitbridge": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Bhodhoro": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera Bhodhoro ReBhizinesi": 80,
+        "Kuwedzera Udzamu hweBhodhoro": 30
+    },
+    "nyika": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Bhodhoro": {
+            "kirasi 6": 1050,
+            "kirasi 9": 1181.25,
+            "kirasi 10": 1312.5,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera Bhodhoro ReBhizinesi": 80,
+        "Kuwedzera Udzamu hweBhodhoro": 30
+    },
+    "bindura": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Bhodhoro": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera Bhodhoro ReBhizinesi": 80,
+        "Kuwedzera Udzamu hweBhodhoro": 30
+    },
+    "binga": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Bhodhoro": {
+            "kirasi 6": 1300,
+            "kirasi 9": 1462.5,
+            "kirasi 10": 1625,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera Bhodhoro ReBhizinesi": 80,
+        "Kuwedzera Udzamu hweBhodhoro": 30
+    },
+    "bubi": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Bhodhoro": {
+            "kirasi 6": 1200,
+            "kirasi 9": 1350,
+            "kirasi 10": 1500,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera Bhodhoro ReBhizinesi": 80,
+        "Kuwedzera Udzamu hweBhodhoro": 30
+    },
+    "murambinda": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Bhodhoro": {
+            "kirasi 6": 1050,
+            "kirasi 9": 1181.25,
+            "kirasi 10": 1312.5,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera Bhodhoro ReBhizinesi": 80,
+        "Kuwedzera Udzamu hweBhodhoro": 30
+    },
+    "buhera": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Bhodhoro": {
+            "kirasi 6": 1150,
+            "kirasi 9": 1293.75,
+            "kirasi 10": 1437.5,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera Bhodhoro ReBhizinesi": 80,
+        "Kuwedzera Udzamu hweBhodhoro": 30
+    },
+    "harare": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Bhodhoro": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 30
+        },
+        "Kuchera Bhodhoro ReBhizinesi": 80,
+        "Kuwedzera Udzamu hweBhodhoro": 30
+    },
+    "bulawayo": {
+        "Ongororo Yemvura": 150,
+        "Kuchera Bhodhoro": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera Bhodhoro ReBhizinesi": 80,
+        "Kuwedzera Udzamu hweBhodhoro": 30
+    }
+}
+
+
+pump_installation_options_shona = {
+    "1": {
+        "description": "D.C solar (solar isina inverter) - Ndine tangi ne stand yetangi",
+        "price": 1640
+    },
+    "2": {
+        "description": "D.C solar (solar isina inverter) - Handina chinhu zvachose",
+        "price": 2550
+    },
+    "3": {
+        "description": "D.C solar (solar isina inverter) - Basa chete",
+        "price": 200
+    },
+    "4": {
+        "description": "A.C yemagetsi (ZESA kana solar inverter) - Kugadzirisa nekuunza zvinhu",
+        "price": 1900
+    },
+    "5": {
+        "description": "A.C yemagetsi (ZESA kana solar inverter) - Basa chete",
+        "price": 170
+    },
+    "6": {
+        "description": "A.C yemagetsi (ZESA kana solar inverter) - Ndine tangi ne stand yetangi",
+        "price": 950
+    }
+}
+
 
 def handle_select_pump_option_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
