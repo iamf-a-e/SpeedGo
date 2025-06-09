@@ -4201,6 +4201,74 @@ def handle_pvc_casing_booking_confirm_shona(prompt, user_data, phone_id):
         send("Ndapota sarudza sarudzo inoshanda (1 kana 2).", user_data['sender'], phone_id)
         return {'step': 'pvc_casing_booking_confirm_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+def handle_collect_quote_details_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if 'location' not in user.quote_data:
+        user.quote_data['location'] = prompt.strip()
+        update_user_state(user_data['sender'], {
+            'step': 'quote_response_shona',
+            'user': user.to_dict()
+        })
+        send(
+            "Ndatenda. Zvino taura chigadzirwa chauri kuda, kana mamwe mashoko ane chekuita nebasa rauri kuda kuti tikwanise kukupa mutengo wakakodzera.",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'quote_response_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send(
+            "Ndapota nyora nzvimbo yako yakajeka (Guta, kanzuru kana GPS).",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'collect_quote_details_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def quote_response_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    user.quote_data['details'] = prompt.strip()
+
+    # Simulate sending the quote request (e.g. storing in DB or notifying team)
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup_shona',
+        'user': user.to_dict()
+    })
+
+    send(
+        "Ndatenda! Tichakupai mutengo wakatarwa tichitarisa nzvimbo yako uye mashoko awakapa. ",
+        user_data['sender'], phone_id
+    )
+    send(
+        "Ungade:\n"
+        "1. Kukumbira imwe quote\n"
+        "2. Kudzokera kuMain Menu",
+        user_data['sender'], phone_id
+    )
+
+    return {'step': 'quote_followup_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def quote_followup_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt == "1":
+        send(
+            "Sarudza sevhisi yaunoda:\n"
+            "1. Water survey\n"
+            "2. Borehole drilling\n"
+            "3. Pump installation\n"
+            "4. Commercial hole drilling\n"
+            "5. Borehole Deepening",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'select_service_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        return {'step': 'main_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Ndapota sarudza 1 kana 2.", user_data['sender'], phone_id)
+        return {'step': 'quote_followup_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def handle_booking_full_name_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     full_name = prompt.strip()
