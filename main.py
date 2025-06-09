@@ -2506,111 +2506,111 @@ def get_pricing_for_location_quotes_shona(location, service_type, pump_option_se
 location_pricing_shona = {
     "beitbridge": {
         "Ongororo Yemvura": 150,
-        "Kuchera Bhodhoro": {
+        "Kuchera chibhorani": {
             "kirasi 6": 1000,
             "kirasi 9": 1125,
             "kirasi 10": 1250,
             "udzamu hwunosanganisirwa_m": 40,
             "mari yekuwedzera pamita": 27
         },
-        "Kuchera Bhodhoro ReBhizinesi": 80,
-        "Kuwedzera Udzamu hweBhodhoro": 30
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
     },
     "nyika": {
         "Ongororo Yemvura": 150,
-        "Kuchera Bhodhoro": {
+        "Kuchera chibhorani": {
             "kirasi 6": 1050,
             "kirasi 9": 1181.25,
             "kirasi 10": 1312.5,
             "udzamu hwunosanganisirwa_m": 40,
             "mari yekuwedzera pamita": 27
         },
-        "Kuchera Bhodhoro ReBhizinesi": 80,
-        "Kuwedzera Udzamu hweBhodhoro": 30
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
     },
     "bindura": {
         "Ongororo Yemvura": 150,
-        "Kuchera Bhodhoro": {
+        "Kuchera chibhorani": {
             "kirasi 6": 1000,
             "kirasi 9": 1125,
             "kirasi 10": 1250,
             "udzamu hwunosanganisirwa_m": 40,
             "mari yekuwedzera pamita": 27
         },
-        "Kuchera Bhodhoro ReBhizinesi": 80,
-        "Kuwedzera Udzamu hweBhodhoro": 30
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
     },
     "binga": {
         "Ongororo Yemvura": 150,
-        "Kuchera Bhodhoro": {
+        "Kuchera chibhorani": {
             "kirasi 6": 1300,
             "kirasi 9": 1462.5,
             "kirasi 10": 1625,
             "udzamu hwunosanganisirwa_m": 40,
             "mari yekuwedzera pamita": 27
         },
-        "Kuchera Bhodhoro ReBhizinesi": 80,
-        "Kuwedzera Udzamu hweBhodhoro": 30
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
     },
     "bubi": {
         "Ongororo Yemvura": 150,
-        "Kuchera Bhodhoro": {
+        "Kuchera chibhorani": {
             "kirasi 6": 1200,
             "kirasi 9": 1350,
             "kirasi 10": 1500,
             "udzamu hwunosanganisirwa_m": 40,
             "mari yekuwedzera pamita": 27
         },
-        "Kuchera Bhodhoro ReBhizinesi": 80,
-        "Kuwedzera Udzamu hweBhodhoro": 30
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
     },
     "murambinda": {
         "Ongororo Yemvura": 150,
-        "Kuchera Bhodhoro": {
+        "Kuchera chibhorani": {
             "kirasi 6": 1050,
             "kirasi 9": 1181.25,
             "kirasi 10": 1312.5,
             "udzamu hwunosanganisirwa_m": 40,
             "mari yekuwedzera pamita": 27
         },
-        "Kuchera Bhodhoro ReBhizinesi": 80,
-        "Kuwedzera Udzamu hweBhodhoro": 30
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
     },
     "buhera": {
         "Ongororo Yemvura": 150,
-        "Kuchera Bhodhoro": {
+        "Kuchera chibhorani": {
             "kirasi 6": 1150,
             "kirasi 9": 1293.75,
             "kirasi 10": 1437.5,
             "udzamu hwunosanganisirwa_m": 40,
             "mari yekuwedzera pamita": 27
         },
-        "Kuchera Bhodhoro ReBhizinesi": 80,
-        "Kuwedzera Udzamu hweBhodhoro": 30
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
     },
     "harare": {
         "Ongororo Yemvura": 150,
-        "Kuchera Bhodhoro": {
+        "Kuchera chibhorani": {
             "kirasi 6": 1000,
             "kirasi 9": 1125,
             "kirasi 10": 1250,
             "udzamu hwunosanganisirwa_m": 40,
             "mari yekuwedzera pamita": 30
         },
-        "Kuchera Bhodhoro ReBhizinesi": 80,
-        "Kuwedzera Udzamu hweBhodhoro": 30
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
     },
     "bulawayo": {
         "Ongororo Yemvura": 150,
-        "Kuchera Bhodhoro": {
+        "Kuchera chibhorani": {
             "kirasi 6": 1000,
             "kirasi 9": 1125,
             "kirasi 10": 1250,
             "udzamu hwunosanganisirwa_m": 40,
             "mari yekuwedzera pamita": 27
         },
-        "Kuchera Bhodhoro ReBhizinesi": 80,
-        "Kuwedzera Udzamu hweBhodhoro": 30
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
     }
 }
 
@@ -4036,7 +4036,7 @@ def handle_main_menu_shona(prompt, user_data, phone_id):
         })
         send(
             "Ndapota sarudza sarudzo:\n"
-            "1. Tarisa mamiriro ekuchera bhodhoro\n"
+            "1. Tarisa mamiriro ekuchera chibhorani\n"
             "2. Tarisa mamiriro ekuisa pombi\n"
             "3. Taura nemumiriri wevanhu\n"
             "4. Dzokera kumenu huru",
@@ -4051,7 +4051,7 @@ def handle_main_menu_shona(prompt, user_data, phone_id):
         })
         send(
             "Ndapota sarudza chikamu chemibvunzo:\n\n"
-            "1. Mibvunzo Inowanzo bvunzwa nezvekuchera bhodhoro\n"
+            "1. Mibvunzo Inowanzo bvunzwa nezvekuchera chibhorani\n"
             "2. Mibvunzo Inowanzo bvunzwa nezvekuisa pombi\n"
             "3. Bvunza mubvunzo wakasiyana\n"
             "4. Taura nemumiriri wevanhu\n"
@@ -4066,9 +4066,9 @@ def handle_main_menu_shona(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            "Kugamuchirwa kune mamwe masevhisi ekuchera bhodhoro. Ndeipi sevhisi yaunoda?\n"
-            "1. Kudzamisa bhodhoro\n"
-            "2. Kugeza bhodhoro\n"
+            "Kugamuchirwa kune mamwe masevhisi ekuchera chibhorani. Ndeipi sevhisi yaunoda?\n"
+            "1. Kudzamisa chibhorani\n"
+            "2. Kugeza chibhorani\n"
             "3. Kusarudza PVC casing pipe\n"
             "4. Dzokera kumenu huru",
             user_data['sender'], phone_id
@@ -4142,10 +4142,10 @@ def handle_enter_location_for_quote_shona(prompt, user_data, phone_id):
                 f"Nzvimbo yaonekwa: {location_name.title()}\n\n"
                 "Sarudza sevhisi:\n"
                 "1. Ongororo yemvura\n"
-                "2. Kuchera bhodhoro\n"
+                "2. Kuchera chibhorani\n"
                 "3. Kuiswa kwepombi\n"
                 "4. Kuchera maburi ekushandisa\n"
-                "5. Kudzamisa bhodhoro",
+                "5. Kudzamisa chibhorani",
                 user_data['sender'], phone_id
             )
             return {'step': 'select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -4162,10 +4162,10 @@ def handle_enter_location_for_quote_shona(prompt, user_data, phone_id):
         send(
             "Sarudza sevhisi:\n"
             "1. Ongororo yemvura\n"
-            "2. Kuchera bhodhoro\n"
+            "2. Kuchera chibhorani\n"
             "3. Kuiswa kwepombi\n"
             "4. Kuchera maburi ekushandisa\n"
-            "5. Kudzamisa bhodhoro",
+            "5. Kudzamisa chibhorani",
             user_data['sender'], phone_id
         )
         return {'step': 'select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -4180,10 +4180,10 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
 
     service_map = {
         "1": "Ongororo yemvura",
-        "2": "Kuchera bhodhoro",
+        "2": "Kuchera chibhorani",
         "3": "Kuiswa kwepombi",
         "4": "Kuchera maburi ekushandisa",
-        "5": "Kudzamisa bhodhoro"
+        "5": "Kudzamisa chibhorani"
     }
 
     selected_service = service_map.get(prompt.strip())
@@ -4255,10 +4255,10 @@ def handle_quote_followup_shona(prompt, user_data, phone_id):
         send(
             "Sarudza imwe sevhisi:\n"
             "1. Ongororo yemvura\n"
-            "2. Kuchera bhodhoro\n"
+            "2. Kuchera chibhorani\n"
             "3. Kuiswa kwepombi\n"
             "4. Kuchera maburi ekushandisa\n"
-            "5. Kudzamisa bhodhoro",
+            "5. Kudzamisa chibhorani",
             user_data['sender'], phone_id
         )
         return {'step': 'select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -4273,7 +4273,7 @@ def handle_quote_followup_shona(prompt, user_data, phone_id):
             "1. Kukumbira quotation\n"
             "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
             "3. Tarisa Mamiriro ePurojekiti\n"
-            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kubhodhoro\n"
+            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuchibhorani\n"
             "5. Zvimwe Zvatinoita\n"
             "6. Taura neMunhu\n\n"
             "Pindura nenhamba (semuenzaniso, 1)",
@@ -4301,14 +4301,14 @@ def handle_borehole_deepening_casing_shona(prompt, user_data, phone_id):
     choice = prompt.strip()
 
     if choice == "1":
-        send("Bhodhoro rako rinokodzera kudzamiswa.\nNdapota isa nzvimbo yako (dhorobha, wadhi, growth point, kana GPS pin):",
+        send("chibhorani rako rinokodzera kudzamiswa.\nNdapota isa nzvimbo yako (dhorobha, wadhi, growth point, kana GPS pin):",
              user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'deepening_location_shona', 'user': user.to_dict()})
         return {'step': 'deepening_location_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif choice == "2":
         send(
-            "Tine hurombo, mabhodhoro akavharirwa kubva kumusoro kusvika pasi nemapombi madiki pane 180mm haakwanisi kudzamiswa.\n"
+            "Tine hurombo, machibhorani akavharirwa kubva kumusoro kusvika pasi nemapombi madiki pane 180mm haakwanisi kudzamiswa.\n"
             "Sarudzo:\n"
             "1. Dzokera kune mamwe masevhisi\n"
             "2. Taura nerutsigiro",
@@ -4376,7 +4376,7 @@ def handle_borehole_flushing_problem_shona(prompt, user_data, phone_id):
 
     if choice == "1":
         send(
-            "Unonzwa here dhayamita yebhodhoro?\n"
+            "Unonzwa here dhayamita yechibhorani?\n"
             "1. 180mm kana kupfuura\n"
             "2. Pakati pe140mm ne180mm\n"
             "3. 140mm kana kushoma",
@@ -4412,19 +4412,19 @@ def handle_flushing_collapsed_diameter_shona(prompt, user_data, phone_id):
     user.quote_data['diameter'] = diameter
 
     if diameter == "180mm_or_larger":
-        send("Tinogona kugeza bhodhoro rako tichishandisa matanda ane drilling bit (zvinoshanda zviri nani).\nNdapota isa nzvimbo yako kuti titarise mutengo:",
+        send("Tinogona kugeza chibhorani rako tichishandisa matanda ane drilling bit (zvinoshanda zviri nani).\nNdapota isa nzvimbo yako kuti titarise mutengo:",
              user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'flushing_location_shona', 'user': user.to_dict()})
         return {'step': 'flushing_location_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif diameter == "between_140_and_180mm":
-        send("Tinogona kugeza bhodhoro nematanho, pasina drilling bit.\nNdapota isa nzvimbo yako kuti titarise mutengo:",
+        send("Tinogona kugeza chibhorani nematanho, pasina drilling bit.\nNdapota isa nzvimbo yako kuti titarise mutengo:",
              user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'flushing_location_shona', 'user': user.to_dict()})
         return {'step': 'flushing_location_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif diameter == "140mm_or_smaller":
-        send("Tinogona kugeza bhodhoro tichishandisa matanda chete (pasina drilling bit).\nNdapota isa nzvimbo yako kuti titarise mutengo:",
+        send("Tinogona kugeza chibhorani tichishandisa matanda chete (pasina drilling bit).\nNdapota isa nzvimbo yako kuti titarise mutengo:",
              user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'flushing_location_shona', 'user': user.to_dict()})
         return {'step': 'flushing_location_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -4644,8 +4644,8 @@ def handle_other_services_menu_shona(prompt, user_data, phone_id):
 
     if choice == "1":
         send(
-            "Kuti titarise kana bhodhoro rako richikwanisa kudzamiswa:\n"
-            "Bhodhoro racho rakavharirwa:\n"
+            "Kuti titarise kana chibhorani rako richikwanisa kudzamiswa:\n"
+            "chibhorani racho rakavharirwa:\n"
             "1. Pamusoro chete, ne180mm kana kupfuura dhayamita pipe\n"
             "2. Kubva kumusoro kusvika pasi ne140mm kana kushoma dhayamita pipe",
             user_data['sender'], phone_id
@@ -4655,9 +4655,9 @@ def handle_other_services_menu_shona(prompt, user_data, phone_id):
 
     elif choice == "2":
         send(
-            "Dambudziko ripi rine bhodhoro rako?\n"
-            "1. Bhodhoro Rakapunzika\n"
-            "2. Bhodhoro Rine Mvura Yakasviba",
+            "Dambudziko ripi rine chibhorani rako?\n"
+            "1. chibhorani Rakapunzika\n"
+            "2. chibhorani Rine Mvura Yakasviba",
             user_data['sender'], phone_id
         )
         update_user_state(user_data['sender'], {'step': 'borehole_flushing_problem_shona', 'user': user.to_dict()})
@@ -4665,7 +4665,7 @@ def handle_other_services_menu_shona(prompt, user_data, phone_id):
 
     elif choice == "3":
         send(
-            "Tinopa kuchera mabhodhoro achitevedza PVC casing pipe makirasi:\n"
+            "Tinopa kuchera machibhorani achitevedza PVC casing pipe makirasi:\n"
             "1. Class 6 - Yakajairwa\n"
             "2. Class 9 - Yakasimba\n"
             "3. Class 10 - Yakasimba zvikuru\n"
@@ -4690,7 +4690,7 @@ def send_main_menu_shona(phone_number, phone_id):
         "1. Kukumbira quotation\n"
         "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
         "3. Tarisa Mamiriro ePurojekiti\n"
-        "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kubhodhoro\n"
+        "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuchibhorani\n"
         "5. Zvimwe Zvatinoita\n"
         "6. Taura neMunhu\n\n"
         "Pindura nenhamba (semuenzaniso, 1)"
