@@ -3000,6 +3000,60 @@ def faq_borehole_followup_shona(prompt, user_data, phone_id):
         return {'step': 'faq_borehole_followup_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
+def faq_pump_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    responses = {
+        "1": "Mitengo inobva pane rudzi rwepombi yaunoda kuisa. Ndokumbira tizivise mhando yepombi yako kuti tikupa mutengo wakakodzera.",
+        "2": "Kuisa pombi kunowanzotora maawa 2-4, zvinoenderana nemamiriro enzvimbo yako.",
+        "3": "Tinopa mhando dzakasiyana dzepombi, kusanganisira pombi dzemagetsi nevasina magetsi.",
+        "4": "Kana uine mimwe mibvunzo kana kuda rubatsiro rwemanyorero, ndapota taura nesu zvakananga.",
+        "5": "Kudzokera kuMenu reMibvunzo...",
+    }
+
+    if prompt in responses:
+        send(responses[prompt], user_data['sender'], phone_id)
+        if prompt == "5":
+            return {'step': 'faq_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+        else:
+            send(
+                "Unoda kuita zvinotevera:\n"
+                "1. Kubvunza mimwe mibvunzo pamusoro pePump Installation\n"
+                "2. Kudzokera kuMenu Mukuru",
+                user_data['sender'], phone_id
+            )
+            return {'step': 'faq_pump_followup_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Ndokumbira usarudze sarudzo yakakodzera (1-5).", user_data['sender'], phone_id)
+        return {'step': 'faq_pump_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def faq_pump_followup_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt == "1":
+        # Ask another pump-related FAQ
+        send(
+            "Ndapota sarudza mubvunzo kubva kuPump Installation FAQs:\n"
+            "1. Mutengo wekuisa pombi\n"
+            "2. Nguva inotora kuisa pombi\n"
+            "3. Mhando dzepombi dzatinopa\n"
+            "4. Rubatsiro rwemanyorero\n"
+            "5. Kudzokera kuMenu reMibvunzo",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_pump_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        # Return to main menu
+        send("Kudzokera kuMenu Mukuru...", user_data['sender'], phone_id)
+        return {'step': 'main_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Ndokumbira usarudze sarudzo yakakodzera (1 kana 2).", user_data['sender'], phone_id)
+        return {'step': 'faq_pump_followup_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def handle_drilling_status_updates_opt_in_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     response = prompt.strip().lower()
