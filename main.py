@@ -2891,6 +2891,30 @@ def handle_pump_status_info_request_shona(prompt, user_data, phone_id):
         'sender': user_data['sender']
     }
 
+
+def handle_quote_response_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    user.quote_data['details'] = prompt.strip()
+
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup_shona',
+        'user': user.to_dict()
+    })
+
+    send(
+        "Ndatenda! Tichakupai mutengo wakatarwa tichitarisa nzvimbo yako uye mashoko awakapa. ",
+        user_data['sender'], phone_id
+    )
+    send(
+        "Ungade:\n"
+        "1. Kukumbira imwe quote\n"
+        "2. Kudzokera kuMain Menu",
+        user_data['sender'], phone_id
+    )
+
+    return {'step': 'quote_followup_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def handle_pump_status_updates_opt_in_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     response = prompt.strip().lower()
