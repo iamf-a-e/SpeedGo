@@ -2448,6 +2448,9 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
     location_key = location.strip().lower()
     loc_data_shona = location_pricing_shona.get(location_key)
 
+    if not loc_data_shona:
+        return "Ndine urombo, hatina mitengo yenzvimbo iyi."
+
     SERVICE_KEY_MAP_SHONA = {
         "kuongorora mvura": "Ongororo Yemvura",
         "kudzika borehole": "Kuchera chibhorani",
@@ -2456,20 +2459,16 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
         "kuiswa kwepombi": "Kuiswa kwepombi"
     }
 
-    # Normalize user input key to lowercase for mapping
+    # Normalize user input
     service_key_raw = service_key_input.strip().lower()
     service_key_shona = SERVICE_KEY_MAP_SHONA.get(service_key_raw)
 
     if not service_key_shona:
         return "Ndine urombo, sevhisi yamakasarudza haina kuzivikanwa."
 
-    if not loc_data_shona:
-        return "Ndine urombo, hatina mitengo yenzvimbo iyi."
-
-    # Handle pump installation option specially
     if service_key_shona == "Kuiswa kwepombi":
         if pump_option_selected is None:
-            message_lines = ["💧 Sarudzo dzekuiswa kwepombi:\n"]
+            message_lines = [f"💧 Sarudzo dzekuiswa kwepombi:\n"]
             for key, option in pump_installation_options.items():
                 desc = option.get('description', 'Hapana tsananguro')
                 message_lines.append(f"{key}. {desc}")
@@ -2488,12 +2487,10 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
     if not price:
         return f"Ndine urombo, hatina mutengo we {service_key_shona} mu {location.title()}."
 
-    # If price is a dict, show detailed pricing (kirasi, depth, extras)
     if isinstance(price, dict):
         included_depth = price.get("udzamu hwunosanganisirwa_m", "N/A")
         extra_rate = price.get("mari yekuwedzera pamita", "N/A")
 
-        # Extract classes (keys starting with "kirasi")
         classes = {k: v for k, v in price.items() if k.startswith("kirasi")}
         message_lines = [f"💧 Mitengo ye {service_key_shona} mu {location.title()}:"]
         for cls, amt in classes.items():
@@ -2503,7 +2500,6 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
         message_lines.append("Unoda here:\n1. Kukumbira mitengo yeimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako")
         return "\n".join(message_lines)
 
-    # Otherwise, just return the price with proper unit
     unit = "pamita" if service_key_shona in ["Kuchera chibhorani ReBhizinesi", "Kuwedzera Udzamu hwechibhorani"] else "mutengo wakafanira"
     return (f"{service_key_shona} mu {location.title()}: ${price} {unit}\n\n"
             "Unoda here:\n1. Kukumbira mitengo yeimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako")
