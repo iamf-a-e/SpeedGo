@@ -2289,7 +2289,7 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
         send("\n".join(message_lines), user_data['sender'], phone_id)
         return {'step': 'select_pump_option_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-    pricing_message = get_pricing_for_location_quotes(location, selected_service)
+    pricing_message = get_pricing_for_location_quotes_shona(location, selected_service)
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_shona',
