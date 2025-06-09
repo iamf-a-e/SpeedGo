@@ -2445,6 +2445,7 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
 
 
 def get_pricing_for_location_quotes_shona(location, service_key_input, pump_option_selected=None):
+    # Normalize location key (strip + lowercase)
     location_key = location.strip().lower()
     loc_data_shona = location_pricing_shona.get(location_key)
 
@@ -2455,7 +2456,7 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
     SERVICE_KEY_MAP_SHONA = {
         "1": "Ongororo Yemvura",
         "kuongorora mvura": "Ongororo Yemvura",
-        "2": "Kuchera chibhorani",
+        "2": "Kuchera chibhorani",  # MUST MATCH DICTIONARY KEY
         "kudzika borehole": "Kuchera chibhorani",
         "3": "Kuchera chibhorani ReBhizinesi",
         "kuchera maburi ekutengesa": "Kuchera chibhorani ReBhizinesi",
@@ -2465,12 +2466,19 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
         "kuiswa kwepombi": "Kuiswa kwepombi"
     }
 
-    service_key_raw = service_key_input.strip().lower()
+    # Normalize service key input
+    service_key_raw = str(service_key_input).strip().lower()
     service_key_shona = SERVICE_KEY_MAP_SHONA.get(service_key_raw)
 
     if not service_key_shona:
         return "Ndine urombo, sevhisi yamakasarudza haina kuzivikanwa."
 
+    # Debug: Print keys to verify matching
+    print(f"[DEBUG] Location Key: '{location_key}'")  # Should be 'harare'
+    print(f"[DEBUG] Service Key Shona: '{service_key_shona}'")  # Should be 'Kuchera chibhorani'
+    print(f"[DEBUG] Available Services: {list(loc_data_shona.keys())}")
+
+    # Handle pump installation separately
     if service_key_shona == "Kuiswa kwepombi":
         if pump_option_selected is None:
             message_lines = ["💧 Sarudzo dzekuiswa kwepombi:\n"]
@@ -2494,7 +2502,13 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
             )
             return message
 
-    price = loc_data_shona.get(service_key_shona)
+    # FALLBACK: Case-insensitive search if exact key not found
+    price = None
+    for key in loc_data_shona.keys():
+        if key.lower() == service_key_shona.lower():
+            price = loc_data_shona[key]
+            break
+
     if not price:
         return f"Ndine urombo, hatina mutengo we {service_key_shona} mu {location.title()}."
 
@@ -2516,9 +2530,6 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
         f"{service_key_shona} mu {location.title()}: ${price} {unit}\n\n"
         "Unoda here:\n1. Kukumbira mitengo yeimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako"
     )
-        print(f"Looking up service: '{service_key_shona}' in location: '{location_key}'")
-        print(f"Available services: {list(loc_data_shona.keys())}")
-
 
 location_pricing_shona = {
     "beitbridge": {
