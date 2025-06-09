@@ -2454,16 +2454,27 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
 
     # Map textual service names and numeric options to internal keys
     SERVICE_KEY_MAP_SHONA = {
+        # Numeric options
         "1": "Ongororo Yemvura",
-        "kuongorora mvura": "Ongororo Yemvura",
-        "2": "Kuchera chibhorani",  # MUST MATCH DICTIONARY KEY
-        "kudzika borehole": "Kuchera chibhorani",
+        "2": "Kuchera chibhorani",
         "3": "Kuchera chibhorani ReBhizinesi",
-        "kuchera maburi ekutengesa": "Kuchera chibhorani ReBhizinesi",
         "4": "Kuwedzera Udzamu hwechibhorani",
-        "kuwedzera kudzika borehole": "Kuwedzera Udzamu hwechibhorani",
         "5": "Kuiswa kwepombi",
-        "kuiswa kwepombi": "Kuiswa kwepombi"
+        
+        # Textual options (Shona)
+        "kuongorora mvura": "Ongororo Yemvura",
+        "kudzika borehole": "Kuchera chibhorani",
+        "kuchera chibhorani": "Kuchera chibhorani",  # Alternative spelling
+        "kuchera maburi ekushandisa": "Kuchera chibhorani ReBhizinesi",  # Fixed
+        "kuchera maburi ekutengesa": "Kuchera chibhorani ReBhizinesi",
+        "kuwedzera kudzika borehole": "Kuwedzera Udzamu hwechibhorani",
+        "kuiswa kwepombi": "Kuiswa kwepombi",
+        
+        # Common typos/user variations (optional)
+        "borehole": "Kuchera chibhorani",
+        "pombi": "Kuiswa kwepombi",
+        "mvura": "Ongororo Yemvura"
+
     }
 
     # Normalize service key input
