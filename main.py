@@ -3241,6 +3241,17 @@ def handle_pump_status_info_request_shona(prompt, user_data, phone_id):
         'sender': user_data['sender']
     }
 
+def custom_question_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    # You can replace this with your real logic or integration with Gemini, etc.
+    response = (
+        "Tatambira mubvunzo wenyu. Tichakupindurai nekukurumidza.\n"
+        "Kana muchida, dzokai kumenu huru nekutumira 0."
+    )
+    send(response, user_data['sender'], phone_id)
+    return {'step': 'main_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def handle_main_menu_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     if prompt == "1":  # Request a quote
