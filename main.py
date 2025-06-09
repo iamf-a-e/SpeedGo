@@ -2036,6 +2036,36 @@ def human_agent_shona(prompt, user_data, phone_id):
     
     return {'step': 'waiting_for_human_agent_response_shona', 'user': user_data.get('user', {}), 'sender': customer_number}
 
+
+def faq_pump_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    responses = {
+        "1": "Isu tinogadzirisa mapombi emazvibhorani akasiyana-siyana anosanganisira submersible nehand pump. Ndokumbirawo utaure rudzi rwemapombi auri kuda.",
+        "2": "Kuiswa kwepump kunowanzotora maawa 3 kusvika 6, zvichienderana nezvinhu zvakaita sekudzika kwechibhorani uye mhando yepombi.",
+        "3": "Ehe, tinopa warranty yezvigadzirwa uye basa rekuisa. Kazhinji warranty inotora gore rimwe.",
+        "4": "Mutengo unobva parudzi rwepombi, kudzika kwechibhorani, uye kuti nzvimbo iri kupi. Ndokumbira utaure nzvimbo yako kuti tiite quotation yakakodzera.",
+        "5": "Isu tinotengesa nepombi. Kana uine yako, tinogona kungoisa chete. Tinokupawo zano pamusoro pehupenyu hwepombi yawakatenga.",
+        "6": "Kudzoka kuMenyu yeFAQ..."
+    }
+
+    if prompt in responses:
+        send(responses[prompt], user_data['sender'], phone_id)
+        if prompt == "6":
+            return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+        send(
+            "Ungada kuita zvinotevera:\n"
+            "1. Bvunza rimwe mubvunzo reFAQ dzePump Installation\n"
+            "2. Dzokera kuMain Menu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_pump_followup_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Ndapota sarudza chisarudzo chiri pakati pe1 kusvika ku6.", user_data['sender'], phone_id)
+        return {'step': 'faq_pump_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 # Shona version of location handler
 def handle_enter_location_for_quote_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
