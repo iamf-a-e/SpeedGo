@@ -2943,6 +2943,63 @@ def handle_pump_status_updates_opt_in_shona(prompt, user_data, phone_id):
 
     return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
 
+def faq_borehole_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    responses = {
+        "1": "Mutengo unotsamira panzvimbo yako, kudzika kwepombi, uye mamiriro evhu. Ndokumbira utitumire nzvimbo yako pamwe nemashoko ekuti tinokwanisa sei kusvika panzvimbo yacho kuti tikupe mutengo wakakodzera.",
+        "2": "Kazhinji zvinotora maawa 4–6 kana mazuva akati wandei, zvinoenderana nemamiriro epanzvimbo, rudzi rwe dombo, uye kuwanika kwenzvimbo yacho.",
+        "3": "Kudzika kunosiyana nzvimbo nenzvimbo. Kazhinji kudzika kunosvika mamita anenge 40, asi borehole inogona kudzika kubva pamamita 40 kusvika 150 zvichibva pavhu remvura pasi pevhu.",
+        "4": "Mumamwe matunhu, ungangoda rezinesi remvura. Tinogona kukubatsira pakunyorera rezinesi iri kana zvichidiwa.",
+        "5": "Ehe, tinopa zvose pamwe chete kana zvakasiyana, zvinoenderana nezvaunoda.",
+        "6": "Kana mutengi achida kuchera kune imwe nzvimbo zvakare, tinopa dhisikaundi.\n\nCherechedzo: Michina yekuongorora inobatsira kuona mafundo emvura ari pasi pevhu kana nzvimbo dzinounganidza mvura dzepasi pevhu. Asi haibviri kuyera huwandu hwemvura kana kumhanya kwayo. Saka kuchera borehole hakuvimbisi kuti mvura ichawanikwa 100%, sezvo mafundo aya angave akaoma, akanyorova, kana akanyorova zvishoma.",
+        "7": "Tinoshandisa michina yepamusoro-soro yekuchera borehole inosanganisira rotary ne percussion drilling rigs, zvishandiso zveGPS, uye michina yekuongorora zvicherwa.",
+        "8": "Kudzokera kuMenu reMibvunzo yeBorehole..."
+    }
+
+    if prompt in responses:
+        send(responses[prompt], user_data['sender'], phone_id)
+        if prompt == "8":
+            return {'step': 'faq_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+        send(
+            "Ungada kuita zvipi:\n"
+            "1. Kubvunza mimwe mibvunzo pamusoro peBorehole Drilling\n"
+            "2. Kudzokera kuMenu Mukuru",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_borehole_followup_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Ndokumbira usarudze sarudzo yakakodzera (1–8).", user_data['sender'], phone_id)
+        return {'step': 'faq_borehole_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def faq_borehole_followup_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    responses = {
+        "1": "Ndapota sarudza mubvunzo waunoda kubvunza pamusoro peBorehole Drilling:\n"
+             "1. Mutengo\n"
+             "2. Nguva inotora\n"
+             "3. Kudzika kweborehole\n"
+             "4. Rezinesi remvura\n"
+             "5. Borehole drilling uye pump installation pamwe chete\n"
+             "6. Dhisikaundi pakuchera pane imwe nzvimbo\n"
+             "7. Michina inoshandiswa\n"
+             "8. Kudzokera kuMenu reMibvunzo",
+        "2": "Kudzokera kuMenu Mukuru...",
+    }
+
+    if prompt in responses:
+        send(responses[prompt], user_data['sender'], phone_id)
+        if prompt == "2":
+            return {'step': 'faq_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+        else:
+            return {'step': 'faq_borehole_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Ndokumbira usarudze sarudzo yakakodzera (1-2).", user_data['sender'], phone_id)
+        return {'step': 'faq_borehole_followup_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def handle_drilling_status_updates_opt_in_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     response = prompt.strip().lower()
