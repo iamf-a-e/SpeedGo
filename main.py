@@ -6882,6 +6882,45 @@ def handle_booking_details_ndebele(prompt, user_data, phone_id):
         send("Khetha inketho efanele (1-3).", user_data['sender'], phone_id)
         return {'step': 'booking_details_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+def handle_pvc_casing_selection_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    casing_options = {
+        "1": "Class 6",
+        "2": "Class 9",
+        "3": "Class 10",
+        "4": "Double Casing"
+    }
+
+    selected_casing = casing_options.get(prompt)
+    if selected_casing:
+        user.quote_data['casing_type'] = selected_casing
+        update_user_state(user_data['sender'], {
+            'step': 'quote_summary_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            f"Ukwakha kwePVC okukhethiwe: {selected_casing}.\n\n"
+            f"Ngiyabonga! Sizokunikeza isilinganiso ngokuya ngemininingwane oyinikezileyo.\n\n"
+            f"1. Nikeza inani lakho?\n"
+            f"2. Bhukha i-Site Survey\n"
+            f"3. Bhukha i-Drilling\n"
+            f"4. Khuluma nommeli womuntu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'quote_summary_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send(
+            "Sicela ukhethe inketho evumelekileyo yePVC casing:\n"
+            "1. Class 6\n"
+            "2. Class 9\n"
+            "3. Class 10\n"
+            "4. Double Casing",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'pvc_casing_selection_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def handle_collect_booking_info_ndebele(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     if prompt.lower().strip() == "thumela":
