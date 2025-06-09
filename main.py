@@ -4900,6 +4900,47 @@ def get_pricing_for_location_quotes_ndebele(location, service_type, pump_option_
             "Ungathanda uk:\n1. Buzela intengo yenye inkonzo\n2. Buyela kumenyu eyinhloko\n3. Nika intengo")
 
 
+def handle_collect_quote_details_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    responses = prompt.split('\n')
+    if len(responses) >= 4:
+        user.quote_data.update({
+            'location': responses[0].strip(),
+            'depth': responses[1].strip(),
+            'purpose': responses[2].strip(),
+            'water_survey': responses[3].strip(),
+            'casing_type': responses[5].strip() if len(responses) > 5 else "Akuzange kuchazwe"
+        })
+        quote_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        user.quote_data['quote_id'] = quote_id
+        redis.set(f"quote:{quote_id}", json.dumps({
+            'quote_id': quote_id,
+            'user_data': user.to_dict(),
+            'timestamp': datetime.now().isoformat(),
+            'status': 'pending'
+        }))
+        update_user_state(user_data['sender'], {
+            'step': 'quote_response_ndebele',
+            'user': user.to_dict()
+        })
+        estimate = "Class 6: Inanela engu-$2500\nIhlanganisa ukubhoboza, PVC casing engu-140mm"
+        send(
+            f"Siyabonga! Ngokusekelwe kulokho onikezileyo:\n\n"
+            f"{estimate}\n\n"
+            f"Qaphela: I-double casing iyakhokhwa ngokwehlukile uma kudingeka, ngemvume yakho\n\n"
+            f"Ungathanda ukwenza lokhu:\n"
+            f"1. Nikeza inani lakho?\n"
+            f"2. Bhukha i-Site Survey\n"
+            f"3. Bhukha i-Borehole Drilling\n"
+            f"4. Khuluma loMmeli womuntu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'quote_response_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Sicela unikeze lonke ulwazi oludingakalayo (okungenani imigqa emi-4).", user_data['sender'], phone_id)
+        return {'step': 'collect_quote_details_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def handle_user_message_ndebele(prompt, user_data, phone_id):
     if user_data.get('step') == 'human_agent_followup_ndebele':
         if prompt.strip() == '1':
