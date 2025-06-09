@@ -2526,6 +2526,38 @@ def handle_quote_followup_shona(prompt, user_data, phone_id):
         send("Sarudzo isiriyo. Pindura ne1 kuti ubvunze nezveimwe sevhisi kana 2 kudzokera kumain menu kana 3 kana uchida kupa mutengo wako.", user_data['sender'], phone_id)
         return {'step': 'quote_followup_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
+def faq_borehole_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    responses = {
+        "1": "Mutengo unotsamira panzvimbo yauri, kudzika kwacho, uye ivhu riripo. Ndapota tumira nzvimbo yako uye ruzivo rwekupinda panzvimbo kuti tikugadzirire mutengo wakakodzera.",
+        "2": "Kazhinji zvinotora maawa 4–6 kana mazuva akati wandei zvichienderana nemamiriro enzvimbo, dombo riripo, uye kuti nzvimbo yacho inowanikwa sei.",
+        "3": "Kudzika kunosiyana nenzvimbo. Pakazhinji, chibhorani chinodzika mamita 40, asi chinogona kusvika mamita 150 zvichienderana nemvura iri pasi pevhu.",
+        "4": "Mune dzimwe nzvimbo, mvumo yekuchera inogona kudiwa. Tinogona kukubatsira nekunyorera kana zvichidikanwa.",
+        "5": "Ehe, tinopa ese ari maviri pamwe chete kana zvakaparadzana zvichienderana nezvaunoda.",
+        "6": "Kana mutengi achida kuchera panzvimbo yechipiri, tinopa dhisikaundi.\n\nCherechedza: Muchina wekuongorora unoratidza nzvimbo dzine mapazi emvura pasi pevhu kana panosangana mikoto. Asi hauyeri huwandu kana kuyerera kwemvura. Saka kuchera chibhorani hakune vimbiso yakazara yekuwana mvura, sezvo mapazi anogona kuva akaoma, ane unyoro, kana ane mvura.",
+        "7": "Tinoshandisa michina yepamusoro-soro inosanganisira rotary nepercussion drilling rigs, maturusi eGPS, uye michina yekuongorora geology.",
+        "8": "Kudzoka kuMenyu yeFAQ..."
+    }
+
+    if prompt in responses:
+        send(responses[prompt], user_data['sender'], phone_id)
+        if prompt == "8":
+            return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+        send(
+            "Ungada kuita zvinotevera:\n"
+            "1. Bvunza rimwe mubvunzo reFAQ dzeKuchera Maburi\n"
+            "2. Dzokera kuMain Menu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_borehole_followup_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Ndapota sarudza chisarudzo chiri pakati pe1 kusvika ku8.", user_data['sender'], phone_id)
+        return {'step': 'faq_borehole_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def handle_collect_offer_details_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     user.offer_data['offer'] = prompt
