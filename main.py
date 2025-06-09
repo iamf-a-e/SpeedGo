@@ -2223,11 +2223,11 @@ def handle_enter_location_for_quote_shona(prompt, user_data, phone_id):
             send(
                 f"Nzvimbo yaonekwa: {location_name.title()}\n\n"
                 "Sarudza sevhisi:\n"
-                "1. Ongororo yemvura\n"
-                "2. Kuchera borehole\n"
+                "1. Ongororo Yemvura\n"
+                "2. Kuchera chibhorani\n"
                 "3. Kuiswa kwepombi\n"
-                "4. Kuchera maburi ekutengeserana\n"
-                "5. Borehole Deepening",
+                "4. Kuchera chibhorani cheBhizinesi\n"
+                "5. Kuwedzera kuchera Chibhorani",
                 user_data['sender'], phone_id
             )
             return {'step': 'select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -2243,11 +2243,11 @@ def handle_enter_location_for_quote_shona(prompt, user_data, phone_id):
         })
         send(
             "Sarudza sevhisi:\n"
-            "1. Ongororo yemvura\n"
-            "2. Kuchera borehole\n"
+            "1. Ongororo Yemvura\n"
+            "2. Kuchera chibhorani\n"
             "3. Kuiswa kwepombi\n"
-            "4. Kuchera maburi ekutengeserana\n"
-            "5. Borehole Deepening",
+            "4. Kuchera chibhorani cheBhizinesi\n"
+            "5. Kuwedzera kuchera Chibhorani",
             user_data['sender'], phone_id
         )
         return {'step': 'select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -2266,7 +2266,7 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
         "2": "Kuchera chibhorani",
         "3": "Kuiswa kwepombi",
         "4": "Kuchera chibhorani cheBhizinesi",
-        "5": "Kuwedzera kuchera Chibhorani"
+        "5": "Kuwedzera Udzamu hwechibhorani"
     }
 
     selected_service = service_map.get(prompt.strip())
@@ -2314,11 +2314,11 @@ def handle_quote_followup_shona(prompt, user_data, phone_id):
         })
         send(
             "Sarudza imwe sevhisi:\n"
-            "1. Ongororo yemvura\n"
-            "2. Kuchera borehole\n"
+            "1. Ongororo Yemvura\n"
+            "2. Kuchera chibhorani\n"
             "3. Kuiswa kwepombi\n"
-            "4. Kuchera maburi ekutengeserana\n"
-            "5. Borehole Deepening",
+            "4. Kuchera chibhorani cheBhizinesi\n"
+            "5. Kuwedzera kuchera Chibhorani",
             user_data['sender'], phone_id
         )
         return {'step': 'select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -2542,11 +2542,11 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
         return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     service_map = {
-        "1": "Ongororo yemvura",
-        "2": "Kuchera borehole",
+        "1": "Ongororo Yemvura",
+        "2": "Kuchera chibhorani",
         "3": "Kuiswa kwepombi",
-        "4": "Kuchera maburi ekutengesa",
-        "5": "Kudzika borehole"
+        "4": "Kuchera chibhorani cheBhizinesi",
+        "5": "Kuwedzera Udzamu hwechibhorani"
     }
 
     selected_service = service_map.get(prompt.strip())
@@ -2598,20 +2598,23 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
         "1": "Ongororo Yemvura",
         "2": "Kuchera chibhorani",
         "3": "Kuiswa kwepombi",
-        "4": "Kuchera chibhorani ReBhizinesi",
+        "4": "Kuchera chibhorani cheBhizinesi",
         "5": "Kuwedzera Udzamu hwechibhorani",
         
         # Textual options
         "ongororo yemvura": "Ongororo Yemvura",
         "kuchera chibhorani": "Kuchera chibhorani",
+        "kuchera borehole": "Kuchera chibhorani",
         "kuiswa kwepombi": "Kuiswa kwepombi",
-        "kuchera chibhorani chebhizinesi": "Kuchera chibhorani ReBhizinesi",
-        "kuwedzera kuchera chibhorani": "Kuwedzera Udzamu hwechibhorani"
+        "kuchera chibhorani chebhizinesi": "Kuchera chibhorani cheBhizinesi",
+        "kuchera maburi ekutengesa": "Kuchera chibhorani cheBhizinesi",
+        "kuwedzera kuchera chibhorani": "Kuwedzera Udzamu hwechibhorani",
+        "kudzika borehole": "Kuwedzera Udzamu hwechibhorani"
     }
 
     # Normalize service key input
     service_key_raw = str(service_key_input).strip().lower()
-    service_key_shona = SERVICE_KEY_MAP_SHONA.get(service_key_raw, service_key_input)
+    service_key_shona = SERVICE_KEY_MAP_SHONA.get(service_key_raw, service_key_raw)
 
     # Get price with case-insensitive fallback
     price = None
@@ -2641,15 +2644,14 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
         ]
         return "\n".join(message_lines)
     else:  # For simple pricing
-        unit = "pamita" if service_key_shona in ["Kuchera chibhorani ReBhizinesi", "Kuwedzera Udzamu hwechibhorani"] else "mutengo wakafanira"
+        unit = "pamita" if service_key_shona in ["Kuchera chibhorani cheBhizinesi", "Kuwedzera Udzamu hwechibhorani"] else "mutengo wakafanira"
         return (
             f"{service_key_shona} mu {location.title()}: ${price} {unit}\n\n"
             "Unoda here:\n"
             "1. Kukumbira mitengo yeimwe sevhisi\n"
             "2. Kudzokera kuMain Menu\n"
             "3. Kupa mutengo wako"
-        )
-        
+        )        
 
 def handle_select_pump_option_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
@@ -3733,11 +3735,11 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
         return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     service_map = {
-        "1": "Ongororo yemvura",
-        "2": "Kuchera bhorehole",
+        "1": "Ongororo Yemvura",
+        "2": "Kuchera chibhorani",
         "3": "Kuiswa kwepombi",
-        "4": "Kuchera maburi ekutengesa",
-        "5": "Borehole Deepening"
+        "4": "Kuchera chibhorani cheBhizinesi",
+        "5": "Kuwedzera Udzamu hwechibhorani"
     }
 
     selected_service = service_map.get(prompt.strip())
@@ -4187,11 +4189,11 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
         return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     service_map = {
-        "1": "Ongororo yemvura",
+        "1": "Ongororo Yemvura",
         "2": "Kuchera chibhorani",
         "3": "Kuiswa kwepombi",
-        "4": "Kuchera maburi ekushandisa",
-        "5": "Kudzamisa chibhorani"
+        "4": "Kuchera chibhorani cheBhizinesi",
+        "5": "Kuwedzera Udzamu hwechibhorani"
     }
 
     selected_service = service_map.get(prompt.strip())
