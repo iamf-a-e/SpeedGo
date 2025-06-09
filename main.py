@@ -1922,6 +1922,34 @@ def handle_quote_followup(prompt, user_data, phone_id):
         return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 #-------------------------------------------------------SHONA---------------------------------------------------------------------------
+def handle_select_service_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    services = {
+        "1": "Kutsvaga mvura (Water survey)",
+        "2": "Kuchera borehole (Borehole drilling)",
+        "3": "Kuisa pombi yemvura (Pump installation)",
+        "4": "Kuchera bhora hombe rekutengesa (Commercial hole drilling)",
+        "5": "Kuwedzera kudzika kwe borehole (Borehole Deepening)",
+    }
+
+    if prompt in services:
+        user.quote_data['service'] = services[prompt]
+        update_user_state(user_data['sender'], {
+            'step': 'collect_quote_details_shona',
+            'user': user.to_dict()
+        })
+        send(
+            "Kuti tikwanise kukupa mutengo wekutanga, tapota pindura mibvunzo inotevera:\n\n"
+            "1. Ndekupi kwamuri? (Guta/Kanzuru kana GPS):",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'handle_select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Ndapota sarudza sevhisi yakakodzera (1-5).", user_data['sender'], phone_id)
+        return {'step': 'select_service_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
 # Add this after the English main_menu handler
 def handle_main_menu_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
