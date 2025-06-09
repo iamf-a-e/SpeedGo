@@ -4708,6 +4708,2329 @@ def send_main_menu_shona(phone_number, phone_id):
     send(menu_text, phone_number, phone_id)
 
 
+#-----------------------------------------------------NDEBELE-------------------------------------------------------------------------
+
+location_pricing_ndebele = {
+    "beitbridge": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "nyika": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1050,
+            "class 9": 1181.25,
+            "class 10": 1312.5,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "bindura": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "binga": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1300,
+            "class 9": 1462.5,
+            "class 10": 1625,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "bubi": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1200,
+            "class 9": 1350,
+            "class 10": 1500,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "murambinda": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1050,
+            "class 9": 1181.25,
+            "class 10": 1312.5,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "buhera": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1150,
+            "class 9": 1293.75,
+            "class 10": 1437.5,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "harare": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 30
+        },       
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    },
+    "bulawayo": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
+    }
+}
+
+pump_installation_options_ndebele = {
+    "1": {
+        "description": "I-solar ye-DC (ngqo kusolar AKUKHO inverter) - Nginethangi kanye nestendi yetangi",
+        "price": 1640
+    },
+    "2": {
+        "description": "I-solar ye-DC (ngqo kusolar AKUKHO inverter) - Anginalutho",
+        "price": 2550
+    },
+    "3": {
+        "description": "I-solar ye-DC (ngqo kusolar AKUKHO inverter) - Umsebenzi kuphela",
+        "price": 200
+    },
+    "4": {
+        "description": "I-AC electric (ZESA noma i-solar inverter) - Lungisa futhi unikeze",
+        "price": 1900
+    },
+    "5": {
+        "description": "I-AC electric (ZESA noma i-solar inverter) - Umsebenzi kuphela",
+        "price": 170
+    },
+    "6": {
+        "description": "I-AC electric (ZESA noma i-solar inverter) - Nginethangi kanye nestendi yetangi",
+        "price": 950
+    }
+}
+
+
+def get_pricing_for_location_quotes_ndebele(location, service_type, pump_option_selected=None):
+    location_key = location.strip().lower()
+    service_key = service_type.strip().title()  # Normalize e.g. "Pump Installation"
+
+    # Handle Pump Installation separately
+    if service_key == "Pump Installation":
+        if pump_option_selected is None:            
+            message_lines = [f"💧 Izinketho Zokufaka I-Pump:\n"]
+            for key, option in pump_installation_options.items():
+                desc = option.get('description', 'Akukho ncazelo')
+                message_lines.append(f"{key}. {desc}")
+            return "\n".join(message_lines)
+        else:
+            option = pump_installation_options.get(pump_option_selected)
+            if not option:
+                return "Uxolo, inketho yokufaka i-pump ayilungile."
+            desc = option.get('description', 'Akukho ncazelo')
+            price = option.get('price', 'Akutholakali')
+            message = f"💧 Intengo yenketho {pump_option_selected}:\n{desc}\nIntengo: ${price}\n"
+            message += "\nUngathanda uk:\n1. Buzela intengo yenye inkonzo\n2. Buyela kumenyu eyinhloko\n3. Nika intengo"
+            return message
+
+    # Rest of the function remains the same...
+    loc_data = location_pricing.get(location_key)
+    if not loc_data:
+        return "Uxolo, intengo ayitholakali kule ndawo."
+
+    price = loc_data.get(service_key)
+    if not price:
+        return f"Uxolo, intengo ye-{service_key} ayitholakali e-{location.title()}."
+
+    # Format complex pricing dicts nicely
+    if isinstance(price, dict):
+        included_depth = price.get("included_depth_m", "Akutholakali")
+        extra_rate = price.get("extra_per_m", "Akutholakali")
+
+        classes = {k: v for k, v in price.items() if k.startswith("class")}
+        message_lines = [f"Intengo ye-{service_key} e-{location.title()}:"]
+        for cls, amt in classes.items():
+            message_lines.append(f"- {cls.title()}: ${amt}")
+        message_lines.append(f"- Ifaka ubude kuze kufike ku-{included_depth}m")
+        message_lines.append(f"- Intengo eyengeziwe: ${extra_rate}/m ngemva kobude obufakiwe\n")
+        message_lines.append("Ungathanda uk:\n1. Buzela intengo yenye inkonzo\n2. Buyela kumenyu eyinhloko\n3. Nika intengo")
+        return "\n".join(message_lines)
+
+    # Flat rate or per meter pricing
+    unit = "ngemitha ngayinye" if service_key in ["Commercial Hole Drilling", "Borehole Deepening"] else "intengo esisodwa"
+    return (f"{service_key} e-{location.title()}: ${price} {unit}\n\n"
+            "Ungathanda uk:\n1. Buzela intengo yenye inkonzo\n2. Buyela kumenyu eyinhloko\n3. Nika intengo")
+
+
+def handle_user_message_ndebele(prompt, user_data, phone_id):
+    if user_data.get('step') == 'human_agent_followup_ndebele':
+        if prompt.strip() == '1':
+            # Return to main menu
+            update_user_state(user_data['sender'], {
+                'step': 'main_menu_ndebele',
+                'user': user_data['user']
+            })
+            send_main_menu(user_data['sender'], phone_id)
+        elif prompt.strip() == '2':
+            # Continue waiting
+            send("Sizolokhu sizama ukukuxhumanisa. Siyabonga ngokubekezela kwakho.", user_data['sender'], phone_id)
+            update_user_state(user_data['sender'], {
+                'step': 'waiting_for_human_agent_response_ndebele',
+                'user': user_data['user']
+            })
+        else:
+            send("Sicela ukhethe u-1 noma u-2", user_data['sender'], phone_id)
+    
+    return user_data
+
+
+def human_agent_followup_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt == "1":
+        return handle_select_language("1", user_data, phone_id)
+
+    elif prompt == "2":
+        send("Kulungile. Uxolo ukubuza uma udinga okunye.", user_data['sender'], phone_id)
+        return {'step': 'human_agent_followup_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Sicela uphendule ngo-1 ukuya kumenyu oyinhloko noma u-2 uhlale lapha.", user_data['sender'], phone_id)
+        return {'step': 'human_agent_followup_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_main_menu_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    if prompt == "1":  # Request a quote
+        update_user_state(user_data['sender'], {
+            'step': 'enter_location_for_quote_ndebele',
+            'user': user.to_dict()
+        })
+        send("Sicela ufake indawo yakho (Idolobha/Itawuni noma ama-GPS coordinates) ukuze siqale.", user_data['sender'], phone_id)
+        return {'step': 'enter_location_for_quote_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":  # Search Price Using Location
+        update_user_state(user_data['sender'], {
+            'step': 'enter_location_for_quote_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Ukuze sikutholele intengo, sicela ufake indawo yakho (Idolobha/Itawuni noma ama-GPS coordinates):",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'enter_location_for_quote_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "3":  # Check Project Status
+        update_user_state(user_data['sender'], {
+            'step': 'check_project_status_menu_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Sicela ukhethe okuthile:\n"
+            "1. Bheka isimo sokubha ibhorehole\n"
+            "2. Bheka isimo sokufakwa kwepompi\n"
+            "3. Khuluma nomuntu\n"
+            "4. Ibhodle elikhulu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'check_project_status_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "4":
+        update_user_state(user_data['sender'], {
+            'step': 'faq_menu_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Sicela ukhethe isigaba semibuzo:\n\n"
+            "1. Imibuzo Evame Ukubuzwa Mayelana Nokubha Ibhorehole\n"
+            "2. Imibuzo Evame Ukubuzwa Mayelana Nokufakwa Kwepompi\n"
+            "3. Buza omunye umbuzo\n"
+            "4. Khuluma nomuntu\n"
+            "5. Ibhodle elikhulu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "5":  # Other Services
+        update_user_state(user_data['sender'], {
+            'step': 'other_services_menu_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Wamukelekile kwezinye izinsiza zobhorehole. Yisiphi isevisi oyidingayo?\n"
+            "1. Ukujulisa Ibhorehole\n"
+            "2. Ukuhlanza Ibhorehole\n"
+            "3. Ukukhetha I-PVC Casing Pipe\n"
+            "4. Buyela Ebhodleni Elikhulu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'other_services_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+        
+    elif prompt == "6":  # Human agent
+        update_user_state(user_data['sender'], {
+            'step': 'human_agent_ndebele',
+            'user': user.to_dict(),
+            'original_prompt': prompt
+        })
+        return human_agent_ndebele(prompt, {
+            'step': 'human_agent_ndebele',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }, phone_id)
+    
+    else:
+        send("Sicela ukhethe okulungile (1-6).", user_data['sender'], phone_id)
+        return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def human_agent_ndebele(prompt, user_data, phone_id):
+    customer_number = user_data['sender']
+    
+    # 1. Notify customer immediately
+    send("Ukuxhumanisa nomuntu...", customer_number, phone_id)
+    
+    # 2. Notify agent in background
+    agent_number = "+263719835124"
+    agent_message = f"Isicelo esisha somthengi esivela ku-{customer_number}\nUmlayezo: {prompt}"
+    threading.Thread(target=send, args=(agent_message, agent_number, phone_id)).start()
+    
+    # 3. After 10 seconds, send fallback options
+    def send_fallback():
+        user_data = get_user_state(customer_number)
+        if user_data and user_data.get('step') in ['human_agent_ndebele', 'waiting_for_human_agent_response_ndebele']:
+            send("Uma ungakaxhunyaniswa, ungasifonela ku-+263719835124", customer_number, phone_id)
+            send("Ungathanda:\n1. Buyela ebhodleni elikhulu\n2. Lindela okwengeziwe", customer_number, phone_id)
+            update_user_state(customer_number, {
+                'step': 'human_agent_followup_ndebele',
+                'user': user_data.get('user', {}),
+                'sender': customer_number
+            })
+    
+    threading.Timer(10, send_fallback).start()
+    
+    # 4. Update state to waiting
+    update_user_state(customer_number, {
+        'step': 'waiting_for_human_agent_response_ndebele',
+        'user': user_data.get('user', {}),
+        'sender': customer_number,
+        'waiting_since': time.time()
+    })
+    
+    return {'step': 'waiting_for_human_agent_response_ndebele', 'user': user_data.get('user', {}), 'sender': customer_number}
+
+def handle_enter_location_for_quote_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    
+    if 'location' in user_data and 'latitude' in user_data['location'] and 'longitude' in user_data['location']:
+        lat = user_data['location']['latitude']
+        lng = user_data['location']['longitude']
+        gps_coords = f"{lat},{lng}"
+        location_name = reverse_geocode_location(gps_coords)
+        
+        if location_name:
+            user.quote_data['location'] = location_name
+            user.quote_data['gps_coords'] = gps_coords
+            update_user_state(user_data['sender'], {
+                'step': 'select_service_quote_ndebele',
+                'user': user.to_dict()
+            })
+            send(
+                f"Indawo itholakele: {location_name.title()}\n\n"
+                "Manje khetha isevisi:\n"
+                "1. Ukuhlola amanzi\n"
+                "2. Ukubha ibhorehole\n"
+                "3. Ukufaka ipompi\n"
+                "4. Ukubha imbobo yezohwebo\n"
+                "5. Ukujulisa ibhorehole",
+                user_data['sender'], phone_id
+            )
+            return {'step': 'select_service_quote_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+        else:
+            send("Asikwazanga ukukhomba indawo yakho. Sicela uthayiphe igama ledolobha/letawuni ngesandla.", user_data['sender'], phone_id)
+            return {'step': 'enter_location_for_quote_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        location_name = prompt.strip()
+        user.quote_data['location'] = location_name.lower()
+        update_user_state(user_data['sender'], {
+            'step': 'select_service_quote_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Manje khetha isevisi:\n"
+            "1. Ukuhlola amanzi\n"
+            "2. Ukubha ibhorehole\n"
+            "3. Ukufaka ipompi\n"
+            "4. Ukubha imbobo yezohwebo\n"
+            "5. Ukujulisa ibhorehole",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'select_service_quote_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_select_service_quote_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    
+    if not location:
+        send("Sicela ufake indawo yakho kuqala ngaphambi kokukhetha isevisi.", user_data['sender'], phone_id)
+        return {'step': 'enter_location_for_quote_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    service_map = {
+        "1": "Ukuhlola amanzi",
+        "2": "Ukubha ibhorehole",
+        "3": "Ukufaka ipompi",
+        "4": "Ukubha imbobo yezohwebo",
+        "5": "Ukujulisa ibhorehole"
+    }
+
+    selected_service = service_map.get(prompt.strip())
+
+    if not selected_service:
+        send("Okungalungile. Sicela uphendule ngo-1, 2, 3, 4 noma 5 ukukhetha isevisi.", user_data['sender'], phone_id)
+        return {'step': 'select_service_quote_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    user.quote_data['service'] = selected_service
+
+    if selected_service == "Ukufaka ipompi":
+        update_user_state(user_data['sender'], {
+            'step': 'select_pump_option_ndebele',
+            'user': user.to_dict()
+        })
+        message_lines = [f"💧 Izinketho Zokufaka Ipompi:\n"]
+        for key, option in pump_installation_options.items():
+            desc = option.get('description', 'No description')
+            message_lines.append(f"{key}. {desc}")
+        send("\n".join(message_lines), user_data['sender'], phone_id)
+        return {'step': 'select_pump_option_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    pricing_message = get_pricing_for_location_quotes(location, selected_service)
+    
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
+
+    return {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+def handle_quote_followup_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt.strip() == "1":
+        update_user_state(user_data['sender'], {
+            'step': 'select_service_quote_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Khetha enye isevisi:\n"
+            "1. Ukuhlola amanzi\n"
+            "2. Ukubha ibhorehole\n"
+            "3. Ukufaka ipompi\n"
+            "4. Ukubha imbobo yezohwebo\n"
+            "5. Ukujulisa ibhorehole",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'select_service_quote_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt.strip() == "2":
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Singakusiza njani namuhla?\n\n"
+            "1. Cela isiphakamiso\n"
+            "2. Phanda Intengo Ngokusebenzisa Indawo\n"
+            "3. Bheka Isimo Sephrojekthi\n"
+            "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
+            "5. Eminye Imisebenzi\n"
+            "6. Khuluma Nomuntu\n\n"
+            "Sicela uphendule ngenombolo (umzekeliso: 1)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt.strip() == "3":
+        update_user_state(user_data['sender'], {
+            'step': 'collect_offer_details_ndebele',
+            'user': user.to_dict()    
+        })
+        send(
+            "Kulungile! Ungabelana ngentengo yakho engezansi.\n\n",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'collect_offer_details_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Okungalungile. Phendula ngo-1 ukubuza ngenye isevisi noma u-2 ukubuyela ebhodleni elikhulu noma u-3 uma ufuna ukwenza isiphakamiso sentengo.", user_data['sender'], phone_id)
+        return {'step': 'quote_followup_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    
+    if prompt.strip() not in pump_installation_options:
+        send("Okungalungile. Sicela ukhethe inketho elungile yokufaka ipompi (1-6).", user_data['sender'], phone_id)
+        return {'step': 'select_pump_option_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    user.quote_data['pump_option'] = prompt.strip()
+    
+    pricing_message = get_pricing_for_location_quotes(location, "Ukufaka ipompi", prompt.strip())
+    
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
+    
+    return {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+def handle_check_project_status_menu_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt == "1":
+        update_user_state(user_data['sender'], {
+            'step': 'drilling_status_info_request_ndebele',
+            'user': user.to_dict()
+        })
+    
+        send(
+            "Ukubheka isimo sakho sokubha ibhorehole, sicela unikeze okulandelayo:\n\n"
+            "- Igama eliphelele elisetshenzisiwe ngesikhathi sokubhuka\n"
+            "- Inombolo Yereferensi Yephrojekthi noma Inombolo Yocingo\n"
+            "- Indawo Yokubha (okungathandeki)",
+            user_data['sender'], phone_id
+        )
+        return {
+            'step': 'drilling_status_info_request_ndebele',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    elif prompt == "2":
+        update_user_state(user_data['sender'], {
+            'step': 'pump_status_info_request_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Ukubheka isimo sakho sokufakwa kwepompi, sicela unikeze okulandelayo:\n\n"
+            "- Igama eliphelele elisetshenzisiwe ngesikhathi sokubhuka\n"
+            "- Inombolo Yereferensi Yephrojekthi noma Inombolo Yocingo\n"
+            "- Indawo Yokufakwa (okungathandeki)",
+            user_data['sender'], phone_id
+        )
+        return {
+            'step': 'pump_status_info_request_ndebele',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    elif prompt == "3":
+        update_user_state(user_data['sender'], {
+            'step': 'human_agent_ndebele',
+            'user': user.to_dict()
+        })
+        send("Sicela ulinde ngenkathi ngikuxhumanisa nomunye wethimba lethu lokusekela.", user_data['sender'], phone_id)
+        return {'step': 'human_agent_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "4":
+        return handle_main_menu_ndebele("", user_data, phone_id)
+
+    else:
+        send("Okungalungile. Sicela ukhethe u-1, 2, 3, noma 4.", user_data['sender'], phone_id)
+        return {'step': 'check_project_status_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_drilling_status_info_request_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
+
+    if len(lines) < 2:
+        send(
+            "Sicela unikeze okungenani igama lakho eliphelele kanye nenombolo yereferensi noma inombolo yocingo, ngomugqa omusha ngamunye.\n\n"
+            "Isibonelo:\n"
+            "John Doe\nREF789123 noma 0779876543\nOkungathandeki: Bulawayo",
+            user_data['sender'], phone_id
+        )
+        return {
+            'step': 'drilling_status_info_request_ndebele',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    full_name = lines[0]
+    reference = lines[1]
+    location = lines[2] if len(lines) >= 3 else "Akunikezwe"
+
+    user.project_status_request = {
+        'type': 'drilling',
+        'full_name': full_name,
+        'reference': reference,
+        'location': location
+    }
+
+    send("Ngiyabonga. Sicela ulinde ngenkathi sithola isimo sephrojekthi yakho...", user_data['sender'], phone_id)
+
+    send(
+        f"Nansi isimo sephrojekthi yakho yokubha ibhorehole:\n\n"
+        f"Igama Lephrojekthi: Ibhorehole - {full_name}\n"
+        f"Isigaba Samanje: Ukubha Kuyaqhubeka\n"
+        f"Okulandelayo: Ukufaka i-casing\n"
+        f"Usuku Lokugcwaliseka Olulindelekile: 10/06/2025\n\n"
+        "Ungathatha izibuyekezo ze-WhatsApp lapho isimo sishintsha?\nIzinketho: Yebo / Cha",
+        user_data['sender'], phone_id
+    )
+
+    update_user_state(user_data['sender'], {
+        'step': 'drilling_status_updates_opt_in_ndebele',
+        'user': user.to_dict()
+    })
+
+    return {
+        'step': 'drilling_status_updates_opt_in_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+def handle_drilling_status_updates_opt_in_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    response = prompt.strip().lower()
+
+    if response in ['yebo', 'ye', 'y']:
+        send(
+            "Kuhle! Manje uzothola izibuyekezo ze-WhatsApp noma nini lapho isimo sokubha ibhorehole sakho sishintsha.\n\n"
+            "Siyabonga ngokusebenzisa insiza yethu.",
+            user_data['sender'], phone_id
+        )
+    elif response in ['cha', 'ch', 'n']:
+        send(
+            "Akunankinga. Ungahlola isimo futhi kamuva uma kudingeka.\n\n"
+            "Siyabonga ngokusebenzisa insiza yethu.",
+            user_data['sender'], phone_id
+        )
+    else:
+        send("Ngiyaxolisa, angikwazanga ukukuqonda. Sicela uphendule ngo-Yebo noma Cha.", user_data['sender'], phone_id)
+        return {'step': 'drilling_status_updates_opt_in_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    update_user_state(user_data['sender'], {
+        'step': None,
+        'user': user.to_dict()
+    })
+
+    return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_pump_status_info_request_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
+
+    if len(lines) < 2:
+        send(
+            "Sicela unikeze okungenani igama lakho eliphelele kanye nenombolo yereferensi noma inombolo yocingo, ngomugqa omusha ngamunye.\n\n"
+            "Isibonelo:\n"
+            "Jane Doe\nREF123456\nOkungathandeki: Harare",
+            user_data['sender'], phone_id
+        )
+        return {
+            'step': 'pump_status_info_request_ndebele',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    full_name = lines[0]
+    reference = lines[1]
+    location = lines[2] if len(lines) >= 3 else "Akunikezwe"
+
+    user.project_status_request = {
+        'type': 'pump',
+        'full_name': full_name,
+        'reference': reference,
+        'location': location
+    }
+
+    send("Ngiyabonga. Sicela ulinde ngenkathi sithola isimo sephrojekthi yakho...", user_data['sender'], phone_id)
+
+    send(
+        f"Nansi isimo sephrojekthi yakho yokufakwa kwepompi:\n\n"
+        f"Igama Lephrojekthi: Ipompi - {full_name}\n"
+        f"Isigaba Samanje: Ukufakwa Kuqediwe\n"
+        f"Okulandelayo: Ukuhlolwa Kokugcina\n"
+        f"Usuku Lokudluliswa Olulindelekile: 12/06/2025\n\n"
+        "Ungathatha izibuyekezo ze-WhatsApp lapho isimo sishintsha?\nIzinketho: Yebo / Cha",
+        user_data['sender'], phone_id
+    )
+
+    update_user_state(user_data['sender'], {
+        'step': 'pump_status_updates_opt_in_ndebele',
+        'user': user.to_dict()
+    })
+
+    return {
+        'step': 'pump_status_updates_opt_in_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+def handle_pump_status_updates_opt_in_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    response = prompt.strip().lower()
+
+    if response in ['yebo', 'ye', 'y']:
+        send(
+            "Kuhle! Manje uzothola izibuyekezo ze-WhatsApp noma nini lapho isimo sokufakwa kwepompi sakho sishintsha.\n\n"
+            "Siyabonga ngokusebenzisa insiza yethu.",
+            user_data['sender'], phone_id
+        )
+    elif response in ['cha', 'ch', 'n']:
+        send(
+            "Akunankinga. Ungahlola isimo futhi kamuva uma kudingeka.\n\n"
+            "Siyabonga ngokusebenzisa insiza yethu.",
+            user_data['sender'], phone_id
+        )
+    else:
+        send("Ngiyaxolisa, angikwazanga ukukuqonda. Sicela uphendule ngo-Yebo noma Cha.", user_data['sender'], phone_id)
+        return {'step': 'pump_status_updates_opt_in_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    update_user_state(user_data['sender'], {
+        'step': None,
+        'user': user.to_dict()
+    })
+
+    return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def faq_menu_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user']) 
+
+    if prompt == "1":  # Borehole Drilling FAQs
+        update_user_state(user_data['sender'], {
+            'step': 'faq_borehole_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Nawa imibuzo evame ukubuzwa mayelana nokubha ibhorehole:\n\n"
+            "1. Ibiza malini ukubha ibhorehole?\n"
+            "2. Kuthatha isikhathi esingakanani ukubha ibhorehole?\n"
+            "3. Ijulile kangakanani ibhorehole yami?\n"
+            "4. Ngidinga imvume yokubha ibhorehole?\n"
+            "5. Niya hlola amanzi nibha ngasikhathi sinye?\n"
+            "6. Yini uma nihlola amanzi ningatholi lutho?\n"
+            "7. Yiziphi izinto enizisebenzisayo?\n"
+            "8. Buyela Kumenyu Yemibuzo",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_borehole_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":  # Pump Installation FAQs
+        update_user_state(user_data['sender'], {
+            'step': 'faq_pump_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Nawa imibuzo evame ukubuzwa mayelana nokufakwa kwepompi:\n\n"
+            "1. Umehluko uphi phakathi kwepompi yelanga neyagesi?\n"
+            "2. Ungayifaka uma senginazo izinto ezidingekayo?\n"
+            "3. Kuthatha isikhathi esingakanani ukufaka ipompi?\n"
+            "4. Ngidinga ipompi engakanani?\n"
+            "5. Nikhipha amathangi nezindlu zethangi?\n"
+            "6. Buyela Kumenyu Yemibuzo",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_pump_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "3":  # Ask a different question
+        update_user_state(user_data['sender'], {
+            'step': 'custom_question_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Sicela uthayiphe umbuzo wakho ngezansi, futhi sizozama ukukusiza.\n",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'custom_question_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "4":  # Human agent
+        update_user_state(user_data['sender'], {
+            'step': 'human_agent_ndebele',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        })
+        send("Sicela ulinde ngenkathi ngikuxhumanisa nomuntu...", user_data['sender'], phone_id)
+        return {'step': 'human_agent_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "5":  # Back to Main Menu
+        return handle_main_menu_ndebele("", user_data, phone_id)
+
+    else:
+        send("Sicela ukhethe okulungile (1–5).", user_data['sender'], phone_id)
+        return {'step': 'faq_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def faq_borehole_followup_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt == "1":
+        send(
+            "Sicela ukhethe umbuzo:\n\n"
+            "1. Ibiza malini ukubha ibhorehole?\n"
+            "2. Kuthatha isikhathi esingakanani ukubha ibhorehole?\n"
+            "3. Ijulile kangakanani ibhorehole yami?\n"
+            "4. Ngidinga imvume yokubha ibhorehole?\n"
+            "5. Niya hlola amanzi nibha ngasikhathi sinye?\n"
+            "6. Yini uma nihlola amanzi ningatholi lutho?\n"
+            "7. Yiziphi izinto enizisebenzisayo?\n"
+            "8. Buyela Kumenyu Yemibuzo",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_borehole_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        return handle_main_menu_ndebele("", user_data, phone_id)
+
+    else:
+        send("Sicela ukhethe u-1 ukubuza omunye umbuzo noma u-2 ukubuyela ebhodleni elikhulu.", user_data['sender'], phone_id)
+        return {'step': 'faq_borehole_followup_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def faq_pump_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    responses = {
+        "1": "Amaphampu e-solar asebenzisa amandla elanga futhi afanele izindawo ezingelazibane. Amaphampu e-electric axhomeke ku-ZESA, angabiza kancane ekuqaleni kodwa adinga amandla kagesi aqhubekayo.",
+        "2": "Yebo! Silephakheji lomsebenzi kuphela nxa usulezinto zonke ezidingekayo.",
+        "3": "Ukufakwa kwepampu kuthatha usuku olulodwa kuphela uma izinto sezilungile futhi indawo ifinyeleleka kalula.",
+        "4": "Usayizi wepampu uncika kudinga kwakho kwamanzi kanye lobujula be-borehole. Sizokuhlola ukuze sikunikeze okungcono.",
+        "5": "Yebo, sinikezela ngamathangi, ama-tank stands, kanye lezinye izinto ezifanele ukufakwa kwepampu.",
+        "6": "Sibuyela kuFAQ Menu..."
+    }
+
+    if prompt in responses:
+        send(responses[prompt], user_data['sender'], phone_id)
+
+        if prompt == "6":
+            return {'step': 'faq_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+        send(
+            "Ungathanda:\n"
+            "1. Ukubuza omunye umbuzo kuPump Installation FAQs\n"
+            "2. Ukubuyela kuMain Menu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_pump_followup_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Sicela ukhethe inketho efaneleyo (1–6).", user_data['sender'], phone_id)
+        return {'step': 'faq_pump_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def faq_pump_followup_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt == "1":
+        send(
+            "Sicela ukhethe umbuzo:\n\n"
+            "1. Kuyini umehluko phakathi kwepampu ye-solar leye-electric?\n"
+            "2. Lingayifaka yini nxa sengilalezinto zonke?\n"
+            "3. Kuthatha isikhathi esingakanani ukufaka ipampu?\n"
+            "4. Ngidinga ipampu enkulu kangakanani?\n"
+            "5. Linikezela ngamathangi kanye lezindawo zokuwabeka yini?\n"
+            "6. Buyela kuFAQ Menu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_pump_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        return handle_select_language("3", user_data, phone_id)
+
+    else:
+        send("Sicela ukhethe 1 ukuze ubuze omunye umbuzo noma 2 ukubuyela kuMain Menu.", user_data['sender'], phone_id)
+        return {'step': 'faq_pump_followup_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
+
+def send_main_menu_ndebele(phone_number, phone_id):
+    menu_text = (
+        "Singakusiza njani namuhla?\n\n"
+        "1. Cela isiphakamiso\n"
+        "2. Phanda Intengo Ngokusebenzisa Indawo\n"
+        "3. Bheka Isimo Sephrojekthi\n"
+        "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
+        "5. Eminye Imisebenzi\n"
+        "6. Khuluma Nomuntu\n\n"
+        "Phendula ngenombolo (umzekeliso: 1)"
+    )
+    send(menu_text, phone_number, phone_id)
+
+
+
+def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    
+    if prompt.strip() not in pump_installation_options:
+        send("Inketho engavumelekile. Sicela ukhethe inketho efanele yokufaka iphampu (1-6).", user_data['sender'], phone_id)
+        return {'step': 'select_pump_option_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    user.quote_data['pump_option'] = prompt.strip()
+    
+    pricing_message = get_pricing_for_location_quotes(location, "Pump Installation", prompt.strip())
+    
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
+    
+    return {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+
+
+
+def handle_pump_status_info_request_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
+
+    if len(lines) < 2:
+        send(
+            "Sicela unikeze okungenani igama lakho eliphelele kanye nenombolo yereferensi noma inombolo yocingo, ngomugqa omusha ngamunye.\n\n"
+            "Isibonelo:\n"
+            "Jane Doe\nREF123456\nOkungathandeki: Harare",
+            user_data['sender'], phone_id
+        )
+        return {
+            'step': 'pump_status_info_request_ndebele',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    full_name = lines[0]
+    reference = lines[1]
+    location = lines[2] if len(lines) >= 3 else "Ayikho"
+
+    user.project_status_request = {
+        'type': 'pump',
+        'full_name': full_name,
+        'reference': reference,
+        'location': location
+    }
+
+    send("Ngiyabonga. Sicela ulinde njengoba sithola isimo sephrojekthi yakho...", user_data['sender'], phone_id)
+
+    send(
+        f"Nansi isimo sephrojekthi yakho yokufaka iphampu:\n\n"
+        f"Igama lephrojekthi: Iphampu - {full_name}\n"
+        f"Isigaba samanje: Kuqediwe ukufakwa\n"
+        f"Okulandelayo: Ukuhlolwa kokugcina\n"
+        f"Usuku olulindeleke ukunikezwa: 12/06/2025\n\n"
+        "Ungathanda ukuthola izibuyekezo ze-WhatsApp lapho isimo sishintsha?\nIzinketho: Yebo / Cha",
+        user_data['sender'], phone_id
+    )
+
+    update_user_state(user_data['sender'], {
+        'step': 'pump_status_updates_opt_in_ndebele',
+        'user': user.to_dict()
+    })
+
+    return {
+        'step': 'pump_status_updates_opt_in_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+def handle_pump_status_updates_opt_in_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    response = prompt.strip().lower()
+
+    if response in ['yebo', 'ye', 'y']:
+        send(
+            "Kuhle! Uzothola izibuyekezo ze-WhatsApp njalo lapho isimo sokubhula ibhorehole sakho sishintsha.\n\n"
+            "Siyabonga ngokusebenzisa insiza yethu.",
+            user_data['sender'], phone_id
+        )
+    elif response in ['cha', 'ch', 'n']:
+        send(
+            "Akunankinga. Ungahlola isimo futhi kamuva uma kudingeka.\n\n"
+            "Siyabonga ngokusebenzisa insiza yethu.",
+            user_data['sender'], phone_id
+        )
+    else:
+        send("Ngiyaxolisa, angikwazanga ukuqonda lokho. Sicela uphendule ngo-Yebo noma Cha.", user_data['sender'], phone_id)
+        return {'step': 'pump_status_updates_opt_in_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    update_user_state(user_data['sender'], {
+        'step': None,
+        'user': user.to_dict()
+    })
+
+    return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def faq_borehole_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    responses = {
+        "1": "Intengo incike endaweni, ejuleni, kanye nezimo zomhlabathi. Sicela usithumelele indawo yakho kanye nemininingwane yokufinyelela ukuze sikunikeze isilinganiso.",
+        "2": "Ngokuvamile amahora angu-4–6 noma kuze kufike ezinsukwini ezimbalwa, kuncike ezimweni zendawo, uhlobo lwedwala, nokufinyeleleka.",
+        "3": "Ubujiya buyahluka ngendawo. Ubujiya obujwayelekile bungamamitha angu-40, kodwa amabhorehole angavela kumamitha angu-40 kuya kwayi-150 kuncike kuthebula lwamanzi angaphansi komhlaba.",
+        "4": "Kwezinye izindawo, kungadingeka imvume yamanzi. Singakusiza ngesicelo uma kunesidingo.",
+        "5": "Yebo, sinikela kokubili njengephakathi noma ngokwahlukana, kuncike okukhethwa wena.",
+        "6": "Uma umthengi efuna ukubhula endaweni yesibili, sinikela ngesaphulelo.\n\nQaphela: Imishini yokuhlola ithola ukuhlukana komhlaba okuthwala amanzi noma amaphoyinti wokuhlangana kwemifudlana yangaphansi komhlaba. Kodwa, ayikwazi ukukala inani noma ijubane lamanzi. Ngakho-ke, ukubhula ibhorehole akunasiqinisekiso esingu-100% sokuthola amanzi, njengoba ukuhlukana kungaba komile, kunomswakama, noma kunamanzi.",
+        "7": "Sisebenzisa imishini yokubhula ye-rotary ne-percussion, amathuluzi e-GPS, nemishini yokuhlola imininingwane yomhlaba.",
+        "8": "Ibuyela kumenyu yemibuzo..."
+    }
+
+    if prompt in responses:
+        send(responses[prompt], user_data['sender'], phone_id)
+        if prompt == "8":
+            return {'step': 'faq_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+        send(
+            "Ungathanda:\n"
+            "1. Buza omunye umbuzo kumibuzo ejwayelekile yokubhula ibhorehole\n"
+            "2. Buyela ebhodini enkulu",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_borehole_followup_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Sicela ukhethe inketho efanele (1–8).", user_data['sender'], phone_id)
+        return {'step': 'faq_borehole_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
+
+def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    
+    if prompt.strip() not in pump_installation_options:
+        send("Inketho engavumelekile. Sicela ukhethe inketho efanele yokufakwa kwepompi (1-6).", user_data['sender'], phone_id)
+        return {'step': 'select_pump_option_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    user.quote_data['pump_option'] = prompt.strip()
+    
+    pricing_message = get_pricing_for_location_quotes(location, "Ukufakwa kwepompi", prompt.strip())
+    
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
+    
+    return {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+
+def handle_other_services_menu_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        send(
+            "Ukuhlola uma ibhorehole yakho ingajuliswa:\n"
+            "Ingabe ibhorehole yakho yayinamapayipi:\n"
+            "1. Kuphela esiqongweni, ngepayipi elingama-180mm noma elikhulu\n"
+            "2. Ukusuka esiqongweni kuya ezansi ngepayipi elingama-140mm noma elincane",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'borehole_deepening_casing_ndebele', 'user': user.to_dict()})
+        return {'step': 'borehole_deepening_casing_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        send(
+            "Iyiphi inkinga ebhoreholeni yakho?\n"
+            "1. Ibhorehole ewohlokile\n"
+            "2. Ibhorehole enamanzi angcolile",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'borehole_flushing_problem_ndebele', 'user': user.to_dict()})
+        return {'step': 'borehole_flushing_problem_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "3":
+        send(
+            "Sinikela ngokubha amabhorehole ngokulandela amakilasi amapayipi e-PVC:\n"
+            "1. Ikilasi 6 – Okujwayelekile\n"
+            "2. Ikilasi 9 – Okunamandla\n"
+            "3. Ikilasi 10 – Okunamandla kakhulu\n"
+            "Ufuna ukuhlola eyiphi?",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'pvc_casing_selection_ndebele', 'user': user.to_dict()})
+        return {'step': 'pvc_casing_selection_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "4":
+        update_user_state(user_data['sender'], {'step': 'main_menu_ndebele', 'user': user.to_dict()})
+        send_main_menu_ndebele(user_data['sender'], phone_id)
+        return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Sicela ukhethe inketho efanele (1-4).", user_data['sender'], phone_id)
+        return {'step': 'other_services_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def send_main_menu_ndebele(phone_number, phone_id):
+    menu_text = (
+        "Singakusiza njani lamuhla?\n\n"
+        "1. Cela isiphakamiso\n"
+        "2. Phanda Intengo Ngokusebenzisa Indawo\n"
+        "3. Bheka Isimo Sephrojekthi\n"
+        "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
+        "5. Eminye Imisebenzi\n"
+        "6. Khuluma Nomuntu\n\n"
+        "Phendula ngenombolo (umzekeliso: 1)"
+    )
+    send(menu_text, phone_number, phone_id)
+
+def handle_borehole_deepening_casing_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        send("Ibhorehole yakho iyafaneleka ukujuliseka.\nSicela ufake indawo yakho (idolobha, i-ward, i-growth point, noma i-GPS pin):",
+             user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'deepening_location_ndebele', 'user': user.to_dict()})
+        return {'step': 'deepening_location_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        send(
+            "Ngeshwa, amabhorehole anamapayipi angaphansi kwama-180mm awakwazi ukujuliseka.\n"
+            "Izinketho:\n"
+            "1. Buyela kwezinye izinsiza\n"
+            "2. Khuluma nosizo",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'deepening_no_deepening_options_ndebele', 'user': user.to_dict()})
+        return {'step': 'deepening_no_deepening_options_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Sicela ukhethe inketho efanele (1 noma 2).", user_data['sender'], phone_id)
+        return {'step': 'borehole_deepening_casing_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_deepening_no_deepening_options_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        return handle_other_services_menu_ndebele("0", user_data, phone_id)
+
+    elif choice == "2":
+        send("Sikuxhumanisa nosizo...", user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'human_agent_ndebele', 'user': user.to_dict()})
+        return {'step': 'human_agent_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Sicela ukhethe inketho efanele (1 noma 2).", user_data['sender'], phone_id)
+        return {'step': 'deepening_no_deepening_options_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_deepening_booking_confirm_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        user.booking_data = {}
+        send("Sicela unikeze igama lakho eliphelele:", user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'booking_full_name_ndebele', 'user': user.to_dict()})
+        return {'step': 'booking_full_name_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        return handle_other_services_menu_ndebele("0", user_data, phone_id)
+
+    else:
+        send("Sicela ukhethe inketho efanele (1 noma 2).", user_data['sender'], phone_id)
+        return {'step': 'deepening_booking_confirm_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_select_language(prompt, user_data, phone_id):
+    user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
+    if prompt == "1":
+        user.language = "English"
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu',
+            'user': user.to_dict()
+        })
+        send(
+            "Thank you!\n"
+            "How can we help you today?\n\n"
+            "1. Request a quote\n"
+            "2. Search Price Using Location\n"
+            "3. Check Project Status\n"
+            "4. FAQs or Learn About Borehole Drilling\n"
+            "5. Other services\n"
+            "6. Talk to a Human Agent\n\n"
+            "Please reply with a number (e.g., 1)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    elif prompt == "2":
+        user.language = "Shona"
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu2',
+            'user': user.to_dict()
+        })
+        send(
+            "Tatenda!\n"
+            "Tinokubatsirai sei nhasi?\n\n"
+            "1. Kukumbira quotation\n"
+            "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
+            "3. Tarisa Mamiriro ePurojekiti\n"
+            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n"
+            "5. Zvimwe Zvatinoita\n"
+            "6. Taura neMunhu\n\n"
+            "Pindura nenhamba (semuenzaniso, 1)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'main_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "3":
+        user.language = "Ndebele"
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Siyabonga!\n"
+            "Singakusiza njani lamuhla?\n\n"
+            "1. Cela isiphakamiso\n"
+            "2. Phanda Intengo Ngokusebenzisa Indawo\n"
+            "3. Bheka Isimo Sephrojekthi\n"
+            "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
+            "5. Eminye Imisebenzi\n"
+            "6. Khuluma Nomuntu\n\n"
+            "Phendula ngenombolo (umzekeliso: 1)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    else:
+        send("Please select a valid language option (1 for English, 2 for Shona, 3 for Ndebele).", user_data['sender'], phone_id)
+        return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
+
+def faq_borehole_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    responses = {
+        "1": "Intengo incike endaweni, ejulini, kanye nezimo zenhlabathi. Sicela usithumelele indawo yakho nemininingwane ukuze sikunikeze isilinganiso.",
+        "2": "Ngokuvamile amahora angu-4–6 noma kuze kube izinsuku ezimbalwa, kuncike ezimweni zendawo, uhlobo lwedwala, nokufinyeleleka.",
+        "3": "Ubujiya buyahluka ngendawo. Ubujiya obujwayelekile bungamamitha angu-40, kodwa amabhorehole angaba phakathi kwama-40 kuya kuma-150 amamitha kuncike kuthebula lwamanzi angaphansi komhlaba.",
+        "4": "Kwezinye izindawo, kungadingeka imvume yamanzi. Singakusiza ngesicelo uma kunesidingo.",
+        "5": "Yebo, sinikela kokubili njengephakathi noma ngokwehlukana, kuncike okukhethwa ngumthengi.",
+        "6": "Uma umthengi efuna ukubha endaweni yesibili, sinikela ngesaphulelo.\n\nQaphela: Amamishini okuhlola athola ukuqhekeka komhlaba okuphethe amanzi noma izindawo zokuhlangana kwemifudlana yangaphansi komhlaba. Kodwa awalinganisi inani noma ijubane lamanzi. Ngakho-ke, ukubha ibhorehole akunasiqinisekiso esingu-100% sokuthola amanzi, ngoba ukuqhekeka kungase kube komile, kunomswakama, noma kunamanzi.",
+        "7": "Sisebenzisa amamishini okubha aqondile nama-percussion drilling rigs, amathuluzi e-GPS, nemishini yokuhlola iminerali.",
+        "8": "Buyela kumenyu wemibuzo..."
+    }
+
+    if prompt in responses:
+        send(responses[prompt], user_data['sender'], phone_id)
+        if prompt == "8":
+            return {'step': 'faq_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+        send(
+            "Ungathanda:\n"
+            "1. Ukubuza omunye umbuzo mayelana nokubha ibhorehole\n"
+            "2. Ukubuyela kumenyu eyinhloko",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_borehole_followup_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Sicela ukhethe inketho efanele (1–8).", user_data['sender'], phone_id)
+        return {'step': 'faq_borehole_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
+
+def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    
+    if prompt.strip() not in pump_installation_options:
+        send("Inketho engavumelekile. Sicela ukhethe inketho efanele yokufaka iphampu (1-6).", user_data['sender'], phone_id)
+        return {'step': 'select_pump_option_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    user.quote_data['pump_option'] = prompt.strip()
+    
+    pricing_message = get_pricing_for_location_quotes(location, "Ukufaka iphampu", prompt.strip())
+    
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
+    
+    return {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+
+def handle_other_services_menu_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        send(
+            "Ukubheka ukuthi ibhorehole yakho ingajuliswa:\n"
+            "Ingabe ibhorehole yakho yayinama-pipe:\n"
+            "1. Kuphela esiqongweni, nge-pipe enobubanzi obungu-180mm noma obukhulu\n"
+            "2. Ukusuka esiqongweni kuya ezansi nge-pipe enobubanzi obungu-140mm noma obuncane",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'borehole_deepening_casing_ndebele', 'user': user.to_dict()})
+        return {'step': 'borehole_deepening_casing_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        send(
+            "Iyiphi inkinga ebhoreholeni yakho?\n"
+            "1. Ibhorehole elicwile\n"
+            "2. Ibhorehole elinamanzi angcolile",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'borehole_flushing_problem_ndebele', 'user': user.to_dict()})
+        return {'step': 'borehole_flushing_problem_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "3":
+        send(
+            "Sinikela ngokubha amabhorehole ngokulandela ama-PVC casing pipe classes:\n"
+            "1. I-Class 6 – Okujwayelekile\n"
+            "2. I-Class 9 – Okunamandla kakhulu\n"
+            "3. I-Class 10 – Okunamandla kakhulu kunakho konke\n"
+            "Ufuna ukubheka iphi?",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'pvc_casing_selection_ndebele', 'user': user.to_dict()})
+        return {'step': 'pvc_casing_selection_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "4":
+        update_user_state(user_data['sender'], {'step': 'main_menu_ndebele', 'user': user.to_dict()})
+        send_main_menu_ndebele(user_data['sender'], phone_id)
+        return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Sicela ukhethe inketho efanele (1-4).", user_data['sender'], phone_id)
+        return {'step': 'other_services_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def send_main_menu_ndebele(phone_number, phone_id):
+    menu_text = (
+        "Singakusiza njani lamuhla?\n\n"
+        "1. Cela isiphakamiso\n"
+        "2. Phanda Intengo Ngokusebenzisa Indawo\n"
+        "3. Bheka Isimo Sephrojekthi\n"
+        "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
+        "5. Eminye Imisebenzi\n"
+        "6. Khuluma Nomuntu\n\n"
+        "Phendula ngenombolo (umzekeliso: 1)"
+    )
+    send(menu_text, phone_number, phone_id)
+
+
+def handle_deepening_no_deepening_options_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        return handle_other_services_menu_ndebele("0", user_data, phone_id)
+
+    elif choice == "2":
+        send("Sikuxhumanisa nosizo...", user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'human_agent_ndebele', 'user': user.to_dict()})
+        return {'step': 'human_agent_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Sicela ukhethe inketho efanele (1 noma 2).", user_data['sender'], phone_id)
+        return {'step': 'deepening_no_deepening_options_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_deepening_location_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = prompt.strip()
+
+    user.quote_data['location'] = location
+
+    price = get_pricing_for_location_quotes(location, "borehole_deepening")
+
+    send(
+        f"Intengo yokujulisa ebhoreholeni e-{location} iqala kusuka ku-USD {price} ngemitha.\n"
+        "Ungathanda:\n"
+        "1. Ukuqinisekisa & Ukubhukisha Umsebenzi\n"
+        "2. Emuva kwezinye izinsiza",
+        user_data['sender'], phone_id
+    )
+    update_user_state(user_data['sender'], {'step': 'deepening_booking_confirm_ndebele', 'user': user.to_dict()})
+    return {'step': 'deepening_booking_confirm_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_select_language(prompt, user_data, phone_id):
+    user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
+    if prompt == "1":
+        user.language = "English"
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu',
+            'user': user.to_dict()
+        })
+        send(
+            "Thank you!\n"
+            "How can we help you today?\n\n"
+            "1. Request a quote\n"
+            "2. Search Price Using Location\n"
+            "3. Check Project Status\n"
+            "4. FAQs or Learn About Borehole Drilling\n"
+            "5. Other services\n"
+            "6. Talk to a Human Agent\n\n"
+            "Please reply with a number (e.g., 1)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    elif prompt == "2":
+        user.language = "Shona"
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu2',
+            'user': user.to_dict()
+        })
+        send(
+            "Tatenda!\n"
+            "Tinokubatsirai sei nhasi?\n\n"
+            "1. Kukumbira quotation\n"
+            "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
+            "3. Tarisa Mamiriro ePurojekiti\n"
+            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n"
+            "5. Zvimwe Zvatinoita\n"
+            "6. Taura neMunhu\n\n"
+            "Pindura nenhamba (semuenzaniso, 1)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'main_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "3":
+        user.language = "Ndebele"
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Siyabonga!\n"
+            "Singakusiza njani lamuhla?\n\n"
+            "1. Cela isiphakamiso\n"
+            "2. Phanda Intengo Ngokusebenzisa Indawo\n"
+            "3. Bheka Isimo Sephrojekthi\n"
+            "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
+            "5. Eminye Imisebenzi\n"
+            "6. Khuluma Nomuntu\n\n"
+            "Phendula ngenombolo (umzekeliso: 1)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    else:
+        send("Please select a valid language option (1 for English, 2 for Shona, 3 for Ndebele).", user_data['sender'], phone_id)
+        return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
+
+
+def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    
+    if prompt.strip() not in pump_installation_options:
+        send("Inketho engavumelekile. Sicela ukhethe inketho evumelekile yokufaka ipompi (1-6).", user_data['sender'], phone_id)
+        return {'step': 'select_pump_option_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    user.quote_data['pump_option'] = prompt.strip()
+    
+    pricing_message = get_pricing_for_location_quotes(location, "Ukufaka ipompi", prompt.strip())
+    
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
+    
+    return {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+
+
+def handle_pump_status_info_request_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
+
+    if len(lines) < 2:
+        send(
+            "Sicela unikeze okungenani igama lakho eliphelele kanye nenombolo yesiphakamiso noma inombolo yocingo, ngomugqa omusha ngamunye.\n\n"
+            "Isibonelo:\n"
+            "Jane Doe\nREF123456\nOkungakho: Harare",
+            user_data['sender'], phone_id
+        )
+        return {
+            'step': 'pump_status_info_request_ndebele',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    full_name = lines[0]
+    reference = lines[1]
+    location = lines[2] if len(lines) >= 3 else "Ayikho"
+
+    user.project_status_request = {
+        'type': 'pump',
+        'full_name': full_name,
+        'reference': reference,
+        'location': location
+    }
+
+    send("Ngiyabonga. Sicela ulinde ngenkathi sithola isimo sephrojekthi yakho...", user_data['sender'], phone_id)
+
+    send(
+        f"Nansi isimo sephrojekthi yakho yokufaka ipompi:\n\n"
+        f"Igama Lephrojekthi: Ipompi - {full_name}\n"
+        f"Isigaba Samanje: Ukufaka Kuqediwe\n"
+        f"Isinyathelo Esilandelayo: Ukuhlolwa Kokugcina\n"
+        f"Usuku Olulindelekile Lokunikezwa: 12/06/2025\n\n"
+        "Ungathanda ukuthola izibuyekezo nge-WhatsApp lapho isimo sishintsha?\nIzinketho: Yebo / Cha",
+        user_data['sender'], phone_id
+    )
+
+    update_user_state(user_data['sender'], {
+        'step': 'pump_status_updates_opt_in_ndebele',
+        'user': user.to_dict()
+    })
+
+    return {
+        'step': 'pump_status_updates_opt_in_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+def handle_pump_status_updates_opt_in_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    response = prompt.strip().lower()
+
+    if response in ['yes', 'y', 'yebo']:
+        send(
+            "Kuhle! Manje uzothola izibuyekezo nge-WhatsApp noma nini lapho isimo sokufaka ipompi sakho sishintsha.\n\n"
+            "Siyabonga ngokusebenzisa inkonzo yethu.",
+            user_data['sender'], phone_id
+        )
+    elif response in ['no', 'n', 'cha']:
+        send(
+            "Akunankinga. Ungakwazi ukubheka isimo futhi kamuva uma kudingeka.\n\n"
+            "Siyabonga ngokusebenzisa inkonzo yethu.",
+            user_data['sender'], phone_id
+        )
+    else:
+        send("Ngiyaxolisa, angikwazanga ukukuqonda. Sicela uphendule ngo-Yebo noma Cha.", user_data['sender'], phone_id)
+        return {'step': 'pump_status_updates_opt_in_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    update_user_state(user_data['sender'], {
+        'step': None,
+        'user': user.to_dict()
+    })
+
+    return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_faq_menu_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user']) 
+
+    if prompt == "1":  # Borehole Drilling FAQs
+        update_user_state(user_data['sender'], {
+            'step': 'faq_borehole_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Nawa imibuzo evame ukubuzwa mayelana nokuqhakha ibhorehole:\n\n"
+            "1. Ibiza malini ukuqhakha ibhorehole?\n"
+            "2. Kuthatha isikhathi esingakanani ukuqhakha ibhorehole?\n"
+            "3. Ijulile kangakanani ibhorehole yami?\n"
+            "4. Ngidinga imvume yokuqhakha ibhorehole?\n"
+            "5. Ngabe niyahlola amanzi bese niqhakha ibhorehole ngasikhathi sinye?\n"
+            "6. Kuthiwani uma nihlola amanzi bese ningatholi?\n"
+            "7. Yiziphi izinto zokusebenza enizisebenzisayo?\n"
+            "8. Emuva Kumenyu Wemibuzo",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_borehole_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":  # Pump Installation FAQs
+        update_user_state(user_data['sender'], {
+            'step': 'faq_pump_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Nawa imibuzo evame ukubuzwa mayelana nokufaka ipompi:\n\n"
+            "1. Umehluko uphi phakathi kwepompi yelanga neyagesi?\n"
+            "2. Ngabe ningayifaka uma senginazo zonke izinto ezidingekayo?\n"
+            "3. Kuthatha isikhathi esingakanani ukufaka ipompi?\n"
+            "4. Ngidinga usayizi bani wepompi?\n"
+            "5. Ngabe niletha amathangi nezindlu zamathangi?\n"
+            "6. Emuva Kumenyu Wemibuzo",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_pump_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "3":  # Ask a different question
+        update_user_state(user_data['sender'], {
+            'step': 'custom_question_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Sicela uthayiphe umbuzo wakho ngezansi, futhi sizozama ukukusiza.\n",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'custom_question_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "4":  # Human agent
+        update_user_state(user_data['sender'], {
+            'step': 'human_agent_ndebele',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        })
+        send("Sicela ulinde ngenkathi sikuxhumanisa nomuntu...", user_data['sender'], phone_id)
+        return {'step': 'human_agent_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "5":  # Back to Main Menu
+        return handle_select_language("3", user_data, phone_id)
+
+    else:
+        send("Sicela ukhethe inketho evumelekile (1–5).", user_data['sender'], phone_id)
+        return {'step': 'faq_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
+
+def custom_question_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if not prompt.strip():
+        send("Sicela uthayiphe umbuzo wakho.", user_data['sender'], phone_id)
+        return {'step': 'custom_question_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    # Gemini prompt template
+    system_prompt = (
+        "Uyisisekelesi esilusizo se-SpeedGo, inkampani yokubha amabhorehole nokufaka amapompi eZimbabwe. "
+        "Uzophendula kuphela imibuzo ephathelene nesevisi ye-SpeedGo, intengo, izinqubo, noma ukusekelwa kwabathengi. "
+        "Uma umbuzo womthengi ungaluhlobene ne-SpeedGo, mazise ngobumnene ukuthi ungakwazi ukusiza ngezinto eziphathelene ne-SpeedGo kuphela."
+    )
+
+    try:
+        model = genai.GenerativeModel("gemini-pro")
+        response = model.generate_content([system_prompt, prompt])
+
+        answer = response.text.strip() if hasattr(response, "text") else "Ngiyaxolisa, angikwazanga ukukuphendula okwamanje."
+
+    except Exception as e:
+        answer = "Uxolo, kube nenkinga ngesikhathi sikuphendula. Sicela uzame futhi emuva kwesikhathi."
+        print(f"[Gemini error] {e}")
+
+    send(answer, user_data['sender'], phone_id)
+
+    send(
+        "Ungathanda:\n"
+        "1. Buza omunye umbuzo\n"
+        "2. Buyela kumenyu eyinhloko",
+        user_data['sender'], phone_id
+    )
+
+    return {'step': 'custom_question_followup_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def custom_question_followup_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt == "1":
+        send("Sicela uthayiphe umbuzo wakho olandelayo.", user_data['sender'], phone_id)
+        return {'step': 'custom_question_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        return handle_select_language("3", user_data, phone_id)
+
+    else:
+        send("Sicela uphendule ngo-1 ukuze ubuze omunye umbuzo noma u-2 ukuze ubuyele kumenyu eyinhloko.", user_data['sender'], phone_id)
+        return {'step': 'custom_question_followup_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
+def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    
+    if prompt.strip() not in pump_installation_options:
+        send("Inketho engavumelekile. Sicela ukhethe inketho efanele yokufakwa kwepompi (1-6).", user_data['sender'], phone_id)
+        return {'step': 'select_pump_option_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    user.quote_data['pump_option'] = prompt.strip()
+    
+    pricing_message = get_pricing_for_location_quotes(location, "Ukufakwa kwepompi", prompt.strip())
+    
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
+    
+    return {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+
+
+
+def handle_pump_status_info_request_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
+
+    if len(lines) < 2:
+        send(
+            "Sicela unikeze okungenani igama lakho eligcwele kanye nenombolo yereferensi noma inombolo yocingo, ngomugqa omusha.\n\n"
+            "Isibonelo:\n"
+            "Jane Doe\nREF123456\nOkungahleliwe: Harare",
+            user_data['sender'], phone_id
+        )
+        return {
+            'step': 'pump_status_info_request_ndebele',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    full_name = lines[0]
+    reference = lines[1]
+    location = lines[2] if len(lines) >= 3 else "Ayikho"
+
+    user.project_status_request = {
+        'type': 'pump',
+        'full_name': full_name,
+        'reference': reference,
+        'location': location
+    }
+
+    send("Ngiyabonga. Sicela ulinde njengoba sithola isimo sakho...", user_data['sender'], phone_id)
+
+    send(
+        f"Nansi isimo sakho somsebenzi wokufaka ipompi:\n\n"
+        f"Igama lomsebenzi: Ipompi - {full_name}\n"
+        f"Isigaba samanje: Kuqediwe ukufakwa\n"
+        f"Isinyathelo esilandelayo: Ukuhlolwa kokugcina\n"
+        f"Usuku olulindeleke ukunikezwa: 12/06/2025\n\n"
+        "Ungathanda ukuthola izibuyekezo nge-WhatsApp uma isimo sishintsha?\nIzinketho: Yebo / Cha",
+        user_data['sender'], phone_id
+    )
+
+    update_user_state(user_data['sender'], {
+        'step': 'pump_status_updates_opt_in_ndebele',
+        'user': user.to_dict()
+    })
+
+    return {
+        'step': 'pump_status_updates_opt_in_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+def handle_pump_status_updates_opt_in_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    response = prompt.strip().lower()
+
+    if response in ['yebo', 'y']:
+        send(
+            "Kuhle! Uzothola izibuyekezo nge-WhatsApp noma nini lapho isimo sesikhundla sakho sesikhundla sishintsha.\n\n"
+            "Siyabonga ngokusebenzisa insiza yethu.",
+            user_data['sender'], phone_id
+        )
+    elif response in ['cha', 'c']:
+        send(
+            "Akunankinga. Ungahlola isimo futhi kamuva uma udinga.\n\n"
+            "Siyabonga ngokusebenzisa insiza yethu.",
+            user_data['sender'], phone_id
+        )
+    else:
+        send("Ngiyaxolisa, angikwazanga ukuqonda lokho. Sicela uphendule ngo-Yebo noma Cha.", user_data['sender'], phone_id)
+        return {'step': 'pump_status_updates_opt_in_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    update_user_state(user_data['sender'], {
+        'step': None,
+        'user': user.to_dict()
+    })
+
+    return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
+def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    
+    if prompt.strip() not in pump_installation_options:
+        send("Inketho engalungile. Sicela ukhethe inketho efanele yokufaka ipompi (1-6).", user_data['sender'], phone_id)
+        return {'step': 'select_pump_option_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    user.quote_data['pump_option'] = prompt.strip()
+    
+    pricing_message = get_pricing_for_location_quotes(location, "Ukufaka ipompi", prompt.strip())
+    
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
+    
+    return {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+
+def handle_other_services_menu_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        send(
+            "Ukubheka ukuthi ibhorehole lakho lingajuliswa:\n"
+            "Ibhorehole lakho lalifakwe i-casing:\n"
+            "1. Kuphela esiqongweni, ngepayipi elingama-180mm noma elikhulu\n"
+            "2. Kusukela esiqongweni kuya phansi ngepayipi elingama-140mm noma elincane",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'borehole_deepening_casing_ndebele', 'user': user.to_dict()})
+        return {'step': 'borehole_deepening_casing_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        send(
+            "Iyiphi inkinga ebhoreholeni lakho?\n"
+            "1. Ibhorehole elicwile\n"
+            "2. Ibhorehole elinamanzi angcolile",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'borehole_flushing_problem_ndebele', 'user': user.to_dict()})
+        return {'step': 'borehole_flushing_problem_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "3":
+        send(
+            "Sinikezela ngokubha amabhorehole alandela amakilasi e-PVC casing pipe:\n"
+            "1. Ikilasi 6 – Okujwayelekile\n"
+            "2. Ikilasi 9 – Okunamandla\n"
+            "3. Ikilasi 10 – Okunamandla kakhulu\n"
+            "Ufuna ukubheka iphi?",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'pvc_casing_selection_ndebele', 'user': user.to_dict()})
+        return {'step': 'pvc_casing_selection_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "4":
+        update_user_state(user_data['sender'], {'step': 'main_menu_ndebele', 'user': user.to_dict()})
+        send_main_menu_ndebele(user_data['sender'], phone_id)
+        return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Sicela ukhethe inketho efanele (1-4).", user_data['sender'], phone_id)
+        return {'step': 'other_services_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def send_main_menu_ndebele(phone_number, phone_id):
+    menu_text = (
+        "Singakusiza njani namuhla?\n\n"
+        "1. Cela isiphakamiso\n"
+        "2. Phanda Intengo Ngokusebenzisa Indawo\n"
+        "3. Bheka Isimo Sephrojekthi\n"
+        "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
+        "5. Eminye Imisebenzi\n"
+        "6. Khuluma Nomuntu\n\n"
+        "Sicela uphendule ngenombolo (isib. 1)"
+    )
+    send(menu_text, phone_number, phone_id)
+
+
+
+def send_main_menu_ndebele(phone_number, phone_id):
+    menu_text = (
+        "Singakusiza njani lamuhla?\n\n"
+        "1. Cela isiphakamiso\n"
+        "2. Phanda Intengo Ngokusebenzisa Indawo\n"
+        "3. Bheka Isimo Sephrojekthi\n"
+        "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
+        "5. Eminye Imisebenzi\n"
+        "6. Khuluma Nomuntu\n\n"
+        "Phendula ngenombolo (umzekeliso: 1)"
+    )
+    send(menu_text, phone_number, phone_id)
+
+
+
+
+
+def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    
+    if prompt.strip() not in pump_installation_options:
+        send("Inketho engavumelekile. Sicela ukhethe inketho evumelekile yokufakwa kwepompi (1-6).", user_data['sender'], phone_id)
+        return {'step': 'select_pump_option_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    user.quote_data['pump_option'] = prompt.strip()
+    
+    pricing_message = get_pricing_for_location_quotes(location, "Ukufakwa kwepompi", prompt.strip())
+    
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
+    
+    return {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    
+    if prompt.strip() not in pump_installation_options:
+        send("Inketho engalungile. Khetha inketho efanele yokufaka iphampu (1-6).", user_data['sender'], phone_id)
+        return {'step': 'select_pump_option_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    user.quote_data['pump_option'] = prompt.strip()
+    
+    pricing_message = get_pricing_for_location_quotes(location, "Ukufaka iphampu", prompt.strip())
+    
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
+    
+    return {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+def handle_collect_offer_details_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    user.offer_data['offer'] = prompt
+    user.offer_data['status'] = 'pending'
+    quote_id = user.quote_data.get('quote_id')
+    if quote_id:
+        q = redis.get(f"quote:{quote_id}")
+        if q:
+            q = json.loads(q)
+            q['offer_data'] = user.offer_data
+            redis.set(f"quote:{quote_id}", json.dumps(q))
+    update_user_state(user_data['sender'], {
+        'step': 'offer_response_ndebele',
+        'user': user.to_dict()
+    })
+    send(
+        "Isicelo sakho sithunyelwe kumphathi wethu wezintengiso. Sizophendula phakathi nehora.\n\n"
+        "Siyabonga ngesiphakamiso sakho!\n\n"
+        "Ithimba lethu lizosibuyekeza futhi liphendule maduzane.\n\n"
+        "Nakuba sizama ukuba ngentengo ephansi, amanani ethu abonisa izinga, ukuphepha nokuthembeka.\n\n"
+        "Ungathanda:\n"
+        "1. Ukuqhubeka uma isiphakamiso samukelwe\n"
+        "2. Ukhulume nomuntu\n"
+        "3. Hlela isiphakamiso sakho",
+        user_data['sender'], phone_id
+    )
+    return {'step': 'offer_response_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_offer_response_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    quote_id = user.quote_data.get('quote_id')
+    if prompt == "1":
+        user.offer_data['status'] = 'accepted'
+        if quote_id:
+            q = redis.get(f"quote:{quote_id}")
+            if q:
+                q = json.loads(q)
+                q['offer_data'] = user.offer_data
+                redis.set(f"quote:{quote_id}", json.dumps(q))
+        update_user_state(user_data['sender'], {
+            'step': 'booking_details_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Izindaba ezinhle! Isiphakamiso sakho samukelwe.\n\n"
+            "Masigqinise isinyathelo sakho esilandelayo.\n\n"
+            "Ungathanda:\n"
+            "1. Bhalisa Ukuhlolwa Kwendawo\n"
+            "2. Khokha Idiphozithi\n"
+            "3. Qinisekisa Usuku Lokubha",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'booking_details_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "2":
+        send("Ukuxhunywa nomuntu siqu...", user_data['sender'], phone_id)
+        return {'step': 'human_agent_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "3":
+        update_user_state(user_data['sender'], {
+            'step': 'collect_offer_details_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Phendula ngesiphakamiso sakho esibuyekeziwe ngefomethi:\n\n"
+            "- Ukuhlola Amanzi: $_\n"
+            "- Ukubha Ibhorehole: $_",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'collect_offer_details_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Khetha inketho efanele (1-3).", user_data['sender'], phone_id)
+        return {'step': 'offer_response_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_booking_details_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    if prompt == "1":
+        update_user_state(user_data['sender'], {
+            'step': 'collect_booking_info_ndebele',
+            'user': user.to_dict()
+        })
+        send(
+            "Kuhle! Sicela unikeze ulwazi olulandelayo ukuze uqedele ukubhuka kwakho:\n\n"
+            "- Igama eliphelele:\n"
+            "- Usuku Oluthandekayo (dd/mm/yyyy):\n"
+            "- Ikheli Lendawo: GPS noma ikheli\n"
+            "- Inombolo Yocingo:\n"
+            "- Indlela Yokukhokha (Ukukhokha kuqala / Imali endaweni):\n\n"
+            "Thayipha: Thumela",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'collect_booking_info_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "2":
+        send("Sicela uxhumane nehhovisi lethu ngo-077xxxxxxx ukuhlela inkokhelo yediphozithi.", user_data['sender'], phone_id)
+        return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "3":
+        send("Umphathi wethu uzokuxhumana nawe ukuze aqinisekise usuku lokubha.", user_data['sender'], phone_id)
+        return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Khetha inketho efanele (1-3).", user_data['sender'], phone_id)
+        return {'step': 'booking_details_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_collect_booking_info_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    if prompt.lower().strip() == "thumela":
+        user.booking_data['status'] = 'confirmed'
+        user.booking_data['timestamp'] = datetime.now().isoformat()
+        booking_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        user.booking_data['booking_id'] = booking_id
+        redis.set(f"booking:{booking_id}", json.dumps({
+            'booking_id': booking_id,
+            'user_data': user.to_dict(),
+            'timestamp': datetime.now().isoformat(),
+            'status': 'confirmed'
+        }))
+        update_user_state(user_data['sender'], {
+            'step': 'booking_confirmation_ndebele',
+            'user': user.to_dict()
+        })
+        booking_date = "25/05/2025"
+        booking_time = "10:00 AM"
+        send(
+            "Siyabonga. Ukubhuka kwakho kokuhlola kwendawo kuvunyiwe, futhi uchwepheshe uzokuxhumana nawe maduzane.\n\n"
+            f"Isikhumbuzo: Ukuhlola kwakho kwendawo kuhlelwe kusasa.\n\n"
+            f"Usuku: {booking_date}\n"
+            f"Isikhathi: {booking_time}\n\n"
+            "Sijabulile ukusebenza nawe!\n"
+            "Udinga ukuhlela kabusha? Phendula\n\n"
+            "1. Yebo\n"
+            "2. Cha",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'booking_confirmation_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Sicela uthayiphe 'Thumela' ukuze uqinisekise ukubhuka kwakho.", user_data['sender'], phone_id)
+        return {'step': 'collect_booking_info_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_booking_confirmation_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    if prompt == "2":
+        send(
+            "Kuhle! Isikhathi sakho sokubha ibhorehole manje sibhukiwe.\n\n"
+            "Usuku: Thursday, 23 May 2025\n"
+            "Isikhathi Sokuqala: 8:00 AM\n"
+            "Isikhathi Esilindelekile: 5 hrs\n"
+            "Ithimba: Ochwepheshe abangu-4-5\n\n"
+            "Qiniseka ukuthi kukhona indlela yokufinyelela endaweni",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'welcome', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Sicela uxhumane nethimba lethu lokusekela ukuze uhlele kabusha.", user_data['sender'], phone_id)
+        return {'step': 'booking_confirmation_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+
+
+
+def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    
+    if prompt.strip() not in pump_installation_options:
+        send("Inketho engavumelekile. Sicela ukhethe inketho efanele yokufaka ipompi (1-6).", user_data['sender'], phone_id)
+        return {'step': 'select_pump_option_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    user.quote_data['pump_option'] = prompt.strip()
+    
+    pricing_message = get_pricing_for_location_quotes(location, "Ukufaka ipompi", prompt.strip())
+    
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
+    
+    return {
+        'step': 'quote_followup_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+
+
+def handle_pump_status_info_request_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    lines = [line.strip() for line in prompt.strip().split('\n') if line.strip()]
+
+    if len(lines) < 2:
+        send(
+            "Sicela unikeze okungenani igama lakho eliphelele kanye nenombolo yereferensi noma inombolo yocingo, ngomugqa omusha ngamunye.\n\n"
+            "Isibonelo:\n"
+            "Jane Doe\nREF123456\nOkungakho: Harare",
+            user_data['sender'], phone_id
+        )
+        return {
+            'step': 'pump_status_info_request_ndebele',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+
+    full_name = lines[0]
+    reference = lines[1]
+    location = lines[2] if len(lines) >= 3 else "Akunikezwe"
+
+    user.project_status_request = {
+        'type': 'pump',
+        'full_name': full_name,
+        'reference': reference,
+        'location': location
+    }
+
+    send("Ngiyabonga. Sicela ulinde ngenkathi sithola isimo sephrojekthi yakho...", user_data['sender'], phone_id)
+
+    send(
+        f"Nansi isimo sephrojekthi yakho yokufaka ipompi:\n\n"
+        f"Igama lephrojekthi: Ipompi - {full_name}\n"
+        f"Isigaba samanje: Ukufaka kuqediwe\n"
+        f"Isinyathelo esilandelayo: Ukuhlola kokugcina\n"
+        f"Usuku olulindeleke ukunikezwa: 12/06/2025\n\n"
+        "Ungathatha ukuthola izibuyekezo ze-WhatsApp lapho isimo sishintsha?\nIzinketho: Yebo / Cha",
+        user_data['sender'], phone_id
+    )
+
+    update_user_state(user_data['sender'], {
+        'step': 'pump_status_updates_opt_in_ndebele',
+        'user': user.to_dict()
+    })
+
+    return {
+        'step': 'pump_status_updates_opt_in_ndebele',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
+def handle_pump_status_updates_opt_in_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    response = prompt.strip().lower()
+
+    if response in ['yebo', 'ye', 'y']:
+        send(
+            "Kuhle! Uzothola izibuyekezo ze-WhatsApp njalo lapho isimo sokufaka ipompi lakho sishintsha.\n\n"
+            "Siyabonga ngokusebenzisa inkonzo yethu.",
+            user_data['sender'], phone_id
+        )
+    elif response in ['cha', 'ch', 'n']:
+        send(
+            "Akunankinga. Ungakubheka isimo futhi kamuva uma kudingeka.\n\n"
+            "Siyabonga ngokusebenzisa inkonzo yethu.",
+            user_data['sender'], phone_id
+        )
+    else:
+        send("Ngiyaxolisa, angikwazanga ukuqonda lokho. Sicela uphendule nge-Yebo noma Cha.", user_data['sender'], phone_id)
+        return {'step': 'pump_status_updates_opt_in_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    update_user_state(user_data['sender'], {
+        'step': None,
+        'user': user.to_dict()
+    })
+
+    return {'step': None, 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_other_services_menu_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        send(
+            "Ukubheka ukuthi ibhorehole lakho lingajulwa yini:\n"
+            "Ibhehole lakho lalifakwe i-casing:\n"
+            "1. Kuphela esiqongweni, ngepayipi elingama-180mm noma likhulu\n"
+            "2. Kusukela esiqongweni kuya ezansi ngepayipi elingama-140mm noma elincane",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'borehole_deepening_casing_ndebele', 'user': user.to_dict()})
+        return {'step': 'borehole_deepening_casing_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        send(
+            "Iyiphi inkinga ebhoreholeni lakho?\n"
+            "1. Ibhorehole elicwile\n"
+            "2. Ibhorehole elinamanzi angcolile",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'borehole_flushing_problem_ndebele', 'user': user.to_dict()})
+        return {'step': 'borehole_flushing_problem_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "3":
+        send(
+            "Sinikezela ngokubha amabhorehole ngokulandela amakilasi amapayipi e-PVC casing:\n"
+            "1. Ikilasi 6 - Okujwayelekile\n"
+            "2. Ikilasi 9 - Okunamandla kakhulu\n"
+            "3. Ikilasi 10 - Okunamandla kakhulu\n"
+            "Ungathanda ukubheka eliphi?",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'pvc_casing_selection_ndebele', 'user': user.to_dict()})
+        return {'step': 'pvc_casing_selection_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "4":
+        update_user_state(user_data['sender'], {'step': 'main_menu_ndebele', 'user': user.to_dict()})
+        send_main_menu_ndebele(user_data['sender'], phone_id)
+        return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Sicela ukhethe inketho efanele (1-4).", user_data['sender'], phone_id)
+        return {'step': 'other_services_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def send_main_menu_ndebele(phone_number, phone_id):
+    menu_text = (
+        "Singakusiza njani namuhla?\n\n"
+        "1. Cela isiphakamiso\n"
+        "2. Phanda Intengo Ngokusebenzisa Indawo\n"
+        "3. Bheka Isimo Sephrojekthi\n"
+        "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
+        "5. Eminye Imisebenzi\n"
+        "6. Khuluma Nomuntu\n\n"
+        "Phendula ngenombolo (umzekeliso: 1)"
+    )
+    send(menu_text, phone_number, phone_id)
+
+
+def handle_deepening_no_deepening_options_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        return handle_other_services_menu_ndebele("0", user_data, phone_id)
+
+    elif choice == "2":
+        send("Sikuxhumanisa nabasekeli...", user_data['sender'], phone_id)
+        update_user_state(user_data['sender'], {'step': 'human_agent_ndebele', 'user': user.to_dict()})
+        return {'step': 'human_agent_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Sicela ukhethe inketho efanele (1 noma 2).", user_data['sender'], phone_id)
+        return {'step': 'deepening_no_deepening_options_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
+def handle_borehole_flushing_problem_ndebele(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    choice = prompt.strip()
+
+    if choice == "1":
+        send(
+            "Uyayazi ububanzi bebhorehole?\n"
+            "1. Ama-180mm noma amakhulu\n"
+            "2. Phakathi kwama-140mm nama-180mm\n"
+            "3. Ama-140mm noma amancane",
+            user_data['sender'], phone_id
+        )
+        update_user_state(user_data['sender'], {'step': 'flushing_collapsed_diameter_ndebele', 'user': user.to_dict()})
+        return {'step': 'flushing_collapsed_diameter_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif choice == "2":
+        send("Sicela ufake indawo yakho ukubheka intengo:", user_data['sender'], phone_id)
+        user.quote_data['flushing_type'] = 'dirty_water'
+        update_user_state(user_data['sender'], {'step': 'flushing_location_ndebele', 'user': user.to_dict()})
+        return {'step': 'flushing_location_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Sicela ukhethe inketho efanele (1 noma 2).", user_data['sender'], phone_id)
+        return {'step': 'borehole_flushing_problem_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
+
 
 # Action mapping
 action_mapping = {
@@ -4785,6 +7108,40 @@ action_mapping = {
     "borehole_flushing_problem_shona": handle_borehole_flushing_problem_shona,
     "pvc_casing_selection_shona": handle_pvc_casing_selection_shona,
     "deepening_location_shona": handle_deepening_location_shona,
+
+    "main_menu_ndebele": handle_main_menu_ndebele,
+    "enter_location_for_quote_ndebele": handle_enter_location_for_quote_ndebele,
+    "select_service_quote_ndebele": handle_select_service_quote_ndebele,
+    "select_service_ndebele": handle_select_service_ndebele,
+    "select_pump_option_ndebele": handle_select_pump_option_ndebele,
+    "quote_followup_ndebele": handle_quote_followup_ndebele,
+    "collect_quote_details_ndebele": handle_collect_quote_details_ndebele,
+    "quote_response_ndebele": handle_quote_response_ndebele,
+    "collect_offer_details_ndebele": handle_collect_offer_details_ndebele,
+    "offer_response_ndebele": handle_offer_response_ndebele,
+    "booking_details_ndebele": handle_booking_details_ndebele,
+    "collect_booking_info_ndebele": handle_collect_booking_info_ndebele,
+    "booking_confirmation_ndebele": handle_booking_confirmation_ndebele,
+    "faq_menu_ndebele": faq_menu_ndebele,
+    "faq_borehole_ndebele": faq_borehole_ndebele,
+    "faq_pump_ndebele": faq_pump_ndebele,
+    "faq_borehole_followup_ndebele": faq_borehole_followup_ndebele,
+    "faq_pump_followup_ndebele": faq_pump_followup_ndebele,
+    "check_project_status_menu_ndebele": handle_check_project_status_menu_ndebele,
+    "drilling_status_info_request_ndebele": handle_drilling_status_info_request_ndebele,
+    "pump_status_info_request_ndebele": handle_pump_status_info_request_ndebele,
+    "pump_status_updates_opt_in_ndebele": handle_pump_status_updates_opt_in_ndebele,
+    "drilling_status_updates_opt_in_ndebele": handle_drilling_status_updates_opt_in_ndebele,
+    "custom_question_ndebele": custom_question_ndebele,
+    "custom_question_followup_ndebele": custom_question_followup_ndebele,
+    "human_agent_ndebele": human_agent_ndebele,
+    "waiting_for_human_agent_response_ndebele": handle_user_message_ndebele,
+    "human_agent_followup_ndebele": handle_user_message_ndebele,
+    "other_services_menu_ndebele": handle_other_services_menu_ndebele,
+    "borehole_deepening_casing_ndebele": handle_borehole_deepening_casing_ndebele,
+    "borehole_flushing_problem_ndebele": handle_borehole_flushing_problem_ndebele,
+    "pvc_casing_selection_ndebele": handle_pvc_casing_selection_ndebele,
+    "deepening_location_ndebele": handle_deepening_location_ndebele
 
 }
 
