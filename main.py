@@ -3553,6 +3553,15 @@ def handle_enter_location_for_quote_shona(prompt, user_data, phone_id):
         )
         return {'step': 'select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
+def handle_user_message_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    # Example: just echo the message or respond in Shona
+    response = "Mharidzo yenyu yagamuchirwa. Tichakupindurai munguva pfupi."
+    send(response, user_data['sender'], phone_id)
+    return {'step': 'main_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def handle_select_service_quote_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     location = user.quote_data.get('location')
