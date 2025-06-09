@@ -2526,10 +2526,13 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
         return "\n".join(message_lines)
 
     unit = "pamita" if service_key_shona in ["Kuchera chibhorani ReBhizinesi", "Kuwedzera Udzamu hwechibhorani"] else "mutengo wakafanira"
-    return (
-        f"{service_key_shona} mu {location.title()}: ${price} {unit}\n\n"
-        "Unoda here:\n1. Kukumbira mitengo yeimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako"
-    )
+    return f"""{service_key_shona} mu {location.title()}: ${price} {unit}
+    
+    Unoda here:
+    1. Kukumbira mitengo yeimwe sevhisi
+    2. Kudzokera kuMain Menu
+    3. Kupa mutengo wako"""
+
 
 location_pricing_shona = {
     "beitbridge": {
