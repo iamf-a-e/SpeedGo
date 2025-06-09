@@ -2115,6 +2115,33 @@ def handle_enter_location_for_quote_shona(prompt, user_data, phone_id):
         )
         return {'step': 'select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+def faq_borehole_followup_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt == "1":
+        send(
+            "Ndapota sarudza mubvunzo waunoda kupindurwa:\n"
+            "1. Chibhorani chinodhura zvakadini?\n"
+            "2. Zvinotora nguva yakareba sei kuchera?\n"
+            "3. Kuchera kunodzika kusvika papi?\n"
+            "4. Pane mvumo inodiwa here?\n"
+            "5. Munopa chibhorani nepombi here?\n"
+            "6. Muchina wekusuruvheya unoshanda sei?\n"
+            "7. Munoshandisa michina ipi?\n"
+            "8. Dzokera kuMenyu yeFAQ",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'faq_borehole_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt == "2":
+        send("Kudzoka kuMain Menu...", user_data['sender'], phone_id)
+        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    else:
+        send("Ndapota sarudza 1 kana 2.", user_data['sender'], phone_id)
+        return {'step': 'faq_borehole_followup_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 # Shona version of service selection
 def handle_select_service_quote_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
