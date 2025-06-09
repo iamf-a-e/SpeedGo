@@ -1922,6 +1922,146 @@ def handle_quote_followup(prompt, user_data, phone_id):
         return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 #-------------------------------------------------------SHONA---------------------------------------------------------------------------
+location_pricing_shona = {
+    "beitbridge": {
+        "Ongororo Yemvura": 150,
+        "Kuchera chibhorani": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
+    },
+    "nyika": {
+        "Ongororo Yemvura": 150,
+        "Kuchera chibhorani": {
+            "kirasi 6": 1050,
+            "kirasi 9": 1181.25,
+            "kirasi 10": 1312.5,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
+    },
+    "bindura": {
+        "Ongororo Yemvura": 150,
+        "Kuchera chibhorani": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
+    },
+    "binga": {
+        "Ongororo Yemvura": 150,
+        "Kuchera chibhorani": {
+            "kirasi 6": 1300,
+            "kirasi 9": 1462.5,
+            "kirasi 10": 1625,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
+    },
+    "bubi": {
+        "Ongororo Yemvura": 150,
+        "Kuchera chibhorani": {
+            "kirasi 6": 1200,
+            "kirasi 9": 1350,
+            "kirasi 10": 1500,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
+    },
+    "murambinda": {
+        "Ongororo Yemvura": 150,
+        "Kuchera chibhorani": {
+            "kirasi 6": 1050,
+            "kirasi 9": 1181.25,
+            "kirasi 10": 1312.5,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
+    },
+    "buhera": {
+        "Ongororo Yemvura": 150,
+        "Kuchera chibhorani": {
+            "kirasi 6": 1150,
+            "kirasi 9": 1293.75,
+            "kirasi 10": 1437.5,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
+    },
+    "harare": {
+        "Ongororo Yemvura": 150,
+        "Kuchera chibhorani": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 30
+        },
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
+    },
+    "bulawayo": {
+        "Ongororo Yemvura": 150,
+        "Kuchera chibhorani": {
+            "kirasi 6": 1000,
+            "kirasi 9": 1125,
+            "kirasi 10": 1250,
+            "udzamu hwunosanganisirwa_m": 40,
+            "mari yekuwedzera pamita": 27
+        },
+        "Kuchera chibhorani ReBhizinesi": 80,
+        "Kuwedzera Udzamu hwechibhorani": 30
+    }
+}
+
+
+pump_installation_options_shona = {
+    "1": {
+        "description": "D.C solar (solar isina inverter) - Ndine tangi ne stand yetangi",
+        "price": 1640
+    },
+    "2": {
+        "description": "D.C solar (solar isina inverter) - Handina chinhu zvachose",
+        "price": 2550
+    },
+    "3": {
+        "description": "D.C solar (solar isina inverter) - Basa chete",
+        "price": 200
+    },
+    "4": {
+        "description": "A.C yemagetsi (ZESA kana solar inverter) - Kugadzirisa nekuunza zvinhu",
+        "price": 1900
+    },
+    "5": {
+        "description": "A.C yemagetsi (ZESA kana solar inverter) - Basa chete",
+        "price": 170
+    },
+    "6": {
+        "description": "A.C yemagetsi (ZESA kana solar inverter) - Ndine tangi ne stand yetangi",
+        "price": 950
+    }
+}
+
+
 def handle_select_service_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     services = {
@@ -2547,145 +2687,6 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
 # Example usage:
 print(get_pricing_for_location_quotes_shona("Harare", "3"))  # Business drilling
 print(get_pricing_for_location_quotes_shona("Harare", "kuchera maburi ekushandisa"))  # Same as above
-
-location_pricing_shona = {
-    "beitbridge": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1000,
-            "kirasi 9": 1125,
-            "kirasi 10": 1250,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
-        },
-        "Kuchera chibhorani ReBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
-    },
-    "nyika": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1050,
-            "kirasi 9": 1181.25,
-            "kirasi 10": 1312.5,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
-        },
-        "Kuchera chibhorani ReBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
-    },
-    "bindura": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1000,
-            "kirasi 9": 1125,
-            "kirasi 10": 1250,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
-        },
-        "Kuchera chibhorani ReBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
-    },
-    "binga": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1300,
-            "kirasi 9": 1462.5,
-            "kirasi 10": 1625,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
-        },
-        "Kuchera chibhorani ReBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
-    },
-    "bubi": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1200,
-            "kirasi 9": 1350,
-            "kirasi 10": 1500,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
-        },
-        "Kuchera chibhorani ReBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
-    },
-    "murambinda": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1050,
-            "kirasi 9": 1181.25,
-            "kirasi 10": 1312.5,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
-        },
-        "Kuchera chibhorani ReBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
-    },
-    "buhera": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1150,
-            "kirasi 9": 1293.75,
-            "kirasi 10": 1437.5,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
-        },
-        "Kuchera chibhorani ReBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
-    },
-    "harare": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1000,
-            "kirasi 9": 1125,
-            "kirasi 10": 1250,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 30
-        },
-        "Kuchera chibhorani ReBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
-    },
-    "bulawayo": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1000,
-            "kirasi 9": 1125,
-            "kirasi 10": 1250,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
-        },
-        "Kuchera chibhorani ReBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
-    }
-}
-
-
-pump_installation_options_shona = {
-    "1": {
-        "description": "D.C solar (solar isina inverter) - Ndine tangi ne stand yetangi",
-        "price": 1640
-    },
-    "2": {
-        "description": "D.C solar (solar isina inverter) - Handina chinhu zvachose",
-        "price": 2550
-    },
-    "3": {
-        "description": "D.C solar (solar isina inverter) - Basa chete",
-        "price": 200
-    },
-    "4": {
-        "description": "A.C yemagetsi (ZESA kana solar inverter) - Kugadzirisa nekuunza zvinhu",
-        "price": 1900
-    },
-    "5": {
-        "description": "A.C yemagetsi (ZESA kana solar inverter) - Basa chete",
-        "price": 170
-    },
-    "6": {
-        "description": "A.C yemagetsi (ZESA kana solar inverter) - Ndine tangi ne stand yetangi",
-        "price": 950
-    }
-}
 
 
 def handle_select_pump_option_shona(prompt, user_data, phone_id):
