@@ -5227,7 +5227,7 @@ def handle_select_service_quote_ndebele(prompt, user_data, phone_id):
         send("\n".join(message_lines), user_data['sender'], phone_id)
         return {'step': 'select_pump_option_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-    pricing_message = get_pricing_for_location_quotes(location, selected_service)
+    pricing_message = get_pricing_for_location_quotes_ndebele(location, selected_service)
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_ndebele',
@@ -5303,7 +5303,7 @@ def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
     
     user.quote_data['pump_option'] = prompt.strip()
     
-    pricing_message = get_pricing_for_location_quotes(location, "Ukufaka ipompi", prompt.strip())
+    pricing_message = get_pricing_for_location_quotes_ndebele(location, "Ukufaka ipompi", prompt.strip())
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_ndebele',
@@ -5705,7 +5705,7 @@ def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
     
     user.quote_data['pump_option'] = prompt.strip()
     
-    pricing_message = get_pricing_for_location_quotes(location, "Pump Installation", prompt.strip())
+    pricing_message = get_pricing_for_location_quotes_ndebele(location, "Pump Installation", prompt.strip())
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_ndebele',
@@ -5871,7 +5871,7 @@ def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
     
     user.quote_data['pump_option'] = prompt.strip()
     
-    pricing_message = get_pricing_for_location_quotes(location, "Ukufakwa kwepompi", prompt.strip())
+    pricing_message = get_pricing_for_location_quotes_ndebele(location, "Ukufakwa kwepompi", prompt.strip())
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_ndebele',
@@ -6118,7 +6118,7 @@ def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
     
     user.quote_data['pump_option'] = prompt.strip()
     
-    pricing_message = get_pricing_for_location_quotes(location, "Ukufaka iphampu", prompt.strip())
+    pricing_message = get_pricing_for_location_quotes_ndebele(location, "Ukufaka iphampu", prompt.strip())
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_ndebele',
@@ -6215,7 +6215,7 @@ def handle_deepening_location_ndebele(prompt, user_data, phone_id):
 
     user.quote_data['location'] = location
 
-    price = get_pricing_for_location_quotes(location, "borehole_deepening")
+    price = get_pricing_for_location_quotes_ndebele(location, "borehole_deepening")
 
     send(
         f"Intengo yokujulisa ebhoreholeni e-{location} iqala kusuka ku-USD {price} ngemitha.\n"
@@ -6308,7 +6308,7 @@ def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
     
     user.quote_data['pump_option'] = prompt.strip()
     
-    pricing_message = get_pricing_for_location_quotes(location, "Ukufaka ipompi", prompt.strip())
+    pricing_message = get_pricing_for_location_quotes_ndebele(location, "Ukufaka ipompi", prompt.strip())
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_ndebele',
@@ -6533,7 +6533,7 @@ def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
     
     user.quote_data['pump_option'] = prompt.strip()
     
-    pricing_message = get_pricing_for_location_quotes(location, "Ukufakwa kwepompi", prompt.strip())
+    pricing_message = get_pricing_for_location_quotes_ndebele(location, "Ukufakwa kwepompi", prompt.strip())
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_ndebele',
@@ -6641,7 +6641,7 @@ def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
     
     user.quote_data['pump_option'] = prompt.strip()
     
-    pricing_message = get_pricing_for_location_quotes(location, "Ukufaka ipompi", prompt.strip())
+    pricing_message = get_pricing_for_location_quotes_ndebele(location, "Ukufaka ipompi", prompt.strip())
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_ndebele',
@@ -6744,7 +6744,7 @@ def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
     
     user.quote_data['pump_option'] = prompt.strip()
     
-    pricing_message = get_pricing_for_location_quotes(location, "Ukufakwa kwepompi", prompt.strip())
+    pricing_message = get_pricing_for_location_quotes_ndebele(location, "Ukufakwa kwepompi", prompt.strip())
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_ndebele',
@@ -6768,7 +6768,7 @@ def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
     
     user.quote_data['pump_option'] = prompt.strip()
     
-    pricing_message = get_pricing_for_location_quotes(location, "Ukufaka iphampu", prompt.strip())
+    pricing_message = get_pricing_for_location_quotes_ndebele(location, "Ukufaka iphampu", prompt.strip())
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_ndebele',
@@ -6987,7 +6987,7 @@ def handle_select_pump_option_ndebele(prompt, user_data, phone_id):
     
     user.quote_data['pump_option'] = prompt.strip()
     
-    pricing_message = get_pricing_for_location_quotes(location, "Ukufaka ipompi", prompt.strip())
+    pricing_message = get_pricing_for_location_quotes_ndebele(location, "Ukufaka ipompi", prompt.strip())
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_ndebele',
