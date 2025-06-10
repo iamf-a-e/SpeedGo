@@ -387,7 +387,7 @@ def handle_select_language(prompt, user_data, phone_id):
             "1. Kukumbira quotation\n"
             "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
             "3. Tarisa Mamiriro ePurojekiti\n"
-            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n"
+            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Chibhorani\n"
             "5. Zvimwe Zvatinoita\n"
             "6. Taura neMunhu\n\n"
             "Pindura nenhamba (semuenzaniso, 1)",
@@ -398,7 +398,7 @@ def handle_select_language(prompt, user_data, phone_id):
     elif prompt == "3":
         user.language = "Ndebele"
         update_user_state(user_data['sender'], {
-            'step': 'main_menu3',
+            'step': 'main_menu_ndebele',
             'user': user.to_dict()
         })
         send(
@@ -413,7 +413,7 @@ def handle_select_language(prompt, user_data, phone_id):
             "Phendula ngenombolo (umzekeliso: 1)",
             user_data['sender'], phone_id
         )
-        return {'step': 'main_menu3', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
     
     else:
         send("Please select a valid language option (1 for English, 2 for Shona, 3 for Ndebele).", user_data['sender'], phone_id)
@@ -1924,112 +1924,112 @@ def handle_quote_followup(prompt, user_data, phone_id):
 #-------------------------------------------------------SHONA---------------------------------------------------------------------------
 location_pricing_shona = {
     "beitbridge": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1000,
-            "kirasi 9": 1125,
-            "kirasi 10": 1250,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 27
         },
-        "Kuchera chibhorani cheBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
     },
     "nyika": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1050,
-            "kirasi 9": 1181.25,
-            "kirasi 10": 1312.5,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1050,
+            "class 9": 1181.25,
+            "class 10": 1312.5,
+            "included_depth_m": 40,
+            "extra_per_m": 27
         },
-        "Kuchera chibhorani cheBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
     },
     "bindura": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1000,
-            "kirasi 9": 1125,
-            "kirasi 10": 1250,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 27
         },
-        "Kuchera chibhorani cheBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
     },
     "binga": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1300,
-            "kirasi 9": 1462.5,
-            "kirasi 10": 1625,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1300,
+            "class 9": 1462.5,
+            "class 10": 1625,
+            "included_depth_m": 40,
+            "extra_per_m": 27
         },
-        "Kuchera chibhorani cheBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
     },
     "bubi": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1200,
-            "kirasi 9": 1350,
-            "kirasi 10": 1500,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1200,
+            "class 9": 1350,
+            "class 10": 1500,
+            "included_depth_m": 40,
+            "extra_per_m": 27
         },
-        "Kuchera chibhorani cheBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
     },
     "murambinda": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1050,
-            "kirasi 9": 1181.25,
-            "kirasi 10": 1312.5,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1050,
+            "class 9": 1181.25,
+            "class 10": 1312.5,
+            "included_depth_m": 40,
+            "extra_per_m": 27
         },
-        "Kuchera chibhorani cheBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
     },
     "buhera": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1150,
-            "kirasi 9": 1293.75,
-            "kirasi 10": 1437.5,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1150,
+            "class 9": 1293.75,
+            "class 10": 1437.5,
+            "included_depth_m": 40,
+            "extra_per_m": 27
         },
-        "Kuchera chibhorani cheBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
     },
     "harare": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1000,
-            "kirasi 9": 1125,
-            "kirasi 10": 1250,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
-        },
-        "Kuchera chibhorani cheBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 30
+        },       
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
     },
     "bulawayo": {
-        "Ongororo Yemvura": 150,
-        "Kuchera chibhorani": {
-            "kirasi 6": 1000,
-            "kirasi 9": 1125,
-            "kirasi 10": 1250,
-            "udzamu hwunosanganisirwa_m": 40,
-            "mari yekuwedzera pamita": 27
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 27
         },
-        "Kuchera chibhorani cheBhizinesi": 80,
-        "Kuwedzera Udzamu hwechibhorani": 30
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
     }
 }
 
@@ -2262,11 +2262,11 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
         return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     service_map = {
-        "1": "Ongororo Yemvura",
-        "2": "Kuchera chibhorani",
-        "3": "Kuiswa kwepombi",
-        "4": "Kuchera chibhorani cheBhizinesi",
-        "5": "Kuwedzera Udzamu hwechibhorani"
+        "1": "Water Survey",
+        "2": "Borehole Drilling",
+        "3": "Pump Installation",
+        "4": "Commercial Hole Drilling",
+        "5": "Borehole Deepening"
     }
 
     selected_service = service_map.get(prompt.strip())
@@ -2333,7 +2333,7 @@ def handle_quote_followup_shona(prompt, user_data, phone_id):
             "1. Kukumbira quotation\n"
             "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
             "3. Tarisa Mamiriro ePurojekiti\n"
-            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n"
+            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Chibhorani\n"
             "5. Zvimwe Zvatinoita\n"
             "6. Taura neMunhu\n\n"
             "Pindura nenhamba (semuenzaniso, 1)",
@@ -2542,11 +2542,11 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
         return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     service_map = {
-        "1": "Ongororo Yemvura",
-        "2": "Kuchera chibhorani",
-        "3": "Kuiswa kwepombi",
-        "4": "Kuchera chibhorani cheBhizinesi",
-        "5": "Kuwedzera Udzamu hwechibhorani"
+        "1": "Water Survey",
+        "2": "Borehole Drilling",
+        "3": "Pump Installation",
+        "4": "Commercial Hole Drilling",
+        "5": "Borehole Deepening"
     }
 
     selected_service = service_map.get(prompt.strip())
@@ -2706,7 +2706,7 @@ def handle_quote_followup_shona(prompt, user_data, phone_id):
             "1. Kukumbira quotation\n"
             "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
             "3. Tarisa Mamiriro ePurojekiti\n"
-            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n"
+            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Chibhorani\n"
             "5. Zvimwe Zvatinoita\n"
             "6. Taura neMunhu\n\n"
             "Pindura nenhamba (semuenzaniso, 1)",
@@ -3735,11 +3735,11 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
         return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     service_map = {
-        "1": "Ongororo Yemvura",
-        "2": "Kuchera chibhorani",
-        "3": "Kuiswa kwepombi",
-        "4": "Kuchera chibhorani cheBhizinesi",
-        "5": "Kuwedzera Udzamu hwechibhorani"
+        "1": "Water Survey",
+        "2": "Borehole Drilling",
+        "3": "Pump Installation",
+        "4": "Commercial Hole Drilling",
+        "5": "Borehole Deepening"
     }
 
     selected_service = service_map.get(prompt.strip())
@@ -3829,7 +3829,7 @@ def handle_quote_followup_shona(prompt, user_data, phone_id):
             "1. Kukumbira quotation\n"
             "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
             "3. Tarisa Mamiriro ePurojekiti\n"
-            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n"
+            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Chibhorani\n"
             "5. Zvimwe Zvatinoita\n"
             "6. Taura neMunhu\n\n"
             "Pindura nenhamba (semuenzaniso, 1)",
@@ -4189,11 +4189,11 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
         return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     service_map = {
-        "1": "Ongororo Yemvura",
-        "2": "Kuchera chibhorani",
-        "3": "Kuiswa kwepombi",
-        "4": "Kuchera chibhorani cheBhizinesi",
-        "5": "Kuwedzera Udzamu hwechibhorani"
+        "1": "Water Survey",
+        "2": "Borehole Drilling",
+        "3": "Pump Installation",
+        "4": "Commercial Hole Drilling",
+        "5": "Borehole Deepening"
     }
 
     selected_service = service_map.get(prompt.strip())
@@ -5200,11 +5200,11 @@ def handle_select_service_quote_ndebele(prompt, user_data, phone_id):
         return {'step': 'enter_location_for_quote_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     service_map = {
-        "1": "Ukuhlola amanzi",
-        "2": "Ukubha ibhorehole",
-        "3": "Ukufaka ipompi",
-        "4": "Ukubha imbobo yezohwebo",
-        "5": "Ukujulisa ibhorehole"
+        "1": "Water Survey",
+        "2": "Borehole Drilling",
+        "3": "Pump Installation",
+        "4": "Commercial Hole Drilling",
+        "5": "Borehole Deepening"
     }
 
     selected_service = service_map.get(prompt.strip())
@@ -6039,7 +6039,7 @@ def handle_select_language(prompt, user_data, phone_id):
             "1. Kukumbira quotation\n"
             "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
             "3. Tarisa Mamiriro ePurojekiti\n"
-            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n"
+            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Chibhorani\n"
             "5. Zvimwe Zvatinoita\n"
             "6. Taura neMunhu\n\n"
             "Pindura nenhamba (semuenzaniso, 1)",
@@ -6262,7 +6262,7 @@ def handle_select_language(prompt, user_data, phone_id):
             "1. Kukumbira quotation\n"
             "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
             "3. Tarisa Mamiriro ePurojekiti\n"
-            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Kuborehole\n"
+            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Chibhorani\n"
             "5. Zvimwe Zvatinoita\n"
             "6. Taura neMunhu\n\n"
             "Pindura nenhamba (semuenzaniso, 1)",
