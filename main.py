@@ -2317,6 +2317,57 @@ def custom_question_followup_shona(prompt, user_data, phone_id):
     send(response, user_data['sender'], phone_id)
     return {'step': 'main_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+def handle_enter_location_for_quote_shona(prompt, user_data, phone_id): 
+    user = User.from_dict(user_data['user'])
+
+    # Check if we have a location object from WhatsApp
+    if 'location' in user_data and 'latitude' in user_data['location'] and 'longitude' in user_data['location']:
+        # This is a WhatsApp location message
+        lat = user_data['location']['latitude']
+        lng = user_data['location']['longitude']
+        gps_coords = f"{lat},{lng}"
+        location_name = reverse_geocode_location(gps_coords)
+
+        if location_name:
+            user.quote_data['location'] = location_name
+            user.quote_data['gps_coords'] = gps_coords
+            update_user_state(user_data['sender'], {
+                'step': 'select_service_quote_shona',
+                'user': user.to_dict()
+            })
+            send(
+                f"Nzvimbo yawakatumira: {location_name.title()}\n\n"
+                "Zvino sarudza sevhisi yaunoda:\n"
+                "1. Kutsvaga mvura (Water survey)\n"
+                "2. Kuchera chibhorani (Borehole drilling)\n"
+                "3. Kuisa pombi (Pump installation)\n"
+                "4. Kuchera chibhorani cheBhizimusi (Commercial hole drilling)\n"
+                "5. Kuwedzera Kuchera chibhorani (Borehole Deepening)",
+                user_data['sender'], phone_id
+            )
+            return {'step': 'select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+        else:
+            send("Hatina kukwanisa kuziva nzvimbo yawakatumira. Ndapota nyora zita reguta/kamba nemaoko.", user_data['sender'], phone_id)
+            return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        # This is a text message with location name
+        location_name = prompt.strip()
+        user.quote_data['location'] = location_name.lower()
+        update_user_state(user_data['sender'], {
+            'step': 'select_service_quote_shona',
+            'user': user.to_dict()
+        })
+        send(
+            "Zvino sarudza sevhisi yaunoda:\n"
+            "1. Kutsvaga mvura (Water survey)\n"
+            "2. Kuchera chibhorani (Borehole drilling)\n"
+            "3. Kuisa pombi (Pump installation)\n"
+            "4. Kuchera chibhorani cheBhizimusi (Commercial hole drilling)\n"
+            "5. Kuwedzera Kuchera chibhorani (Borehole Deepening)",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
 
 def handle_main_menu_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
@@ -2345,7 +2396,7 @@ def handle_main_menu_shona(prompt, user_data, phone_id):
         })
         send(
             "Ndapota sarudza sarudzo:\n"
-            "1. Tarisa mamiriro ekuchera borehole\n"
+            "1. Tarisa mamiriro eKuchera chibhorani\n"
             "2. Tarisa mamiriro ekuisa pombi\n"
             "3. Taura nemumiriri wevanhu\n"
             "4. Dzokera kuMain Menu",
@@ -2455,7 +2506,7 @@ def handle_enter_location_for_quote_shona(prompt, user_data, phone_id):
                 f"Nzvimbo yaonekwa: {location_name.title()}\n\n"
                 "Sarudza sevhisi:\n"
                 "1. Ongororo yemvura\n"
-                "2. Kuchera borehole\n"
+                "2. Kuchera chibhorani\n"
                 "3. Kuiswa kwepombi\n"
                 "4. Kuchera maburi ekutengesa\n"
                 "5. Kudzika borehole",
@@ -2475,7 +2526,7 @@ def handle_enter_location_for_quote_shona(prompt, user_data, phone_id):
         send(
             "Sarudza sevhisi:\n"
             "1. Ongororo yemvura\n"
-            "2. Kuchera borehole\n"
+            "2. Kuchera chibhorani\n"
             "3. Kuiswa kwepombi\n"
             "4. Kuchera maburi ekutengesa\n"
             "5. Kudzika borehole",
@@ -2554,7 +2605,7 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
         # Textual options
         "ongororo yemvura": "Ongororo Yemvura",
         "kuchera chibhorani": "Kuchera chibhorani",
-        "kuchera borehole": "Kuchera chibhorani",
+        "Kuchera chibhorani": "Kuchera chibhorani",
         "kuiswa kwepombi": "Kuiswa kwepombi",
         "kuchera chibhorani chebhizinesi": "Kuchera chibhorani cheBhizinesi",
         "kuchera maburi ekutengesa": "Kuchera chibhorani cheBhizinesi",
@@ -2638,7 +2689,7 @@ def handle_quote_followup_shona(prompt, user_data, phone_id):
         send(
             "Sarudza imwe sevhisi:\n"
             "1. Ongororo yemvura\n"
-            "2. Kuchera borehole\n"
+            "2. Kuchera chibhorani\n"
             "3. Kuiswa kwepombi\n"
             "4. Kuchera maburi ekutengesa\n"
             "5. Kudzika borehole",
@@ -2743,7 +2794,7 @@ def handle_offer_response_shona(prompt, user_data, phone_id):
         send(
             "Ndapota tumira chikumbiro chako chakagadziridzwa muchimiro:\n\n"
             "- Ongororo yemvura: $_\n"
-            "- Kuchera borehole: $_",
+            "- Kuchera chibhorani: $_",
             user_data['sender'], phone_id
         )
         return {'step': 'collect_offer_details_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -2818,7 +2869,7 @@ def handle_booking_confirmation_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     if prompt == "2":
         send(
-            "Zvakanaka! Kubhuka kwako kwekuchera borehole kwave kwakanyorwa.\n\n"
+            "Zvakanaka! Kubhuka kwako kweKuchera chibhorani kwave kwakanyorwa.\n\n"
             "Zuva: China, 23 Chivabvu 2025\n"
             "Nguva yekutanga: 8:00 AM\n"
             "Nguva inotarisirwa: 5 maawa\n"
@@ -2841,7 +2892,7 @@ def handle_check_project_status_menu_shona(prompt, user_data, phone_id):
         })
     
         send(
-            "Kutarisa mamiriro ako ekuchera borehole, ndapota tipe zvinotevera:\n\n"
+            "Kutarisa mamiriro ako eKuchera chibhorani, ndapota tipe zvinotevera:\n\n"
             "- Zita rako rose rakashandiswa pakubhuka\n"
             "- Nhamba yereferensi kana Nhamba yefoni\n"
             "- Nzvimbo yekuchera (sarudzo)",
@@ -2918,7 +2969,7 @@ def handle_drilling_status_info_request_shona(prompt, user_data, phone_id):
     send("Ndatenda. Ndapota mira uchichipa tichitora mamiriro epurojekiti yako...", user_data['sender'], phone_id)
 
     send(
-        f"Heino mamiriro epurojekiti yako yekuchera borehole:\n\n"
+        f"Heino mamiriro epurojekiti yako yeKuchera chibhorani:\n\n"
         f"Zita rePurojekiti: Borehole - {full_name}\n"
         f"Chikamu Chazvino: Kuchera Kuri Kuita\n"
         f"Danho Rinotevera: Kuisa Casing\n"
@@ -3078,8 +3129,8 @@ def faq_borehole_shona(prompt, user_data, phone_id):
         "3": "Kudzika kunosiyana nzvimbo nenzvimbo. Kazhinji kudzika kunosvika mamita anenge 40, asi borehole inogona kudzika kubva pamamita 40 kusvika 150 zvichibva pavhu remvura pasi pevhu.",
         "4": "Mumamwe matunhu, ungangoda rezinesi remvura. Tinogona kukubatsira pakunyorera rezinesi iri kana zvichidiwa.",
         "5": "Ehe, tinopa zvose pamwe chete kana zvakasiyana, zvinoenderana nezvaunoda.",
-        "6": "Kana mutengi achida kuchera kune imwe nzvimbo zvakare, tinopa dhisikaundi.\n\nCherechedzo: Michina yekuongorora inobatsira kuona mafundo emvura ari pasi pevhu kana nzvimbo dzinounganidza mvura dzepasi pevhu. Asi haibviri kuyera huwandu hwemvura kana kumhanya kwayo. Saka kuchera borehole hakuvimbisi kuti mvura ichawanikwa 100%, sezvo mafundo aya angave akaoma, akanyorova, kana akanyorova zvishoma.",
-        "7": "Tinoshandisa michina yepamusoro-soro yekuchera borehole inosanganisira rotary ne percussion drilling rigs, zvishandiso zveGPS, uye michina yekuongorora zvicherwa.",
+        "6": "Kana mutengi achida kuchera kune imwe nzvimbo zvakare, tinopa dhisikaundi.\n\nCherechedzo: Michina yekuongorora inobatsira kuona mafundo emvura ari pasi pevhu kana nzvimbo dzinounganidza mvura dzepasi pevhu. Asi haibviri kuyera huwandu hwemvura kana kumhanya kwayo. Saka Kuchera chibhorani hakuvimbisi kuti mvura ichawanikwa 100%, sezvo mafundo aya angave akaoma, akanyorova, kana akanyorova zvishoma.",
+        "7": "Tinoshandisa michina yepamusoro-soro yeKuchera chibhorani inosanganisira rotary ne percussion drilling rigs, zvishandiso zveGPS, uye michina yekuongorora zvicherwa.",
         "8": "Kudzokera kuMenu reMibvunzo yeBorehole..."
     }
 
@@ -3218,7 +3269,7 @@ def handle_check_project_status_menu_shona(prompt, user_data, phone_id):
         })
     
         send(
-            "Kutarisa mamiriro ebasa rako rekuchera borehole, ndapota taura zvinotevera:\n\n"
+            "Kutarisa mamiriro ebasa rako reKuchera chibhorani, ndapota taura zvinotevera:\n\n"
             "- Zita rako rose rawakashandisa pakubhuka\n"
             "- Nhamba yereferensi yeprojekiti kana Nhamba yefoni\n"
             "- Nzvimbo yekuchera (sarudzo)",
@@ -3295,7 +3346,7 @@ def handle_drilling_status_info_request_shona(prompt, user_data, phone_id):
     send("Waita zvako. Ndapota mira uchiri kutora mamiriro ebasa rako...", user_data['sender'], phone_id)
 
     send(
-        f"Heino mamiriro ebasa rako rekuchera borehole:\n\n"
+        f"Heino mamiriro ebasa rako reKuchera chibhorani:\n\n"
         f"Zita reProjekiti: Borehole - {full_name}\n"
         f"Chikamu Chazvino: Kuchera Kuri Kuitika\n"
         f"Chinotevera: Kuisa Casing\n"
@@ -3378,87 +3429,6 @@ def custom_question_shona(prompt, user_data, phone_id):
     return {'step': 'main_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
-def handle_main_menu_shona(prompt, user_data, phone_id):
-    user = User.from_dict(user_data['user'])
-    if prompt == "1":  # Request a quote
-        update_user_state(user_data['sender'], {
-            'step': 'enter_location_for_quote_shona',
-            'user': user.to_dict()
-        })
-        send("ndapota taura nzvimbo yako (Guta/Dhorobha kana GPS coordinates) kuti titange.", user_data['sender'], phone_id)
-        return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "2":  # Search Price Using Location
-        update_user_state(user_data['sender'], {
-            'step': 'enter_location_for_quote_shona',
-            'user': user.to_dict()
-        })
-        send(
-           "Kuti tikupe mutengo, ndapota taura nzvimbo yako (Guta/Dhorobha kana GPS coordinates):",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "3":  # Check Project Status
-        update_user_state(user_data['sender'], {
-            'step': 'check_project_status_menu_shona',
-            'user': user.to_dict()
-        })
-        send(
-            "Ndapota sarudza imwe yesarudzo:\n"
-            "1. Tarisa mamiriro ekuchera borehole\n"
-            "2. Tarisa mamiriro ekuisa pombi\n"
-            "3. Taura nemunhu\n"
-            "4. Menu huru",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'check_project_status_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "4":
-        update_user_state(user_data['sender'], {
-            'step': 'faq_menu_shona',
-            'user': user.to_dict()
-        })
-        send(
-            "Ndapota sarudza chikamu chemibvunzo:\n\n"
-            "1. Mibvunzo Inowanzo bvunzwa nezve Borehole Drilling\n"
-            "2. Mibvunzo Inowanzo bvunzwa nezve Pump Installation\n"
-            "3. Bvunza mumwe mubvunzo\n"
-            "4. Taura nemunhu\n"
-            "5. Menu huru",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'faq_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "5":  # Other Services
-        update_user_state(user_data['sender'], {
-            'step': 'other_services_menu_shona',
-            'user': user.to_dict()
-        })
-        send(
-            "Kugamuchirwa kune mamwe masevhisi eBorehole. Ndeupi sevhisi yaunoda?\n"
-            "1. Borehole Deepening\n"
-            "2. Borehole Flushing\n"
-            "3. PVC Casing Pipe Selection\n"
-            "4. Dzokera kuMenu huru",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'other_services_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-        
-    elif prompt == "6":  # Human agent
-        update_user_state(user_data['sender'], {
-            'step': 'human_agent_shona',
-            'user': user.to_dict(),
-            'original_prompt': prompt
-        })
-        return human_agent_shona(prompt, {
-            'step': 'human_agent_shona',
-            'user': user.to_dict(),
-            'sender': user_data['sender']
-        }, phone_id)
-    
-    else:
-        send("Ndapota sarudza sarudzo inoshanda (1-6).", user_data['sender'], phone_id)
-        return {'step': 'main_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 def human_agent_shona(prompt, user_data, phone_id):
     customer_number = user_data['sender']
@@ -3500,87 +3470,6 @@ def notify_agent_shona(customer_number, prompt, agent_number, phone_id):
     )
     send(agent_message, agent_number, phone_id)
 
-def handle_main_menu_shona(prompt, user_data, phone_id):
-    user = User.from_dict(user_data['user'])
-    if prompt == "1":  # Kukumbira quotation
-        update_user_state(user_data['sender'], {
-            'step': 'enter_location_for_quote_shona',
-            'user': user.to_dict()
-        })
-        send("ndapota isa nzvimbo yako (Guta/Dhorobha kana GPS coordinates) kuti titange.", user_data['sender'], phone_id)
-        return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "2":  # Tsvaga Mutengo Uchishandisa Nzvimbo
-        update_user_state(user_data['sender'], {
-            'step': 'enter_location_for_quote_shona',
-            'user': user.to_dict()
-        })
-        send(
-           "Kuti tikupe mutengo, ndapota isa nzvimbo yako (Guta/Dhorobha kana GPS coordinates):",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "3":  # Tarisa Mamiriro ePurojekiti
-        update_user_state(user_data['sender'], {
-            'step': 'check_project_status_menu_shona',
-            'user': user.to_dict()
-        })
-        send(
-            "Ndapota sarudza sarudzo:\n"
-            "1. Tarisa mamiriro ekuchera bhorehole\n"
-            "2. Tarisa mamiriro ekuisa pombi\n"
-            "3. Taura nemumiriri wevanhu\n"
-            "4. Dzokera kuMenu Huru",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'check_project_status_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "4":
-        update_user_state(user_data['sender'], {
-            'step': 'faq_menu_shona',
-            'user': user.to_dict()
-        })
-        send(
-            "Ndapota sarudza chikamu cheFAQ:\n\n"
-            "1. FAQ dzeBorehole Drilling\n"
-            "2. FAQ dzePump Installation\n"
-            "3. Bvunza mubvunzo wakasiyana\n"
-            "4. Taura nemumiriri wevanhu\n"
-            "5. Dzokera kuMenu Huru",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'faq_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "5":  # Zvimwe Zvatinoita
-        update_user_state(user_data['sender'], {
-            'step': 'other_services_menu_shona',
-            'user': user.to_dict()
-        })
-        send(
-            "Kugamuchirwa kune Zvimwe Zvatinobata Nezvemaborehole. Ndeupi sevhisi yaunoda?\n"
-            "1. Borehole Deepening\n"
-            "2. Borehole Flushing\n"
-            "3. PVC Casing Pipe Selection\n"
-            "4. Dzokera kuMenu Huru",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'other_services_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-        
-    elif prompt == "6":  # Taura neMunhu
-        update_user_state(user_data['sender'], {
-            'step': 'human_agent_shona',
-            'user': user.to_dict(),
-            'original_prompt': prompt
-        })
-        return human_agent_shona(prompt, {
-            'step': 'human_agent_shona',
-            'user': user.to_dict(),
-            'sender': user_data['sender']
-        }, phone_id)
-    
-    else:
-        send("Ndapota sarudza sarudzo inoshanda (1-6).", user_data['sender'], phone_id)
-        return {'step': 'main_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 def human_agent_shona(prompt, user_data, phone_id):
     customer_number = user_data['sender']
@@ -3996,87 +3885,6 @@ def handle_select_service_shona(prompt, user_data, phone_id):
         return {'step': 'select_service_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
-def handle_main_menu_shona(prompt, user_data, phone_id):
-    user = User.from_dict(user_data['user'])
-    if prompt == "1":  # Request a quote
-        update_user_state(user_data['sender'], {
-            'step': 'enter_location_for_quote_shona',
-            'user': user.to_dict()
-        })
-        send("Ndapota isa nzvimbo yako (Guta/Dhorobha kana GPS coordinates) kuti titange.", user_data['sender'], phone_id)
-        return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "2":  # Search Price Using Location
-        update_user_state(user_data['sender'], {
-            'step': 'enter_location_for_quote_shona',
-            'user': user.to_dict()
-        })
-        send(
-           "Kuti tikupe mutengo, ndapota isa nzvimbo yako (Guta/Dhorobha kana GPS coordinates):",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-    elif prompt == "3":  # Check Project Status
-        update_user_state(user_data['sender'], {
-            'step': 'check_project_status_menu_shona',
-            'user': user.to_dict()
-        })
-        send(
-            "Ndapota sarudza sarudzo:\n"
-            "1. Tarisa mamiriro ekuchera chibhorani\n"
-            "2. Tarisa mamiriro ekuisa pombi\n"
-            "3. Taura nemumiriri wevanhu\n"
-            "4. Dzokera kumenu huru",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'check_project_status_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "4":
-        update_user_state(user_data['sender'], {
-            'step': 'faq_menu_shona',
-            'user': user.to_dict()
-        })
-        send(
-            "Ndapota sarudza chikamu chemibvunzo:\n\n"
-            "1. Mibvunzo Inowanzo bvunzwa nezvekuchera chibhorani\n"
-            "2. Mibvunzo Inowanzo bvunzwa nezvekuisa pombi\n"
-            "3. Bvunza mubvunzo wakasiyana\n"
-            "4. Taura nemumiriri wevanhu\n"
-            "5. Dzokera kumenu huru",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'faq_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "5":  # Other Services
-        update_user_state(user_data['sender'], {
-            'step': 'other_services_menu_shona',
-            'user': user.to_dict()
-        })
-        send(
-            "Kugamuchirwa kune mamwe masevhisi ekuchera chibhorani. Ndeipi sevhisi yaunoda?\n"
-            "1. Kudzamisa chibhorani\n"
-            "2. Kugeza chibhorani\n"
-            "3. Kusarudza PVC casing pipe\n"
-            "4. Dzokera kumenu huru",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'other_services_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-        
-    elif prompt == "6":  # Human agent
-        update_user_state(user_data['sender'], {
-            'step': 'human_agent_shona',
-            'user': user.to_dict(),
-            'original_prompt': prompt
-        })
-        return human_agent_shona(prompt, {
-            'step': 'human_agent_shona',
-            'user': user.to_dict(),
-            'sender': user_data['sender']
-        }, phone_id)
-    
-    else:
-        send("Ndapota sarudza sarudzo inoshanda (1-6).", user_data['sender'], phone_id)
-        return {'step': 'main_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 def human_agent_shona(prompt, user_data, phone_id):
     customer_number = user_data['sender']
@@ -5982,74 +5790,6 @@ def handle_deepening_booking_confirm_ndebele(prompt, user_data, phone_id):
         return {'step': 'deepening_booking_confirm_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
-def handle_select_language(prompt, user_data, phone_id):
-    user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
-    if prompt == "1":
-        user.language = "English"
-        update_user_state(user_data['sender'], {
-            'step': 'main_menu',
-            'user': user.to_dict()
-        })
-        send(
-            "Thank you!\n"
-            "How can we help you today?\n\n"
-            "1. Request a quote\n"
-            "2. Search Price Using Location\n"
-            "3. Check Project Status\n"
-            "4. FAQs or Learn About Borehole Drilling\n"
-            "5. Other services\n"
-            "6. Talk to a Human Agent\n\n"
-            "Please reply with a number (e.g., 1)",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    
-    elif prompt == "2":
-        user.language = "Shona"
-        update_user_state(user_data['sender'], {
-            'step': 'main_menu2',
-            'user': user.to_dict()
-        })
-        send(
-            "Tatenda!\n"
-            "Tinokubatsirai sei nhasi?\n\n"
-            "1. Kukumbira quotation\n"
-            "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
-            "3. Tarisa Mamiriro ePurojekiti\n"
-            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Chibhorani\n"
-            "5. Zvimwe Zvatinoita\n"
-            "6. Taura neMunhu\n\n"
-            "Pindura nenhamba (semuenzaniso, 1)",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'main_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "3":
-        user.language = "Ndebele"
-        update_user_state(user_data['sender'], {
-            'step': 'main_menu_ndebele',
-            'user': user.to_dict()
-        })
-        send(
-            "Siyabonga!\n"
-            "Singakusiza njani lamuhla?\n\n"
-            "1. Cela isiphakamiso\n"
-            "2. Phanda Intengo Ngokusebenzisa Indawo\n"
-            "3. Bheka Isimo Sephrojekthi\n"
-            "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
-            "5. Eminye Imisebenzi\n"
-            "6. Khuluma Nomuntu\n\n"
-            "Phendula ngenombolo (umzekeliso: 1)",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
-    
-    else:
-        send("Please select a valid language option (1 for English, 2 for Shona, 3 for Ndebele).", user_data['sender'], phone_id)
-        return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-
-
 
 def faq_borehole_ndebele(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
@@ -6203,74 +5943,6 @@ def handle_deepening_location_ndebele(prompt, user_data, phone_id):
     )
     update_user_state(user_data['sender'], {'step': 'deepening_booking_confirm_ndebele', 'user': user.to_dict()})
     return {'step': 'deepening_booking_confirm_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-
-def handle_select_language(prompt, user_data, phone_id):
-    user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
-    if prompt == "1":
-        user.language = "English"
-        update_user_state(user_data['sender'], {
-            'step': 'main_menu',
-            'user': user.to_dict()
-        })
-        send(
-            "Thank you!\n"
-            "How can we help you today?\n\n"
-            "1. Request a quote\n"
-            "2. Search Price Using Location\n"
-            "3. Check Project Status\n"
-            "4. FAQs or Learn About Borehole Drilling\n"
-            "5. Other services\n"
-            "6. Talk to a Human Agent\n\n"
-            "Please reply with a number (e.g., 1)",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-    
-    elif prompt == "2":
-        user.language = "Shona"
-        update_user_state(user_data['sender'], {
-            'step': 'main_menu2',
-            'user': user.to_dict()
-        })
-        send(
-            "Tatenda!\n"
-            "Tinokubatsirai sei nhasi?\n\n"
-            "1. Kukumbira quotation\n"
-            "2. Tsvaga Mutengo Uchishandisa Nzvimbo\n"
-            "3. Tarisa Mamiriro ePurojekiti\n"
-            "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Chibhorani\n"
-            "5. Zvimwe Zvatinoita\n"
-            "6. Taura neMunhu\n\n"
-            "Pindura nenhamba (semuenzaniso, 1)",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'main_menu2', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "3":
-        user.language = "Ndebele"
-        update_user_state(user_data['sender'], {
-            'step': 'main_menu_ndebele',
-            'user': user.to_dict()
-        })
-        send(
-            "Siyabonga!\n"
-            "Singakusiza njani lamuhla?\n\n"
-            "1. Cela isiphakamiso\n"
-            "2. Phanda Intengo Ngokusebenzisa Indawo\n"
-            "3. Bheka Isimo Sephrojekthi\n"
-            "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
-            "5. Eminye Imisebenzi\n"
-            "6. Khuluma Nomuntu\n\n"
-            "Phendula ngenombolo (umzekeliso: 1)",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
-    
-    else:
-        send("Please select a valid language option (1 for English, 2 for Shona, 3 for Ndebele).", user_data['sender'], phone_id)
-        return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
-
 
 
 
