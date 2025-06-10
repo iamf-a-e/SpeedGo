@@ -2062,114 +2062,59 @@ pump_installation_options_shona = {
 }
 
 
-def handle_select_service_shona(prompt, user_data, phone_id):
+def handle_select_service_quote(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    services = {
-        "1": "Water survey",
-        "2": "Borehole drilling",
-        "3": "Pump installation",
-        "4": "Commercial hole drilling",
-        "5": "Borehole Deepening",
+    location = user.quote_data.get('location')
+    
+    if not location:
+        send("Ndokumbirawo kuti utange wapa nzvimbo yako usati wasarudza sevhisi.", user_data['sender'], phone_id)
+        return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    service_map = {
+        "1": "Water Survey",
+        "2": "Borehole Drilling",
+        "3": "Pump Installation",
+        "4": "Commercial Hole Drilling",
+        "5": "Borehole Deepening"
     }
 
-    if prompt in services:
-        user.quote_data['service'] = services[prompt]
+    selected_service = service_map.get(prompt.strip())
+
+    if not selected_service:
+        send("Sarudzo isiri iyo. Ndapota pindura ne 1, 2, 3, 4 kana 5 kuti usarudze sevhisi.", user_data['sender'], phone_id)
+        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    # Store selected service
+    user.quote_data['service'] = selected_service
+
+    # Handle Pump Installation separately as it has options
+    if selected_service == "Pump Installation":
         update_user_state(user_data['sender'], {
-            'step': 'collect_quote_details_shona',
+            'step': 'select_pump_option',
             'user': user.to_dict()
         })
-        send(
-            "Kuti tikwanise kukupa mutengo wekutanga, tapota pindura mibvunzo inotevera:\n\n"
-            "1. Ndekupi kwamuri? (Guta/Kanzuru kana GPS):",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'handle_select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-    else:
-        send("Ndapota sarudza sevhisi yakakodzera (1-5).", user_data['sender'], phone_id)
-        return {'step': 'select_service_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+        message_lines = [f"💧 Sarudzo dzekuisa Pombi:\n"]
+        for key, option in pump_installation_options.items():
+            desc = option.get('description', 'Tsananguro haisipo')
+            message_lines.append(f"{key}. {desc}")
+        send("\n".join(message_lines), user_data['sender'], phone_id)
+        return {'step': 'select_pump_option', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-
-
-# Add this after the English main_menu handler
-def handle_main_menu_shona(prompt, user_data, phone_id):
-    user = User.from_dict(user_data['user'])
-    if prompt == "1":  # Request a quote
-        update_user_state(user_data['sender'], {
-            'step': 'enter_location_for_quote_shona',
-            'user': user.to_dict()
-        })
-        send("ndapota isa nzvimbo yako (Guta/Dhorobha kana GPS coordinates) kuti titange.", user_data['sender'], phone_id)
-        return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "2":  # Search Price Using Location
-        update_user_state(user_data['sender'], {
-            'step': 'enter_location_for_quote_shona',
-            'user': user.to_dict()
-        })
-        send("Kuti tikupe mutengo, ndapota isa nzvimbo yako (Guta/Dhorobha kana GPS coordinates):", user_data['sender'], phone_id)
-        return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+    # Get pricing for other services
+    pricing_message = get_pricing_for_location_quotes_shona(location, selected_service)
     
-    elif prompt == "3":  # Check Project Status
-        update_user_state(user_data['sender'], {
-            'step': 'check_project_status_menu_shona',
-            'user': user.to_dict()
-        })
-        send(
-            "Ndapota sarudza sarudzo:\n"
-            "1. Tarisa mamiriro ekuchera borehole\n"
-            "2. Tarisa mamiriro ekuisa pombi\n"
-            "3. Taura nemumiriri wevanhu\n"
-            "4. Dzokera kumenu huru",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'check_project_status_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+    # Ask if user wants to return to main menu or choose another service
+    update_user_state(user_data['sender'], {
+        'step': 'quote_followup',
+        'user': user.to_dict()
+    })
+    send(pricing_message, user_data['sender'], phone_id)
 
-    elif prompt == "4":  # FAQs
-        update_user_state(user_data['sender'], {
-            'step': 'faq_menu_shona',
-            'user': user.to_dict()
-        })
-        send(
-            "Ndapota sarudza chikamu chemibvunzo:\n\n"
-            "1. Mibvunzo Inowanzo bvunzwa nezve Borehole Drilling\n"
-            "2. Mibvunzo Inowanzo bvunzwa nezve Pump Installation\n"
-            "3. Bvunza mubvunzo wakasiyana\n"
-            "4. Taura nemumiriri wevanhu\n"
-            "5. Dzokera kumenu huru",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'faq_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    elif prompt == "5":  # Other Services
-        update_user_state(user_data['sender'], {
-            'step': 'other_services_menu_shona',
-            'user': user.to_dict()
-        })
-        send(
-            "Kugamuchirwa kune mamwe masevhisi eBorehole. Ndeupi sevhisi yaunoda?\n"
-            "1. Borehole Deepening\n"
-            "2. Borehole Flushing\n"
-            "3. PVC Casing Pipe Sarudzo\n"
-            "4. Dzokera kumenu huru",
-            user_data['sender'], phone_id
-        )
-        return {'step': 'other_services_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
-        
-    elif prompt == "6":  # Human agent
-        update_user_state(user_data['sender'], {
-            'step': 'human_agent_shona',
-            'user': user.to_dict(),
-            'original_prompt': prompt
-        })
-        return human_agent_shona(prompt, {
-            'step': 'human_agent_shona',
-            'user': user.to_dict(),
-            'sender': user_data['sender']
-        }, phone_id)
-    
-    else:
-        send("Ndapota sarudza sarudzo inoshanda (1-6).", user_data['sender'], phone_id)
-        return {'step': 'main_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+    return {
+        'step': 'quote_followup',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
 
 # Shona version of human agent handler
 def human_agent_shona(prompt, user_data, phone_id):
@@ -2202,6 +2147,7 @@ def human_agent_shona(prompt, user_data, phone_id):
     })
     
     return {'step': 'waiting_for_human_agent_response_shona', 'user': user_data.get('user', {}), 'sender': customer_number}
+
 
 # Shona version of location handler
 def handle_enter_location_for_quote_shona(prompt, user_data, phone_id):
@@ -2258,8 +2204,8 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
     location = user.quote_data.get('location')
     
     if not location:
-        send("Ndapota taura nzvimbo yako kutanga usati wasarudza sevhisi.", user_data['sender'], phone_id)
-        return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+        send("Ndokumbirawo kuti utange wapa nzvimbo yako usati wasarudza sevhisi.", user_data['sender'], phone_id)
+        return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     service_map = {
         "1": "Water Survey",
@@ -2272,33 +2218,37 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
     selected_service = service_map.get(prompt.strip())
 
     if not selected_service:
-        send("Sarudzo isiriyo. Ndapota pindura ne1, 2, 3, 4 kana 5 kusarudza sevhisi.", user_data['sender'], phone_id)
-        return {'step': 'select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+        send("Sarudzo isiri iyo. Ndapota pindura ne 1, 2, 3, 4 kana 5 kuti usarudze sevhisi.", user_data['sender'], phone_id)
+        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+    # Store selected service
     user.quote_data['service'] = selected_service
 
-    if selected_service == "Kuiswa kwepombi":
+    # Handle Pump Installation separately as it has options
+    if selected_service == "Pump Installation":
         update_user_state(user_data['sender'], {
-            'step': 'select_pump_option_shona',
+            'step': 'select_pump_option',
             'user': user.to_dict()
         })
-        message_lines = [f"💧 Sarudzo dzekuiswa kwepombi:\n"]
+        message_lines = [f"💧 Sarudzo dzekuisa Pombi:\n"]
         for key, option in pump_installation_options.items():
-            desc = option.get('description', 'Hapana tsananguro')
+            desc = option.get('description', 'Tsananguro haisipo')
             message_lines.append(f"{key}. {desc}")
         send("\n".join(message_lines), user_data['sender'], phone_id)
-        return {'step': 'select_pump_option_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'select_pump_option', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-    pricing_message_shona = get_pricing_for_location_quotes_shona(location, selected_service)
+    # Get pricing for other services
+    pricing_message = get_pricing_for_location_quotes_shona(location, selected_service)
     
+    # Ask if user wants to return to main menu or choose another service
     update_user_state(user_data['sender'], {
-        'step': 'quote_followup_shona',
+        'step': 'quote_followup',
         'user': user.to_dict()
     })
-    send(pricing_message_shona, user_data['sender'], phone_id)
+    send(pricing_message, user_data['sender'], phone_id)
 
     return {
-        'step': 'quote_followup_shona',
+        'step': 'quote_followup',
         'user': user.to_dict(),
         'sender': user_data['sender']
     }
@@ -2569,13 +2519,13 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
         send("\n".join(message_lines), user_data['sender'], phone_id)
         return {'step': 'select_pump_option_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-    pricing_message_shona = get_pricing_for_location_quotes_shona(location, selected_service)
+    pricing_message = get_pricing_for_location_quotes_shona(location, selected_service)
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_shona',
         'user': user.to_dict()
     })
-    send(pricing_message_shona, user_data['sender'], phone_id)
+    send(pricing_message, user_data['sender'], phone_id)
 
     return {
         'step': 'quote_followup_shona',
@@ -2617,23 +2567,23 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
     service_key_shona = SERVICE_KEY_MAP_SHONA.get(service_key_raw, service_key_raw)
 
     # Get price with case-insensitive fallback
-    price_shona = None
+    price = None
     for key in loc_data_shona.keys():
         if key.lower() == service_key_shona.lower():
-            price_shona = loc_data_shona[key]
+            price = loc_data_shona[key]
             break
 
-    if not price_shona:
+    if not price:
         return f"Ndine urombo, hatina mutengo we {service_key_shona} mu {location.title()}."
 
     # Format response based on price type
-    if isinstance(price_shona, dict):  # For drilling services with multiple classes
-        included_depth = price_shona.get("udzamu hwunosanganisirwa_m", "N/A")
-        extra_rate = price_shona.get("mari yekuwedzera pamita", "N/A")
+    if isinstance(price, dict):  # For drilling services with multiple classes
+        included_depth = price.get("udzamu hwunosanganisirwa_m", "N/A")
+        extra_rate = price.get("mari yekuwedzera pamita", "N/A")
         
         message_lines = [
             f"💧 Mitengo ye {service_key_shona} mu {location.title()}:",
-            *[f"- {k.title()}: ${v}" for k, v in price_shona.items() if k.startswith("kirasi")],
+            *[f"- {k.title()}: ${v}" for k, v in price.items() if k.startswith("kirasi")],
             f"- Inosanganisira kudzika kusvika {included_depth}m",
             f"- Mari yekuwedzera: ${extra_rate}/m pamusoro pekudzika kwakapihwa",
             "",
@@ -2646,7 +2596,7 @@ def get_pricing_for_location_quotes_shona(location, service_key_input, pump_opti
     else:  # For simple pricing
         unit = "pamita" if service_key_shona in ["Kuchera chibhorani cheBhizinesi", "Kuwedzera Udzamu hwechibhorani"] else "mutengo wakafanira"
         return (
-            f"{service_key_shona} mu {location.title()}: ${price_shona} {unit}\n\n"
+            f"{service_key_shona} mu {location.title()}: ${price} {unit}\n\n"
             "Unoda here:\n"
             "1. Kukumbira mitengo yeimwe sevhisi\n"
             "2. Kudzokera kuMain Menu\n"
@@ -2663,13 +2613,13 @@ def handle_select_pump_option_shona(prompt, user_data, phone_id):
     
     user.quote_data['pump_option'] = prompt.strip()
     
-    pricing_message_shona = get_pricing_for_location_quotes_shona(location, "Kuiswa kwepombi", prompt.strip())
+    pricing_message = get_pricing_for_location_quotes_shona(location, "Kuiswa kwepombi", prompt.strip())
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_shona',
         'user': user.to_dict()
     })
-    send(pricing_message_shona, user_data['sender'], phone_id)
+    send(pricing_message, user_data['sender'], phone_id)
     
     return {
         'step': 'quote_followup_shona',
@@ -3762,13 +3712,13 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
         send("\n".join(message_lines), user_data['sender'], phone_id)
         return {'step': 'select_pump_option_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-    pricing_message_shona = get_pricing_for_location_quotes_shona(location, selected_service)
+    pricing_message = get_pricing_for_location_quotes_shona(location, selected_service)
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_shona',
         'user': user.to_dict()
     })
-    send(pricing_message_shona, user_data['sender'], phone_id)
+    send(pricing_message, user_data['sender'], phone_id)
 
     return {
         'step': 'quote_followup_shona',
@@ -3786,13 +3736,13 @@ def handle_select_pump_option_shona(prompt, user_data, phone_id):
     
     user.quote_data['pump_option'] = prompt.strip()
     
-    pricing_message_shona = get_pricing_for_location_quotes_shona(location, "Kuiswa kwepombi", prompt.strip())
+    pricing_message = get_pricing_for_location_quotes_shona(location, "Kuiswa kwepombi", prompt.strip())
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_shona',
         'user': user.to_dict()
     })
-    send(pricing_message_shona, user_data['sender'], phone_id)
+    send(pricing_message, user_data['sender'], phone_id)
     
     return {
         'step': 'quote_followup_shona',
@@ -4216,13 +4166,13 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
         send("\n".join(message_lines), user_data['sender'], phone_id)
         return {'step': 'select_pump_option_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-    pricing_message_shona = get_pricing_for_location_quotes_shona(location, selected_service)
+    pricing_message = get_pricing_for_location_quotes_shona(location, selected_service)
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_shona',
         'user': user.to_dict()
     })
-    send(pricing_message_shona, user_data['sender'], phone_id)
+    send(pricing_message, user_data['sender'], phone_id)
 
     return {
         'step': 'quote_followup_shona',
@@ -4240,13 +4190,13 @@ def handle_select_pump_option_shona(prompt, user_data, phone_id):
     
     user.quote_data['pump_option'] = prompt.strip()
     
-    pricing_message_shona = get_pricing_for_location_quotes_shona(location, "Kuiswa kwepombi", prompt.strip())
+    pricing_message = get_pricing_for_location_quotes_shona(location, "Kuiswa kwepombi", prompt.strip())
     
     update_user_state(user_data['sender'], {
         'step': 'quote_followup_shona',
         'user': user.to_dict()
     })
-    send(pricing_message_shona, user_data['sender'], phone_id)
+    send(pricing_message, user_data['sender'], phone_id)
     
     return {
         'step': 'quote_followup_shona',
@@ -4351,10 +4301,10 @@ def handle_deepening_location_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     location = prompt.strip()
     user.quote_data['location'] = location
-    price_shona = get_pricing_for_location_quotes_shona(location, "borehole_deepening")
+    price = get_pricing_for_location_quotes_shona(location, "borehole_deepening")
 
     send(
-        f"Mutengo wekudzamisa mu {location} unotanga kubva kuUSD {price_shona} pamita.\n"
+        f"Mutengo wekudzamisa mu {location} unotanga kubva kuUSD {price} pamita.\n"
         "Unoda here:\n"
         "1. Simbisa & Bhuka Basa\n"
         "2. Dzokera kune mamwe masevhisi",
@@ -4445,13 +4395,13 @@ def handle_flushing_location_shona(prompt, user_data, phone_id):
     user.quote_data['location'] = location
     flushing_type = user.quote_data.get('flushing_type')
     diameter = user.quote_data.get('diameter')
-    price_shona = get_pricing_for_other_services_shona(location, "borehole_flushing", {
+    price = get_pricing_for_other_services_shona(location, "borehole_flushing", {
         'flushing_type': flushing_type,
         'diameter': diameter
     })
 
     send(
-        f"Mutengo wekugeza mu {location} unotanga kubva kuUSD {price_shona}.\n"
+        f"Mutengo wekugeza mu {location} unotanga kubva kuUSD {price}.\n"
         "Unoda here:\n"
         "1. Simbisa & Bhuka Basa\n"
         "2. Dzokera kune mamwe masevhisi",
@@ -4503,10 +4453,10 @@ def handle_pvc_casing_location_shona(prompt, user_data, phone_id):
     location = prompt.strip()
     user.quote_data['location'] = location
     casing_class = user.quote_data.get('pvc_casing_class')
-    price_shona = get_pricing_for_other_services_shona(location, "pvc_casing", {'class': casing_class})
+    price = get_pricing_for_other_services_shona(location, "pvc_casing", {'class': casing_class})
 
     send(
-        f"Mutengo we{casing_class} PVC casing mu {location} iUSD {price_shona}.\n"
+        f"Mutengo we{casing_class} PVC casing mu {location} iUSD {price}.\n"
         "Unoda here:\n"
         "1. Simbisa & Bhuka\n"
         "2. Dzokera kune mamwe masevhisi",
