@@ -286,8 +286,8 @@ location_pricing = {
         },
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
-    }
-        "bulilimamangwe": {
+    },
+    "bulilimamangwe": {
         "Water Survey": 150,
         "Borehole Drilling": {
             "class 6": 1150,
@@ -295,8 +295,7 @@ location_pricing = {
             "class 10": 1437.5,
             "included_depth_m": 40,
             "extra_per_m": 27
-        },
-        "Pump Installation": 0,
+        },        
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -308,8 +307,7 @@ location_pricing = {
             "class 10": 1250,
             "included_depth_m": 40,
             "extra_per_m": 27
-        },
-        "Pump Installation": 0,
+        },        
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -322,7 +320,6 @@ location_pricing = {
             "included_depth_m": 40,
             "extra_per_m": 27
         },
-        "Pump Installation": 0,
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -334,8 +331,7 @@ location_pricing = {
             "class 10": 1250,
             "included_depth_m": 40,
             "extra_per_m": 27
-        },
-        "Pump Installation": 0,
+        },       
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -347,8 +343,7 @@ location_pricing = {
             "class 10": 1312.5,
             "included_depth_m": 40,
             "extra_per_m": 27
-        },
-        "Pump Installation": 0,
+        },       
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -360,8 +355,7 @@ location_pricing = {
             "class 10": 1312.5,
             "included_depth_m": 40,
             "extra_per_m": 27
-        },
-        "Pump Installation": 0,
+        },       
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -373,8 +367,7 @@ location_pricing = {
             "class 10": 1312.5,
             "included_depth_m": 40,
             "extra_per_m": 27
-        },
-        "Pump Installation": 0,
+        },        
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -386,8 +379,7 @@ location_pricing = {
             "class 10": 1312.5,
             "included_depth_m": 40,
             "extra_per_m": 27
-        },
-        "Pump Installation": 0,
+        },      
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -399,8 +391,7 @@ location_pricing = {
             "class 10": 1437.5,
             "included_depth_m": 40,
             "extra_per_m": 27
-        },
-        "Pump Installation": 0,
+        },     
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -412,8 +403,7 @@ location_pricing = {
             "class 10": 1437.5,
             "included_depth_m": 40,
             "extra_per_m": 27
-        },
-        "Pump Installation": 0,
+        },       
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -425,8 +415,7 @@ location_pricing = {
             "class 10": 1250,
             "included_depth_m": 40,
             "extra_per_m": 27
-        },
-        "Pump Installation": 0,
+        },       
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -438,8 +427,7 @@ location_pricing = {
             "class 10": 1375,
             "included_depth_m": 40,
             "extra_per_m": 27
-        },
-        "Pump Installation": 0,
+        },       
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -451,8 +439,7 @@ location_pricing = {
             "class 10": 1500,
             "included_depth_m": 40,
             "extra_per_m": 27
-        },
-        "Pump Installation": 0,
+        },       
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -464,8 +451,7 @@ location_pricing = {
             "class 10": 1312.5,
             "included_depth_m": 40,
             "extra_per_m": 27
-        },
-        "Pump Installation": 0,
+        },        
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
     },
@@ -721,7 +707,7 @@ location_pricing = {
         },
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
-    }
+    },
 
     "Matobo": {
         "Water Survey": 150,
