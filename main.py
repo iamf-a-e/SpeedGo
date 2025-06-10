@@ -11,6 +11,7 @@ import google.generativeai as genai
 import threading
 import time
 
+
 logging.basicConfig(level=logging.INFO)
 
 # Environment variables
@@ -103,30 +104,31 @@ def reverse_geocode_location(gps_coords):
 
     # Local fallback mapping
     
-    if -22.27 < lat < -22.16 and 29.94 < lng < 30.06:
+    if -22.36 < lat < -22.07 and 29.845 < lng < 30.155:
         return "Beitbridge Town"
-    elif -20.06 < lat < -19.95 and 31.54 < lng < 31.65:
+    elif -20.15 < lat < -19.86 and 31.445 < lng < 31.745:
         return "Nyika Growth Point"
-    elif -17.36 < lat < -17.25 and 31.28 < lng < 31.39:
+    elif -17.45 < lat < -17.16 and 31.185 < lng < 31.485:
         return "Bindura Town"
-    elif -17.68 < lat < -17.57 and 27.29 < lng < 27.40:
+    elif -17.77 < lat < -17.48 and 27.195 < lng < 27.495:
         return "Binga Town"
-    elif -19.58 < lat < -19.47 and 28.62 < lng < 28.73:
+    elif -19.67 < lat < -19.38 and 28.525 < lng < 28.825:
         return "Bubi Town/Centre"
-    elif -19.33 < lat < -19.22 and 31.59 < lng < 31.70:
+    elif -19.42 < lat < -19.13 and 31.495 < lng < 31.795:
         return "Murambinda Town"
-    elif -19.39 < lat < -19.28 and 31.38 < lng < 31.49:
+    elif -19.48 < lat < -19.19 and 31.285 < lng < 31.585:
         return "Buhera"
-    elif -20.20 < lat < -20.09 and 28.51 < lng < 28.62:
+    elif -20.29 < lat < -20.00 and 28.415 < lng < 28.715:
         return "Bulawayo City/Town"
-    elif -19.691 < lat < -19.590 and 31.103 < lng < 31.204:
+    elif -19.781 < lat < -19.501 and 31.008 < lng < 31.299:
         return "Gutu"
-    elif -20.99 < lat < -20.88 and 28.95 < lng < 29.06:
+    elif -21.08 < lat < -20.79 and 28.855 < lng < 29.155:
         return "Gwanda"
-    elif -19.50 < lat < -19.39 and 29.76 < lng < 29.87:
+    elif -19.59 < lat < -19.30 and 29.665 < lng < 29.965:
         return "Gweru"
-    elif -17.88 < lat < -17.77 and 31.00 < lng < 31.11:
+    elif -17.97 < lat < -17.68 and 30.905 < lng < 31.205:
         return "Harare"
+
 
     # If not found locally, use Google Maps API
     url = f"https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lng}&key={GOOGLE_MAPS_API_KEY}"
@@ -3921,7 +3923,7 @@ def handle_enter_location_for_quote_shona(prompt, user_data, phone_id):
                 "1. Ongororo yemvura\n"
                 "2. Kuchera chibhorani\n"
                 "3. Kuiswa kwepombi\n"
-                "4. Kuchera maburi ekushandisa\n"
+                "4. Kuchera chibhorani cheBhizimusi\n"
                 "5. Kudzamisa chibhorani",
                 user_data['sender'], phone_id
             )
@@ -3941,7 +3943,7 @@ def handle_enter_location_for_quote_shona(prompt, user_data, phone_id):
             "1. Ongororo yemvura\n"
             "2. Kuchera chibhorani\n"
             "3. Kuiswa kwepombi\n"
-            "4. Kuchera maburi ekushandisa\n"
+            "4. Kuchera chibhorani cheBhizimusi\n"
             "5. Kudzamisa chibhorani",
             user_data['sender'], phone_id
         )
@@ -4034,7 +4036,7 @@ def handle_quote_followup_shona(prompt, user_data, phone_id):
             "1. Ongororo yemvura\n"
             "2. Kuchera chibhorani\n"
             "3. Kuiswa kwepombi\n"
-            "4. Kuchera maburi ekushandisa\n"
+            "4. Kuchera chibhorani cheBhizimusi\n"
             "5. Kudzamisa chibhorani",
             user_data['sender'], phone_id
         )
