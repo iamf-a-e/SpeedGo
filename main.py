@@ -3969,6 +3969,33 @@ def handle_other_services_menu_shona(prompt, user_data, phone_id):
         send("Ndapota sarudza sarudzo inoshanda (1-4).", user_data['sender'], phone_id)
         return {'step': 'other_services_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
+def handle_select_service_shona(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    services = {
+        "1": "Water survey",
+        "2": "Borehole drilling",
+        "3": "Pump installation",
+        "4": "Commercial hole drilling",
+        "5": "Borehole Deepening",
+    }
+    if prompt in services:
+        user.quote_data['service'] = services[prompt]
+        update_user_state(user_data['sender'], {
+            'step': 'collect_quote_details_shona',
+            'user': user.to_dict()
+        })
+        send(
+            "Kuti tikwanise kukupa fungidziro yemutengo, tapota pindura mibvunzo inotevera:\n\n"
+            "1. Nzvimbo yacho iri kupi? (Guta/Kanzuru kana GPS location):\n",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'handle_select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+    else:
+        send("Ndokumbirawo usarudze basa riri pakati pe 1 kusvika ku 5.", user_data['sender'], phone_id)
+        return {'step': 'select_service_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+
 def handle_main_menu_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     if prompt == "1":  # Request a quote
