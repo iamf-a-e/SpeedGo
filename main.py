@@ -2585,74 +2585,56 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
     }
 
 
-def get_pricing_for_location_quotes_shona(location, service_key_input, pump_option_selected=None):
-    # Normalize location key (strip + lowercase)
+def get_pricing_for_location_quotes_shona(location, service_type, pump_option_selected=None): 
     location_key = location.strip().lower()
-    loc_data_shona = location_pricing_shona.get(location_key)
+    service_key = service_type.strip().title()  # Normalize e.g. "Pump Installation"
 
-    if not loc_data_shona:
-        return "Ndine urombo, hatina mitengo yenzvimbo iyi."
+    # Handle Pump Installation separately
+    if service_key == "Pump Installation":
+        if pump_option_selected is None:            
+            message_lines = [f"💧 Sarudzo dzeKuisa Pombi:\n"]
+            for key, option in pump_installation_options.items():
+                desc = option.get('description', 'Hapana tsananguro')
+                message_lines.append(f"{key}. {desc}")
+            return "\n".join(message_lines)
+        else:
+            option = pump_installation_options.get(pump_option_selected)
+            if not option:
+                return "Ndine urombo, sarudzo yaukasarudza yeKuisa Pombi haisi kushanda."
+            desc = option.get('description', 'Hapana tsananguro')
+            price = option.get('price', 'N/A')
+            message = f"💧 Mutengo weSarudzo {pump_option_selected}:\n{desc}\nMutengo: ${price}\n"
+            message += "\nUnoda:\n1. Kubvunza mutengo weimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako"
+            return message
 
-    # Map textual service names and numeric options to internal keys
-    SERVICE_KEY_MAP_SHONA = {
-        # Numeric options
-        "1": "Ongororo Yemvura",
-        "2": "Kuchera chibhorani",
-        "3": "Kuiswa kwepombi",
-        "4": "Kuchera chibhorani cheBhizinesi",
-        "5": "Kuwedzera Udzamu hwechibhorani",
-        
-        # Textual options
-        "ongororo yemvura": "Ongororo Yemvura",
-        "kuchera chibhorani": "Kuchera chibhorani",
-        "Kuchera chibhorani": "Kuchera chibhorani",
-        "kuiswa kwepombi": "Kuiswa kwepombi",
-        "kuchera chibhorani chebhizinesi": "Kuchera chibhorani cheBhizinesi",
-        "kuchera maburi ekutengesa": "Kuchera chibhorani cheBhizinesi",
-        "kuwedzera kuchera chibhorani": "Kuwedzera Udzamu hwechibhorani",
-        "kudzika borehole": "Kuwedzera Udzamu hwechibhorani"
-    }
+    # Rest of the function remains the same...
+    loc_data = location_pricing.get(location_key)
+    if not loc_data:
+        return "Ndine urombo, hatina mitengo yenzvimbo yawataura."
 
-    # Normalize service key input
-    service_key_raw = str(service_key_input).strip().lower()
-    service_key_shona = SERVICE_KEY_MAP_SHONA.get(service_key_raw, service_key_raw)
-
-    # Get price with case-insensitive fallback
-    price = None
-    for key in loc_data_shona.keys():
-        if key.lower() == service_key_shona.lower():
-            price = loc_data_shona[key]
-            break
-
+    price = loc_data.get(service_key)
     if not price:
-        return f"Ndine urombo, hatina mutengo we {service_key_shona} mu {location.title()}."
+        return f"Ndine urombo, hatina mutengo we {service_key} ku {location.title()}."
 
-    # Format response based on price type
-    if isinstance(price, dict):  # For drilling services with multiple classes
-        included_depth = price.get("udzamu hwunosanganisirwa_m", "N/A")
-        extra_rate = price.get("mari yekuwedzera pamita", "N/A")
-        
-        message_lines = [
-            f"💧 Mitengo ye {service_key_shona} mu {location.title()}:",
-            *[f"- {k.title()}: ${v}" for k, v in price.items() if k.startswith("kirasi")],
-            f"- Inosanganisira kudzika kusvika {included_depth}m",
-            f"- Mari yekuwedzera: ${extra_rate}/m pamusoro pekudzika kwakapihwa",
-            "",
-            "Unoda here:",
-            "1. Kukumbira mitengo yeimwe sevhisi",
-            "2. Kudzokera kuMain Menu",
-            "3. Kupa mutengo wako"
-        ]
+    # Format complex pricing dicts nicely
+    if isinstance(price, dict):
+        included_depth = price.get("included_depth_m", "N/A")
+        extra_rate = price.get("extra_per_m", "N/A")
+
+        classes = {k: v for k, v in price.items() if k.startswith("class")}
+        message_lines = [f"Mitengo ye {service_key} ku {location.title()}:"]
+        for cls, amt in classes.items():
+            message_lines.append(f"- {cls.title()}: ${amt}")
+        message_lines.append(f"- Inosanganisira kudzika kusvika ku {included_depth}m")
+        message_lines.append(f"- Mari yekuwedzera: ${extra_rate}/m kana dzika yapfuura\n")
+        message_lines.append("Unoda here:\n1. Kubvunza mutengo weimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako")
         return "\n".join(message_lines)
-    else:  # For simple pricing
-        unit = "pamita" if service_key_shona in ["Kuchera chibhorani cheBhizinesi", "Kuwedzera Udzamu hwechibhorani"] else "mutengo wakafanira"
-        return (
-            f"{service_key_shona} mu {location.title()}: ${price} {unit}\n\n"
-            "Unoda here:\n"
-            "1. Kukumbira mitengo yeimwe sevhisi\n"
-            "2. Kudzokera kuMain Menu\n"
-            "3. Kupa mutengo wako"
-        )        
+
+    # Flat rate or per meter pricing
+    unit = "pamita" if service_key in ["Commercial Hole Drilling", "Borehole Deepening"] else "mutengo wakatarwa"
+    return (f"{service_key} ku {location.title()}: ${price} {unit}\n\n"
+            "Unoda here:\n1. Kubvunza mutengo weimwe sevhisi\n2. Kudzokera kuMain Menu\n3. Kupa mutengo wako")
+
 
 def handle_select_pump_option_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
