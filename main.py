@@ -23499,7 +23499,7 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
     
     if not location:
         send("Ndokumbirawo kuti utange wapa nzvimbo yako usati wasarudza sevhisi.", user_data['sender'], phone_id)
-        return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     service_map = {
         "1": "Water Survey",
@@ -23513,7 +23513,7 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
 
     if not selected_service:
         send("Sarudzo isiri iyo. Ndapota pindura ne 1, 2, 3, 4 kana 5 kuti usarudze sevhisi.", user_data['sender'], phone_id)
-        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'select_service_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # Store selected service
     user.quote_data['service'] = selected_service
@@ -23521,7 +23521,7 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
     # Handle Pump Installation separately as it has options
     if selected_service == "Pump Installation":
         update_user_state(user_data['sender'], {
-            'step': 'select_pump_option',
+            'step': 'select_pump_option_shona',
             'user': user.to_dict()
         })
         message_lines = [f"💧 Sarudzo dzekuisa Pombi:\n"]
@@ -23529,14 +23529,14 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
             desc = option.get('description', 'Tsananguro haisipo')
             message_lines.append(f"{key}. {desc}")
         send("\n".join(message_lines), user_data['sender'], phone_id)
-        return {'step': 'select_pump_option', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'select_pump_option_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # Get pricing for other services
     pricing_message = get_pricing_for_location_quotes_shona(location, selected_service)
     
     # Ask if user wants to return to main menu or choose another service
     update_user_state(user_data['sender'], {
-        'step': 'quote_followup',
+        'step': 'quote_followup_shona',
         'user': user.to_dict()
     })
     send(pricing_message, user_data['sender'], phone_id)
