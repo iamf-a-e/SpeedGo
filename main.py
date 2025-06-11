@@ -12728,7 +12728,7 @@ def handle_select_service_quote(prompt, user_data, phone_id):
     location = user.quote_data.get('location')
     
     if not location:
-        send("Ndokumbirawo kuti utange wapa nzvimbo yako usati wasarudza sevhisi.", user_data['sender'], phone_id)
+        send("Please provide your location before selecting a service.", user_data['sender'], phone_id)
         return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     service_map = {
@@ -12742,7 +12742,7 @@ def handle_select_service_quote(prompt, user_data, phone_id):
     selected_service = service_map.get(prompt.strip())
 
     if not selected_service:
-        send("Sarudzo isiri iyo. Ndapota pindura ne 1, 2, 3, 4 kana 5 kuti usarudze sevhisi.", user_data['sender'], phone_id)
+        send("Invalid choice. Please reply with 1, 2, 3, 4 or 5 to select a service.", user_data['sender'], phone_id)
         return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # Store selected service
@@ -12754,15 +12754,15 @@ def handle_select_service_quote(prompt, user_data, phone_id):
             'step': 'select_pump_option',
             'user': user.to_dict()
         })
-        message_lines = [f"💧 Sarudzo dzekuisa Pombi:\n"]
+        message_lines = [f"💧 Pump Installation Options:\n"]
         for key, option in pump_installation_options.items():
-            desc = option.get('description', 'Tsananguro haisipo')
+            desc = option.get('description', 'No description available')
             message_lines.append(f"{key}. {desc}")
         send("\n".join(message_lines), user_data['sender'], phone_id)
         return {'step': 'select_pump_option', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # Get pricing for other services
-    pricing_message = get_pricing_for_location_quotes_shona(location, selected_service)
+    pricing_message = get_pricing_for_location_quotes(location, selected_service)
     
     # Ask if user wants to return to main menu or choose another service
     update_user_state(user_data['sender'], {
