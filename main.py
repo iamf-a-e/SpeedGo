@@ -32007,12 +32007,12 @@ def get_pricing_for_location_quotes_ndebele(location, service_type, pump_option_
     if service_key == "Pump Installation":
         if pump_option_selected is None:            
             message_lines = [f"💧 Izinketho Zokufaka I-Pump:\n"]
-            for key, option in pump_installation_options.items():
+            for key, option in pump_installation_options_ndebele.items():
                 desc = option.get('description', 'Akukho ncazelo')
                 message_lines.append(f"{key}. {desc}")
             return "\n".join(message_lines)
         else:
-            option = pump_installation_options.get(pump_option_selected)
+            option = pump_installation_options_ndebele.get(pump_option_selected)
             if not option:
                 return "Uxolo, inketho yokufaka i-pump ayilungile."
             desc = option.get('description', 'Akukho ncazelo')
@@ -32022,7 +32022,7 @@ def get_pricing_for_location_quotes_ndebele(location, service_type, pump_option_
             return message
 
     # Rest of the function remains the same...
-    loc_data = location_pricing.get(location_key)
+    loc_data = location_pricing_ndebele.get(location_key)
     if not loc_data:
         return "Uxolo, intengo ayitholakali kule ndawo."
 
