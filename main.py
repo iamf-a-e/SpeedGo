@@ -1963,7 +1963,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chireya Ii": {
         "Water Survey": 150,
@@ -1975,7 +1975,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chireya Iii": {
         "Water Survey": 150,
@@ -1987,7 +1987,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Goredema": {
         "Water Survey": 150,
@@ -1999,7 +1999,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Gumunyu I": {
         "Water Survey": 150,
@@ -2011,7 +2011,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Gumunyu Ii": {
         "Water Survey": 150,
@@ -2023,7 +2023,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Makore I": {
         "Water Survey": 150,
@@ -2035,7 +2035,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Makore Ii": {
         "Water Survey": 150,
@@ -2047,7 +2047,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Musadzi Rs": {
         "Water Survey": 150,
@@ -2059,7 +2059,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Nembudziya I": {
         "Water Survey": 150,
@@ -2071,7 +2071,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Nembudziya Ii": {
         "Water Survey": 150,
@@ -2083,7 +2083,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Nembudziya Iii": {
         "Water Survey": 150,
@@ -2095,7 +2095,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Nora Rs": {
         "Water Survey": 150,
@@ -2107,7 +2107,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Nyaurungwe Rs": {
         "Water Survey": 150,
@@ -2119,7 +2119,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Simchembo": {
         "Water Survey": 150,
@@ -2131,7 +2131,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Tsungai Rs": {
         "Water Survey": 150,
@@ -2143,7 +2143,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Wadze Rs": {
         "Water Survey": 150,
@@ -2155,7 +2155,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Madzivazvido": {
         "Water Survey": 150,
@@ -2167,7 +2167,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Nenyunka": {
         "Water Survey": 150,
@@ -2179,7 +2179,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chemagora Lscfa": {
         "Water Survey": 150,
@@ -2191,7 +2191,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chirima": {
         "Water Survey": 150,
@@ -2203,7 +2203,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chirisa Park": {
         "Water Survey": 150,
@@ -2215,7 +2215,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chisina I": {
         "Water Survey": 150,
@@ -2227,7 +2227,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chisina Ii": {
         "Water Survey": 150,
@@ -2239,7 +2239,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chisina Iii": {
         "Water Survey": 150,
@@ -2251,7 +2251,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Huchu": {
         "Water Survey": 150,
@@ -2263,7 +2263,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Jahana": {
         "Water Survey": 150,
@@ -2275,7 +2275,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Jiri": {
         "Water Survey": 150,
@@ -2287,7 +2287,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Masuka": {
         "Water Survey": 150,
@@ -2299,7 +2299,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Mukoka Msala": {
         "Water Survey": 150,
@@ -2311,7 +2311,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Muyambi": {
         "Water Survey": 150,
@@ -2323,7 +2323,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Ndhlalambi I": {
         "Water Survey": 150,
@@ -2335,7 +2335,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Ndhlalambi Ii": {
         "Water Survey": 150,
@@ -2347,7 +2347,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Nemangwe I": {
         "Water Survey": 150,
@@ -2359,7 +2359,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Nemangwe Ii": {
         "Water Survey": 150,
@@ -2371,7 +2371,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Nemangwe Iii": {
         "Water Survey": 150,
@@ -2383,7 +2383,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Nemangwe Iv": {
         "Water Survey": 150,
@@ -2395,7 +2395,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Nemangwe V": {
         "Water Survey": 150,
@@ -2407,7 +2407,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Ngomeni": {
         "Water Survey": 150,
@@ -2419,7 +2419,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Njelele I": {
         "Water Survey": 150,
@@ -2431,7 +2431,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Njelele Ii": {
         "Water Survey": 150,
@@ -2443,7 +2443,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Njelele Iii": {
         "Water Survey": 150,
@@ -2455,7 +2455,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Sai Mangidi": {
         "Water Survey": 150,
@@ -2467,7 +2467,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Sai Mangisi": {
         "Water Survey": 150,
@@ -2479,7 +2479,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Sai Sengwa": {
         "Water Survey": 150,
@@ -2491,7 +2491,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chinyika": {
         "Water Survey": 150,
@@ -2503,7 +2503,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Dzvete": {
         "Water Survey": 150,
@@ -2515,7 +2515,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Gutu": {
         "Water Survey": 150,
@@ -2527,7 +2527,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Mawanga": {
         "Water Survey": 150,
@@ -2539,7 +2539,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Munyawiri": {
         "Water Survey": 150,
@@ -2551,7 +2551,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Murape": {
         "Water Survey": 150,
@@ -2563,7 +2563,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Mwanza": {
         "Water Survey": 150,
@@ -2575,7 +2575,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Pote": {
         "Water Survey": 150,
@@ -2587,7 +2587,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "R' Nine – Shangure": {
         "Water Survey": 150,
@@ -2599,7 +2599,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Rusike": {
         "Water Survey": 150,
@@ -2611,7 +2611,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Shumba": {
         "Water Survey": 150,
@@ -2623,7 +2623,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Bepura I": {
         "Water Survey": 150,
@@ -2635,7 +2635,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Bepura Ii": {
         "Water Survey": 150,
@@ -2647,7 +2647,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Bepura Iii": {
         "Water Survey": 150,
@@ -2659,7 +2659,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chapoto": {
         "Water Survey": 150,
@@ -2671,7 +2671,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chipuriro A": {
         "Water Survey": 150,
@@ -2683,7 +2683,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chipuriro B": {
         "Water Survey": 150,
@@ -2695,7 +2695,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chipuriro C": {
         "Water Survey": 150,
@@ -2707,7 +2707,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chiriwo": {
         "Water Survey": 150,
@@ -2719,7 +2719,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chisunga": {
         "Water Survey": 150,
@@ -2731,7 +2731,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chitsungo": {
         "Water Survey": 150,
@@ -2743,7 +2743,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Knyurira": {
         "Water Survey": 150,
@@ -2755,7 +2755,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Mamini": {
         "Water Survey": 150,
@@ -2767,7 +2767,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Matsiwo A": {
         "Water Survey": 150,
@@ -2779,7 +2779,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Matsiwo B": {
         "Water Survey": 150,
@@ -2791,7 +2791,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Mukwenya": {
         "Water Survey": 150,
@@ -2803,7 +2803,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Mutota": {
         "Water Survey": 150,
@@ -2815,7 +2815,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Neshangwe": {
         "Water Survey": 150,
@@ -2827,7 +2827,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Nyamhondoro": {
         "Water Survey": 150,
@@ -2839,7 +2839,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Shayavhudzi": {
         "Water Survey": 150,
@@ -2851,7 +2851,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Suoguru": {
         "Water Survey": 150,
@@ -2863,7 +2863,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Basera": {
         "Water Survey": 150,
@@ -2875,7 +2875,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chimombe": {
         "Water Survey": 150,
@@ -2887,7 +2887,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chihambakwe": {
         "Water Survey": 150,
@@ -2899,7 +2899,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chikwanda\\mazare": {
         "Water Survey": 150,
@@ -2911,7 +2911,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chimedza": {
         "Water Survey": 150,
@@ -2923,7 +2923,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     "Chinyika": {
         "Water Survey": 150,
@@ -2935,7 +2935,7 @@ location_pricing = {
             "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
-        "Borehole Deepening": null
+        "Borehole Deepening": 30
     },
     
     "Chitsa": {
