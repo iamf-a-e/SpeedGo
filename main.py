@@ -23525,7 +23525,7 @@ def handle_select_service_quote_shona(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         message_lines = [f"💧 Sarudzo dzekuisa Pombi:\n"]
-        for key, option in pump_installation_options.items():
+        for key, option in pump_installation_options_shona.items():
             desc = option.get('description', 'Tsananguro haisipo')
             message_lines.append(f"{key}. {desc}")
         send("\n".join(message_lines), user_data['sender'], phone_id)
@@ -36767,7 +36767,7 @@ def handle_select_service_quote_ndebele(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         message_lines = [f"💧 Izinketho Zokufaka Ipompi:\n"]
-        for key, option in pump_installation_options.items():
+        for key, option in pump_installation_options_ndebele.items():
             desc = option.get('description', 'No description')
             message_lines.append(f"{key}. {desc}")
         send("\n".join(message_lines), user_data['sender'], phone_id)
