@@ -1191,7 +1191,7 @@ def handle_select_service_quote(prompt, user_data, phone_id):
 
     
     # If Borehole Drilling is selected, ask for the class
-    if service_key == "Borehole Drilling":
+    if selected_service == "Borehole Drilling":
         borehole_classes = {
             "1": "class 6",
             "2": "class 9",
