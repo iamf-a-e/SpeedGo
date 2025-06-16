@@ -1219,6 +1219,8 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         "5": "Borehole Deepening"
     }
 
+    selected_service = service_map.get(prompt.strip())
+
     # Check if we're processing a borehole class selection
     if user_data.get('step') == 'select_borehole_class':
         borehole_classes = {
@@ -1262,14 +1264,7 @@ def handle_select_service_quote(prompt, user_data, phone_id):
             'sender': user_data['sender']
         }
 
-    # Normal service selection
-    selected_service = service_map.get(prompt.strip())
-    
-    if not selected_service:
-        send("Invalid option. Please reply with 1, 2, 3, 4 or 5 to choose a service.", user_data['sender'], phone_id)
-        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    # Handle Borehole Drilling (needs class selection)
+    # If Borehole Drilling is selected, ask for the class
     if selected_service == "Borehole Drilling":
         message = "💧 Please select a borehole class:\n" \
                  "1. Class 6 ($1000)\n" \
@@ -1283,6 +1278,10 @@ def handle_select_service_quote(prompt, user_data, phone_id):
             'user': user.to_dict(),
             'sender': user_data['sender']
         }
+
+    if not selected_service:
+        send("Invalid option. Please reply with 1, 2, 3, 4 or 5 to choose a service.", user_data['sender'], phone_id)
+        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # Store selected service
     user.quote_data['service'] = selected_service
@@ -1326,6 +1325,23 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         'step': 'quote_followup',
         'user': user.to_dict(),
         'sender': user_data['sender']
+    }
+
+def get_pricing_data(location):
+    """Returns pricing data for the given location"""
+    # This would come from your actual data source
+    return {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+        },
+        "Pump Installation": 500,  # Base price, actual would depend on options
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
     }
 
     def handle_other_services_menu(prompt, user_data, phone_id):
