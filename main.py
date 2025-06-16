@@ -311,12 +311,10 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
             return message
 
     if service_key == "Borehole Drilling":
-    base_price = pricing_data[location]["Borehole Drilling"][selected_class]
-    included_depth = pricing_data[location]["Borehole Drilling"]["included_depth_m"]
-    extra_per_m = pricing_data[location]["Borehole Drilling"]["extra_per_m"]
-    # Continue with depth calculations...
-
-    # Rest of the function remains the same...
+        base_price = pricing_data[location]["Borehole Drilling"][selected_class]
+        included_depth = pricing_data[location]["Borehole Drilling"]["included_depth_m"]
+        extra_per_m = pricing_data[location]["Borehole Drilling"]["extra_per_m"]
+        
     loc_data = location_pricing.get(location_key)
     if not loc_data:
         return "Sorry, pricing not available for this location."
@@ -1192,32 +1190,32 @@ def handle_select_service_quote(prompt, user_data, phone_id):
     selected_service = service_map.get(prompt.strip())
 
     
-# If Borehole Drilling is selected, ask for the class
-if selected_service == "Borehole Drilling":
-    borehole_classes = {
-        "1": "class 6",
-        "2": "class 9",
-        "3": "class 10"
-    }
-    
-    print("Please select a borehole class:")
-    print("1: Class 6 ($1000)")
-    print("2: Class 9 ($1125)")
-    print("3: Class 10 ($1250)")
-    
-    class_choice = input("Enter your choice (1-3): ").strip()
-    selected_class = borehole_classes.get(class_choice)
-    
-    if not selected_class:
-        print("Invalid class selection")
-        # Handle error or ask again
+    # If Borehole Drilling is selected, ask for the class
+    if selected_service == "Borehole Drilling":
+        borehole_classes = {
+            "1": "class 6",
+            "2": "class 9",
+            "3": "class 10"
+        }
+        
+        print("Please select a borehole class:")
+        print("1: Class 6 ($1000)")
+        print("2: Class 9 ($1125)")
+        print("3: Class 10 ($1250)")
+        
+        class_choice = input("Enter your choice (1-3): ").strip()
+        selected_class = borehole_classes.get(class_choice)
+        
+        if not selected_class:
+            print("Invalid class selection")
+            # Handle error or ask again
+        else:
+            # Now you have both the service and the class selected
+            print(f"You selected {selected_service} - {selected_class}")
+            # Continue with pricing logic...
     else:
-        # Now you have both the service and the class selected
-        print(f"You selected {selected_service} - {selected_class}")
-        # Continue with pricing logic...
-else:
-    # For other services, proceed normally
-    print(f"You selected {selected_service}")
+        # For other services, proceed normally
+        print(f"You selected {selected_service}")
 
 
     if not selected_service:
