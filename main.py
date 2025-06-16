@@ -1204,128 +1204,163 @@ def handle_booking_confirmation(prompt, user_data, phone_id):
 
 
 def handle_select_service_quote(prompt, user_data, phone_id):
-    user = User.from_dict(user_data['user'])
-    location = user.quote_data.get('location')
-    
-    if not location:
-        send("Please provide your location first before selecting a service.", user_data['sender'], phone_id)
-        return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+    try:
+        user = User.from_dict(user_data['user'])
+        location = user.quote_data.get('location')
+        
+        if not location:
+            send("Please provide your location first before selecting a service.", user_data['sender'], phone_id)
+            return {
+                'step': 'enter_location_for_quote',
+                'user': user.to_dict(),
+                'sender': user_data['sender']
+            }
 
-    service_map = {
-        "1": "Water Survey",
-        "2": "Borehole Drilling",
-        "3": "Pump Installation",
-        "4": "Commercial Hole Drilling",
-        "5": "Borehole Deepening"
-    }
-
-    selected_service = service_map.get(prompt.strip())
-
-    # Check if we're processing a borehole class selection
-    if user_data.get('step') == 'select_borehole_class':
-        borehole_classes = {
-            "1": "class 6",
-            "2": "class 9",
-            "3": "class 10"
+        service_map = {
+            "1": "Water Survey",
+            "2": "Borehole Drilling",
+            "3": "Pump Installation",
+            "4": "Commercial Hole Drilling",
+            "5": "Borehole Deepening"
         }
-        selected_class = borehole_classes.get(prompt.strip())
+
+        # Check if we're processing a borehole class selection
+        if user_data.get('step') == 'select_borehole_class':
+            borehole_classes = {
+                "1": "class 6",
+                "2": "class 9",
+                "3": "class 10"
+            }
+            selected_class = borehole_classes.get(prompt.strip())
+            
+            if not selected_class:
+                send("Invalid option. Please reply with 1, 2 or 3 to choose a borehole class.", 
+                     user_data['sender'], phone_id)
+                return {
+                    'step': 'select_borehole_class',
+                    'user': user.to_dict(),
+                    'sender': user_data['sender']
+                }
+            
+            # Store both service and class
+            user.quote_data.update({
+                'service': "Borehole Drilling",
+                'borehole_class': selected_class
+            })
+            
+            # Get pricing data
+            pricing_data = get_pricing_data(location)
+            drilling_info = pricing_data["Borehole Drilling"]
+            
+            # Build pricing message
+            pricing_message = (
+                f"💧 Borehole Drilling ({selected_class}) Pricing:\n"
+                f"• Base price: ${drilling_info[selected_class]} (first {drilling_info['included_depth_m']}m)\n"
+                f"• Extra depth: ${drilling_info['extra_per_m']} per meter beyond {drilling_info['included_depth_m']}m\n\n"
+                "Would you like to:\n"
+                "1. Ask pricing for another service\n"
+                "2. Return to Main Menu\n"
+                "3. Offer Your Price"
+            )
+            
+            update_user_state(user_data['sender'], {
+                'step': 'quote_followup',
+                'user': user.to_dict()
+            })
+            send(pricing_message, user_data['sender'], phone_id)
+            return {
+                'step': 'quote_followup',
+                'user': user.to_dict(),
+                'sender': user_data['sender']
+            }
+
+        # Normal service selection
+        selected_service = service_map.get(prompt.strip())
         
-        if not selected_class:
-            send("Invalid option. Please reply with 1, 2 or 3 to choose a borehole class.", user_data['sender'], phone_id)
-            return {'step': 'select_borehole_class', 'user': user.to_dict(), 'sender': user_data['sender']}
-        
-        # Store both service and class
-        user.quote_data['service'] = "Borehole Drilling"
-        user.quote_data['borehole_class'] = selected_class
-        
-        # Get pricing for the selected class
+        if not selected_service:
+            send("Invalid option. Please reply with 1, 2, 3, 4 or 5 to choose a service.", 
+                 user_data['sender'], phone_id)
+            return {
+                'step': 'select_service_quote',
+                'user': user.to_dict(),
+                'sender': user_data['sender']
+            }
+
+        # Handle Borehole Drilling (needs class selection)
+        if selected_service == "Borehole Drilling":
+            message = (
+                "💧 Please select a borehole class:\n"
+                "1. Class 6 ($1000)\n"
+                "2. Class 9 ($1125)\n"
+                "3. Class 10 ($1250)\n\n"
+                "Reply with 1, 2 or 3"
+            )
+            
+            send(message, user_data['sender'], phone_id)
+            return {
+                'step': 'select_borehole_class',
+                'user': user.to_dict(),
+                'sender': user_data['sender']
+            }
+
+        # Store selected service
+        user.quote_data['service'] = selected_service
+
+        # Handle Pump Installation separately
+        if selected_service == "Pump Installation":
+            update_user_state(user_data['sender'], {
+                'step': 'select_pump_option',
+                'user': user.to_dict()
+            })
+            message_lines = ["💧 Pump Installation Options:"]
+            message_lines.extend(
+                f"{key}. {option.get('description', 'No description')}"
+                for key, option in pump_installation_options.items()
+            )
+            send("\n".join(message_lines), user_data['sender'], phone_id)
+            return {
+                'step': 'select_pump_option',
+                'user': user.to_dict(),
+                'sender': user_data['sender']
+            }
+
+        # Get pricing for other services
         pricing_data = get_pricing_data(location)
-        base_price = pricing_data["Borehole Drilling"][selected_class]
-        included_depth = pricing_data["Borehole Drilling"]["included_depth_m"]
-        extra_per_m = pricing_data["Borehole Drilling"]["extra_per_m"]
+        price = pricing_data[selected_service]
         
-        # Build pricing message with follow-up options
-        pricing_message = f"💧 Borehole Drilling ({selected_class}) Pricing:\n"
-        pricing_message += f"• Base price: ${base_price} (first {included_depth}m)\n"
-        pricing_message += f"• Extra depth: ${extra_per_m} per meter beyond {included_depth}m\n\n"
-        pricing_message += "Would you like to:\n"
-        pricing_message += "1. Ask pricing for another service\n"
-        pricing_message += "2. Return to Main Menu\n"
-        pricing_message += "3. Offer Your Price"
+        # Build pricing message
+        unit = "per meter" if selected_service == "Commercial Hole Drilling" else ""
+        pricing_message = (
+            f"💧 {selected_service} Pricing:\n"
+            f"Price: ${price} {unit}\n\n"
+            "Would you like to:\n"
+            "1. Ask pricing for another service\n"
+            "2. Return to Main Menu\n"
+            "3. Offer Your Price"
+        )
         
         update_user_state(user_data['sender'], {
             'step': 'quote_followup',
             'user': user.to_dict()
         })
         send(pricing_message, user_data['sender'], phone_id)
+
         return {
             'step': 'quote_followup',
             'user': user.to_dict(),
             'sender': user_data['sender']
         }
 
-    # If Borehole Drilling is selected, ask for the class
-    if selected_service == "Borehole Drilling":
-        message = "💧 Please select a borehole class:\n" \
-                 "1. Class 6 ($1000)\n" \
-                 "2. Class 9 ($1125)\n" \
-                 "3. Class 10 ($1250)\n\n" \
-                 "Reply with 1, 2 or 3"
-        
-        send(message, user_data['sender'], phone_id)
+    except Exception as e:
+        error_msg = f"An error occurred: {str(e)}"
+        send(error_msg, user_data['sender'], phone_id)
         return {
-            'step': 'select_borehole_class',
+            'step': 'error',
             'user': user.to_dict(),
-            'sender': user_data['sender']
+            'sender': user_data['sender'],
+            'error': error_msg
         }
 
-    if not selected_service:
-        send("Invalid option. Please reply with 1, 2, 3, 4 or 5 to choose a service.", user_data['sender'], phone_id)
-        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    # Store selected service
-    user.quote_data['service'] = selected_service
-
-    # Handle Pump Installation separately as it has options
-    if selected_service == "Pump Installation":
-        update_user_state(user_data['sender'], {
-            'step': 'select_pump_option',
-            'user': user.to_dict()
-        })
-        message_lines = [f"💧 Pump Installation Options:\n"]
-        for key, option in pump_installation_options.items():
-            desc = option.get('description', 'No description')
-            message_lines.append(f"{key}. {desc}")
-        send("\n".join(message_lines), user_data['sender'], phone_id)
-        return {'step': 'select_pump_option', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-    # Get pricing for other services
-    pricing_data = get_pricing_data(location)
-    price = pricing_data[selected_service]
-    
-    # Build pricing message with follow-up options for all services
-    pricing_message = f"💧 {selected_service} Pricing:\n"
-    if selected_service == "Commercial Hole Drilling":
-        pricing_message += f"Price: ${price} per meter\n\n"
-    else:
-        pricing_message += f"Price: ${price}\n\n"
-    
-    pricing_message += "Would you like to:\n"
-    pricing_message += "1. Ask pricing for another service\n"
-    pricing_message += "2. Return to Main Menu\n"
-    pricing_message += "3. Offer Your Price"
-    
-    update_user_state(user_data['sender'], {
-        'step': 'quote_followup',
-        'user': user.to_dict()
-    })
-    send(pricing_message, user_data['sender'], phone_id)
-
-    return {
-        'step': 'quote_followup',
-        'user': user.to_dict(),
-        'sender': user_data['sender']
-    }
 
 def get_pricing_data(location):
     """Returns pricing data for the given location"""
