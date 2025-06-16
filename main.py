@@ -310,13 +310,42 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
             message += "\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price"
             return message
 
+    
     if service_key == "Borehole Drilling":
-        base_price = pricing_data[location]["Borehole Drilling"][selected_class]
-        included_depth = pricing_data[location]["Borehole Drilling"]["included_depth_m"]
-        extra_per_m = pricing_data[location]["Borehole Drilling"]["extra_per_m"]
-        message = f"💧 Pricing for option {selected_class}:\n{desc}\nPrice: ${price}\n"
-        message += "\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price"
-        return message
+        if 'selected_class' in user.quote_data:  # Only show price if class has been selected
+            selected_class = user.quote_data['selected_class']
+            base_price = pricing_data[location]["Borehole Drilling"][selected_class]
+            included_depth = pricing_data[location]["Borehole Drilling"]["included_depth_m"]
+            extra_per_m = pricing_data[location]["Borehole Drilling"]["extra_per_m"]
+            
+            # Build the pricing message
+            message = f"💧 Borehole Drilling ({selected_class}) Pricing:\n"
+            message += f"• Base price: ${base_price} (first {included_depth}m)\n"
+            message += f"• Extra depth: ${extra_per_m} per meter beyond {included_depth}m\n\n"
+            
+            # Add follow-up options
+            message += "Would you like to:\n"
+            message += "1. Ask pricing for another service\n"
+            message += "2. Return to Main Menu\n"
+            message += "3. Offer Your Price"
+            
+            # Clear the class selection so it's fresh if they choose another service
+            del user.quote_data['selected_class']
+            
+            return message
+        else:
+            # Ask for class selection first
+            message = "💧 Please select a borehole class:\n"
+            message += "1. Class 6 ($1000)\n"
+            message += "2. Class 9 ($1125)\n"
+            message += "3. Class 10 ($1250)\n\n"
+            message += "Reply with 1, 2 or 3"
+            
+            # Update state to expect class selection next
+            return {
+                'message': message,
+                'next_step': 'await_borehole_class'
+            }
         
     loc_data = location_pricing.get(location_key)
     if not loc_data:
@@ -1190,8 +1219,6 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         "5": "Borehole Deepening"
     }
 
-    selected_service = service_map.get(prompt.strip())
-
     # Check if we're processing a borehole class selection
     if user_data.get('step') == 'select_borehole_class':
         borehole_classes = {
@@ -1210,7 +1237,19 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         user.quote_data['borehole_class'] = selected_class
         
         # Get pricing for the selected class
-        pricing_message = get_pricing_for_location_quotes(location, "Borehole Drilling", selected_class)
+        pricing_data = get_pricing_data(location)
+        base_price = pricing_data["Borehole Drilling"][selected_class]
+        included_depth = pricing_data["Borehole Drilling"]["included_depth_m"]
+        extra_per_m = pricing_data["Borehole Drilling"]["extra_per_m"]
+        
+        # Build pricing message with follow-up options
+        pricing_message = f"💧 Borehole Drilling ({selected_class}) Pricing:\n"
+        pricing_message += f"• Base price: ${base_price} (first {included_depth}m)\n"
+        pricing_message += f"• Extra depth: ${extra_per_m} per meter beyond {included_depth}m\n\n"
+        pricing_message += "Would you like to:\n"
+        pricing_message += "1. Ask pricing for another service\n"
+        pricing_message += "2. Return to Main Menu\n"
+        pricing_message += "3. Offer Your Price"
         
         update_user_state(user_data['sender'], {
             'step': 'quote_followup',
@@ -1223,7 +1262,14 @@ def handle_select_service_quote(prompt, user_data, phone_id):
             'sender': user_data['sender']
         }
 
-    # If Borehole Drilling is selected, ask for the class
+    # Normal service selection
+    selected_service = service_map.get(prompt.strip())
+    
+    if not selected_service:
+        send("Invalid option. Please reply with 1, 2, 3, 4 or 5 to choose a service.", user_data['sender'], phone_id)
+        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    # Handle Borehole Drilling (needs class selection)
     if selected_service == "Borehole Drilling":
         message = "💧 Please select a borehole class:\n" \
                  "1. Class 6 ($1000)\n" \
@@ -1237,10 +1283,6 @@ def handle_select_service_quote(prompt, user_data, phone_id):
             'user': user.to_dict(),
             'sender': user_data['sender']
         }
-
-    if not selected_service:
-        send("Invalid option. Please reply with 1, 2, 3, 4 or 5 to choose a service.", user_data['sender'], phone_id)
-        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # Store selected service
     user.quote_data['service'] = selected_service
@@ -1259,9 +1301,21 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         return {'step': 'select_pump_option', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # Get pricing for other services
-    pricing_message = get_pricing_for_location_quotes(location, selected_service)
+    pricing_data = get_pricing_data(location)
+    price = pricing_data[selected_service]
     
-    # Ask if user wants to return to main menu or choose another service
+    # Build pricing message with follow-up options for all services
+    pricing_message = f"💧 {selected_service} Pricing:\n"
+    if selected_service == "Commercial Hole Drilling":
+        pricing_message += f"Price: ${price} per meter\n\n"
+    else:
+        pricing_message += f"Price: ${price}\n\n"
+    
+    pricing_message += "Would you like to:\n"
+    pricing_message += "1. Ask pricing for another service\n"
+    pricing_message += "2. Return to Main Menu\n"
+    pricing_message += "3. Offer Your Price"
+    
     update_user_state(user_data['sender'], {
         'step': 'quote_followup',
         'user': user.to_dict()
@@ -1273,7 +1327,8 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         'user': user.to_dict(),
         'sender': user_data['sender']
     }
-def handle_other_services_menu(prompt, user_data, phone_id):
+
+    def handle_other_services_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     choice = prompt.strip()
 
