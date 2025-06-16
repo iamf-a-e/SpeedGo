@@ -314,6 +314,9 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
         base_price = pricing_data[location]["Borehole Drilling"][selected_class]
         included_depth = pricing_data[location]["Borehole Drilling"]["included_depth_m"]
         extra_per_m = pricing_data[location]["Borehole Drilling"]["extra_per_m"]
+        message = f"💧 Pricing for option {selected_class}:\n{desc}\nPrice: ${price}\n"
+        message += "\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price"
+        return message
         
     loc_data = location_pricing.get(location_key)
     if not loc_data:
