@@ -1189,34 +1189,51 @@ def handle_select_service_quote(prompt, user_data, phone_id):
 
     selected_service = service_map.get(prompt.strip())
 
-    
-    # If Borehole Drilling is selected, ask for the class
-    if selected_service == "Borehole Drilling":
+    # Check if we're processing a borehole class selection
+    if user_data.get('step') == 'select_borehole_class':
         borehole_classes = {
             "1": "class 6",
             "2": "class 9",
             "3": "class 10"
         }
-        
-        print("Please select a borehole class:")
-        print("1: Class 6 ($1000)")
-        print("2: Class 9 ($1125)")
-        print("3: Class 10 ($1250)")
-        
-        class_choice = input("Enter your choice (1-3): ").strip()
-        selected_class = borehole_classes.get(class_choice)
+        selected_class = borehole_classes.get(prompt.strip())
         
         if not selected_class:
-            print("Invalid class selection")
-            # Handle error or ask again
-        else:
-            # Now you have both the service and the class selected
-            print(f"You selected {selected_service} - {selected_class}")
-            # Continue with pricing logic...
-    else:
-        # For other services, proceed normally
-        print(f"You selected {selected_service}")
+            send("Invalid option. Please reply with 1, 2 or 3 to choose a borehole class.", user_data['sender'], phone_id)
+            return {'step': 'select_borehole_class', 'user': user.to_dict(), 'sender': user_data['sender']}
+        
+        # Store both service and class
+        user.quote_data['service'] = "Borehole Drilling"
+        user.quote_data['borehole_class'] = selected_class
+        
+        # Get pricing for the selected class
+        pricing_message = get_pricing_for_location_quotes(location, "Borehole Drilling", selected_class)
+        
+        update_user_state(user_data['sender'], {
+            'step': 'quote_followup',
+            'user': user.to_dict()
+        })
+        send(pricing_message, user_data['sender'], phone_id)
+        return {
+            'step': 'quote_followup',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
 
+    # If Borehole Drilling is selected, ask for the class
+    if selected_service == "Borehole Drilling":
+        message = "💧 Please select a borehole class:\n" \
+                 "1. Class 6 ($1000)\n" \
+                 "2. Class 9 ($1125)\n" \
+                 "3. Class 10 ($1250)\n\n" \
+                 "Reply with 1, 2 or 3"
+        
+        send(message, user_data['sender'], phone_id)
+        return {
+            'step': 'select_borehole_class',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
 
     if not selected_service:
         send("Invalid option. Please reply with 1, 2, 3, 4 or 5 to choose a service.", user_data['sender'], phone_id)
@@ -1253,8 +1270,6 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         'user': user.to_dict(),
         'sender': user_data['sender']
     }
-
-
 def handle_other_services_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     choice = prompt.strip()
