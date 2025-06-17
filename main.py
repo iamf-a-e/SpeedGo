@@ -1942,12 +1942,15 @@ def handle_borehole_class_pricing(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            f"Class 6 Pricing Extension:\n\n"
-            f"extra_per_m is $27\n"
-            f"included_depth_m 40m",                                 
+            "Class 6 Pricing Extension:\n\n"
+            "extra_per_m is $27\n"
+            "included_depth_m 40m\n\n"
+            "Would you like to:\n"
+            "1. Ask pricing for another service\n"
+            "2. Return to Main Menu\n"
+            "3. Offer Price",
             user_data['sender'], phone_id
         )
-        send("\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
         return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt.strip() == "2":
@@ -1957,12 +1960,15 @@ def handle_borehole_class_pricing(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            f"Class 9 Pricing Extension:\n\n"
-            f"extra_per_m is $30\n"
-            f"included_depth_m 40m",                                 
+            "Class 9 Pricing Extension:\n\n"
+            "extra_per_m is $30\n"
+            "included_depth_m 40m\n\n"
+            "Would you like to:\n"
+            "1. Ask pricing for another service\n"
+            "2. Return to Main Menu\n"
+            "3. Offer Price",
             user_data['sender'], phone_id
         )
-        send("\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
         return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt.strip() == "3":
@@ -1972,17 +1978,18 @@ def handle_borehole_class_pricing(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            f"Class 10 Pricing Extension:\n\n"
-            f"extra_per_m is $35\n"
-            f"included_depth_m 40m",                                 
+            "Class 10 Pricing Extension:\n\n"
+            "extra_per_m is $35\n"
+            "included_depth_m 40m\n\n"
+            "Would you like to:\n"
+            "1. Ask pricing for another service\n"
+            "2. Return to Main Menu\n"
+            "3. Offer Price",
             user_data['sender'], phone_id
         )
-        send("\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
-        return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}  
         
         
-        
-    
 
 # Action mapping
 action_mapping = {
