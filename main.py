@@ -2149,6 +2149,7 @@ action_mapping = {
     "enter_location_for_quote": handle_enter_location_for_quote,
     "select_service_quote": handle_select_service_quote,
     "select_service": handle_select_service,
+    "borehole_class_selection": handle_borehole_class_selection,
     "select_pump_option": handle_select_pump_option,
     "quote_followup": handle_quote_followup,   
     "collect_quote_details": handle_collect_quote_details,
