@@ -1916,25 +1916,25 @@ def handle_quote_followup(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
 
-elif prompt.strip() == "4":
-    # Borehole Classes
-    update_user_state(user_data['sender'], {
-        'step': 'borehole_class_pricing',
-        'user': user.to_dict()    
-    })
-    send(
-        "Please select a class\n\n"
-        "1. Class 6\n"
-        "2. Class 9\n"
-        "3. Class 10\n",
-        user_data['sender'], phone_id
-    )
-    return {'step': 'borehole_class_pricing', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-else:
-    send("Invalid option. Reply 1 to ask about another service or 2 to return to the main menu or 3 if you want to make a price offer.", 
-         user_data['sender'], phone_id)
-    return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt.strip() == "4":
+        # Borehole Classes
+        update_user_state(user_data['sender'], {
+            'step': 'borehole_class_pricing',
+            'user': user.to_dict()    
+        })
+        send(
+            "Please select a class\n\n"
+            "1. Class 6\n"
+            "2. Class 9\n"
+            "3. Class 10\n",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'borehole_class_pricing', 'user': user.to_dict(), 'sender': user_data['sender']}
+    
+    else:
+        send("Invalid option. Reply 1 to ask about another service or 2 to return to the main menu or 3 if you want to make a price offer.", 
+             user_data['sender'], phone_id)
+        return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 def handle_borehole_class_pricing(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
