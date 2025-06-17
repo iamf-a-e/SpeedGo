@@ -151,29 +151,19 @@ def reverse_geocode_location(gps_coords):
 
 # Pricing dictionaries
 location_pricing = {
-"beitbridge": {
-    "Water Survey": 150,
-    "Borehole Drilling": {
-        "selection_required": True,
-        "options": {
-            "Class 6 (40m included)": {
-                "base_price": 1000,
-                "extra_per_m": 27
-            },
-            "Class 9 (40m included)": {
-                "base_price": 1125,
-                "extra_per_m": 27
-            },
-            "Class 10 (40m included)": {
-                "base_price": 1250,
-                "extra_per_m": 27
+    "beitbridge": {
+        "Water Survey": 150,
+        "Borehole Drilling": {
+            "selection_required": True,
+            "options": {
+                "Class 6": {"base_price": 1000, "included_depth": 40, "extra_per_m": 27},
+                "Class 9": {"base_price": 1125, "included_depth": 40, "extra_per_m": 27},
+                "Class 10": {"base_price": 1250, "included_depth": 40, "extra_per_m": 27}
             }
         },
-        "common_notes": "Includes depth up to 40m. Extra charge: $27/m beyond included depth"
+        "Commercial Hole Drilling": 80,
+        "Borehole Deepening": 30
     },
-    "Commercial Hole Drilling": 80,
-    "Borehole Deepening": 30
-},
     "nyika": {
         "Water Survey": 150,
         "Borehole Drilling": {
@@ -1185,6 +1175,7 @@ def handle_booking_confirmation(prompt, user_data, phone_id):
         return {'step': 'booking_confirmation', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
+       
 def handle_select_service_quote(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     location = user.quote_data.get('location')
@@ -1202,13 +1193,25 @@ def handle_select_service_quote(prompt, user_data, phone_id):
     }
 
     selected_service = service_map.get(prompt.strip())
-
+    
+    
     if not selected_service:
         send("Invalid option. Please reply with 1, 2, 3, 4 or 5 to choose a service.", user_data['sender'], phone_id)
         return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # Store selected service
     user.quote_data['service'] = selected_service
+
+    
+    if selected_service == "Borehole Drilling":
+        display_borehole_options(location)
+        # Add additional handling for class selection here
+    elif selected_service in service_map.values():
+        print(f"\nYou selected: {selected_service}")
+        # Handle other services here
+    else:
+        print("Invalid service selection")
+        
 
     # Handle Pump Installation separately as it has options
     if selected_service == "Pump Installation":
@@ -1239,6 +1242,25 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         'sender': user_data['sender']
     }
 
+def display_borehole_options(location):
+    data = pricing_data[location]["Borehole Drilling"]
+    
+    if data["selection_required"]:
+        print(f"Borehole Drilling Pricing in {location.title()}:")
+        for i, (class_name, details) in enumerate(data["options"].items(), 1):
+            print(f"{i}. {class_name} - ${details['base_price']}")
+            print(f"   - Includes depth up to {details['included_depth']}m")
+            print(f"   - Extra charge: ${details['extra_per_m']}/m beyond included depth\n")
+        
+        print("Would you like to:")        
+        print("1. Ask pricing for another service")
+        print("2. Return to Main Menu")
+        print("3. Offer Price")
+        print("4. Select a class for detailed quote")
+    else:
+        # Handle non-selectable pricing
+        pass
+        
 
 def handle_other_services_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
