@@ -516,7 +516,8 @@ def human_agent(prompt, user_data, phone_id):
         f"1 - Talk to customer\n"
         f"2 - Back to bot"
     )
-    threading.Thread(target=send, args=(agent_message, AGENT_NUMBER, phone_id)).start()
+    send(agent_message, AGENT_NUMBER, phone_id)
+
 
     # 3. Schedule fallback
     def send_fallback():
