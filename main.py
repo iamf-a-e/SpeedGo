@@ -240,9 +240,7 @@ location_pricing = {
         "Borehole Drilling": {
             "class 6": 1000,
             "class 9": 1125,
-            "class 10": 1250,
-            "included_depth_m": 40,
-            "extra_per_m": 30
+            "class 10": 1250
         },       
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
@@ -1948,8 +1946,8 @@ def handle_borehole_class_pricing(prompt, user_data, phone_id):
         })
         send(
             f"Class 6 Pricing in {location.title()}:\n"
-            f"- Base price: $1000 (includes 40m)\n"
-            f"- Extra charge: $27 per m beyond 40m",
+            f"extra_per_m is $27"
+            f"included_depth_m 40m",                                 
             user_data['sender'], phone_id
         )
         return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -1964,6 +1962,7 @@ action_mapping = {
     "enter_location_for_quote": handle_enter_location_for_quote,
     "select_service_quote": handle_select_service_quote,
     "select_service": handle_select_service,
+    "borehole_class_pricing": handle_borehole_class_pricing,
     "select_pump_option": handle_select_pump_option,
     "quote_followup": handle_quote_followup,   
     "collect_quote_details": handle_collect_quote_details,
