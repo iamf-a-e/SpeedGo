@@ -154,12 +154,12 @@ location_pricing = {
     "beitbridge": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "selection_required": True,
-            "options": {
-                "Class 6": {"base_price": 1000, "included_depth": 40, "extra_per_m": 27},
-                "Class 9": {"base_price": 1125, "included_depth": 40, "extra_per_m": 27},
-                "Class 10": {"base_price": 1250, "included_depth": 40, "extra_per_m": 27}
-            }
+            "class 6": 1000,
+            "class 9": 1125,
+            "class 10": 1250,
+            "included_depth_m": 40,
+            "extra_per_m": 27
+            "select class": 4
         },
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
@@ -167,7 +167,6 @@ location_pricing = {
     "nyika": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": True,
             "class 6": 1050,
             "class 9": 1181.25,
             "class 10": 1312.5,
@@ -180,7 +179,6 @@ location_pricing = {
     "bindura": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": True,
             "class 6": 1000,
             "class 9": 1125,
             "class 10": 1250,
@@ -193,7 +191,6 @@ location_pricing = {
     "binga": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": True,
             "class 6": 1300,
             "class 9": 1462.5,
             "class 10": 1625,
@@ -206,7 +203,6 @@ location_pricing = {
     "bubi": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": True,
             "class 6": 1200,
             "class 9": 1350,
             "class 10": 1500,
@@ -219,7 +215,6 @@ location_pricing = {
     "murambinda": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": True,
             "class 6": 1050,
             "class 9": 1181.25,
             "class 10": 1312.5,
@@ -244,7 +239,6 @@ location_pricing = {
     "harare": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": True,
             "class 6": 1000,
             "class 9": 1125,
             "class 10": 1250,
@@ -257,7 +251,6 @@ location_pricing = {
     "bulawayo": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": True,
             "class 6": 1000,
             "class 9": 1125,
             "class 10": 1250,
@@ -1174,33 +1167,6 @@ def handle_booking_confirmation(prompt, user_data, phone_id):
         send("Please contact our support team to reschedule.", user_data['sender'], phone_id)
         return {'step': 'booking_confirmation', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-service_map = {
-        "1": "Water Survey",
-        "2": "Borehole Drilling",
-        "3": "Pump Installation",
-        "4": "Commercial Hole Drilling",
-        "5": "Borehole Deepening"
-    }
-
-def display_borehole_options(location):
-    data = location_pricing[location]["Borehole Drilling"]
-    
-    if data["selection_required"]:
-        print(f"Borehole Drilling Pricing in {location.title()}:")
-        for i, (class_name, details) in enumerate(data["options"].items(), 1):
-            print(f"{i}. {class_name} - ${details['base_price']}")
-            print(f"   - Includes depth up to {details['included_depth']}m")
-            print(f"   - Extra charge: ${details['extra_per_m']}/m beyond included depth\n")
-        
-        print("Would you like to:")        
-        print("1. Ask pricing for another service")
-        print("2. Return to Main Menu")
-        print("3. Offer Price")
-        print("4. Select a class for detailed quote")
-    else:
-        # Handle non-selectable pricing
-        pass
-
 
 def handle_select_service_quote(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
@@ -1219,25 +1185,13 @@ def handle_select_service_quote(prompt, user_data, phone_id):
     }
 
     selected_service = service_map.get(prompt.strip())
-    
-    
+
     if not selected_service:
         send("Invalid option. Please reply with 1, 2, 3, 4 or 5 to choose a service.", user_data['sender'], phone_id)
         return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # Store selected service
     user.quote_data['service'] = selected_service
-
-    
-    if selected_service == "Borehole Drilling":
-        display_borehole_options(location)
-        # Add additional handling for class selection here
-    elif selected_service in service_map.values():
-        print(f"\nYou selected: {selected_service}")
-        # Handle other services here
-    else:
-        print("Invalid service selection")
-        
 
     # Handle Pump Installation separately as it has options
     if selected_service == "Pump Installation":
@@ -1267,7 +1221,6 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         'user': user.to_dict(),
         'sender': user_data['sender']
     }
-
 
 
 def handle_other_services_menu(prompt, user_data, phone_id):
