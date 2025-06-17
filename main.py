@@ -158,8 +158,7 @@ location_pricing = {
             "class 9": 1125,
             "class 10": 1250,
             "included_depth_m": 40,
-            "extra_per_m": 27,
-            "select class": 4
+            "extra_per_m": 27           
         },
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
@@ -331,7 +330,7 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
             message_lines.append(f"- {cls.title()}: ${amt}")
         message_lines.append(f"- Includes depth up to {included_depth}m")
         message_lines.append(f"- Extra charge: ${extra_rate}/m beyond included depth\n")
-        message_lines.append("Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
+        message_lines.append("Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price\n4. Select borehole class")
         return "\n".join(message_lines)
 
     # Flat rate or per meter pricing
