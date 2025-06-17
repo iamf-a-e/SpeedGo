@@ -2127,11 +2127,20 @@ def webhook():
 
 
 def message_handler(prompt, sender, phone_id, message):
+    # First check if this is a message from the agent
+    if sender == AGENT_NUMBER:
+        handle_agent_message(prompt, sender, phone_id, message)
+        return  # Exit after handling agent message
+    
+    # Handle regular customer messages
     user_data = get_user_state(sender)
-    user_data['sender'] = sender
+    if not user_data:
+        user_data = {'sender': sender}
+    else:
+        user_data['sender'] = sender
 
     # If this is a location message, inject location into user_data
-    if message.get("type") == "location":
+    if isinstance(message, dict) and message.get("type") == "location":
         location = message.get("location", {})
         if "latitude" in location and "longitude" in location:
             user_data["location"] = {
@@ -2151,6 +2160,63 @@ def message_handler(prompt, sender, phone_id, message):
     step = user_data.get('step', 'welcome')
     next_state = get_action(step, prompt, user_data, phone_id)
     update_user_state(sender, next_state)
+
+def handle_agent_message(prompt, sender, phone_id, message):
+    """
+    Handles messages coming from the agent number.
+    
+    Args:
+        prompt (str): The message content from the agent
+        sender (str): The phone number of the agent (should be AGENT_NUMBER)
+        phone_id (str): The phone ID for sending replies
+        message (dict): The raw message object (for handling attachments/locations)
+    """
+    # Get the agent's current state
+    agent_state = get_user_state(sender)
+    
+    if not agent_state or agent_state.get('step') != 'agent_reply':
+        # Agent isn't in a conversation handling state
+        send("⚠️ You're not currently handling any customer. Please wait for a new request.", sender, phone_id)
+        return
+    
+    # Get the customer number this agent is handling
+    customer_number = agent_state.get('customer_number')
+    if not customer_number:
+        send("⚠️ Error: No customer assigned. Please wait for a new request.", sender, phone_id)
+        return
+    
+    # Check if this is a control command (1 or 2)
+    prompt = prompt.strip() if isinstance(prompt, str) else ""
+    if prompt in ('1', '2'):
+        handle_agent_reply(prompt, customer_number, phone_id)
+    else:
+        # Forward regular messages to customer when in conversation mode
+        customer_state = get_user_state(customer_number)
+        if customer_state and customer_state.get('step') == 'talking_to_human_agent':
+            # Handle different message types
+            if isinstance(message, dict):
+                if message.get("type") == "text":
+                    send(f"Agent: {message.get('text', '')}", customer_number, phone_id)
+                elif message.get("type") == "image":
+                    # Forward image with optional caption
+                    caption = f"Agent: {message.get('caption', '')}" if message.get('caption') else "From agent:"
+                    send_image(message.get('url'), caption, customer_number, phone_id)
+                elif message.get("type") == "location":
+                    # Forward location
+                    send_location(
+                        message.get('location', {}).get('latitude'),
+                        message.get('location', {}).get('longitude'),
+                        "Agent shared location",
+                        customer_number,
+                        phone_id
+                    )
+                # Add other media types as needed
+            else:
+                # Plain text message
+                send(f"Agent: {prompt}", customer_number, phone_id)
+        else:
+            send("⚠️ You need to start the conversation first by replying '1'", sender, phone_id)
+
 
 def get_action(current_state, prompt, user_data, phone_id):
     handler = action_mapping.get(current_state, handle_welcome)
