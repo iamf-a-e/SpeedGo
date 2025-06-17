@@ -1243,7 +1243,7 @@ def handle_select_service_quote(prompt, user_data, phone_id):
     }
 
 def display_borehole_options(location):
-    data = pricing_data[location]["Borehole Drilling"]
+    data = location_pricing[location]["Borehole Drilling"]
     
     if data["selection_required"]:
         print(f"Borehole Drilling Pricing in {location.title()}:")
