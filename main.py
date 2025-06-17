@@ -154,28 +154,18 @@ location_pricing = {
     "beitbridge": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "select_class": True,  
-            "options": {           
-                "class 6": {
-                    "price": 1000,
-                    "included_depth_m": 40,
-                    "extra_per_m": 27
-                },
-                "class 9": {
-                    "price": 1125,
-                    "included_depth_m": 40,
-                    "extra_per_m": 27
-                },
-                "class 10": {
-                    "price": 1250,
-                    "included_depth_m": 40,
-                    "extra_per_m": 27
-                }
-            }
+            "select_class": True,
+            "options": {
+                "class 6": 1000,
+                "class 9": 1125,
+                "class 10": 1250
+            },
+            "included_depth_m": 40,
+            "extra_per_m": 27
         },
         "Commercial Hole Drilling": 80,
         "Borehole Deepening": 30
-    }
+    },
     "nyika": {
         "Water Survey": 150,
         "Borehole Drilling": {
