@@ -1361,7 +1361,7 @@ def handle_select_service_quote(prompt, user_data, phone_id):
             'error': error_msg
         }
 
-    def handle_other_services_menu(prompt, user_data, phone_id):
+def handle_other_services_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     choice = prompt.strip()
 
@@ -1410,7 +1410,6 @@ def handle_select_service_quote(prompt, user_data, phone_id):
     else:
         send("Please select a valid option (1-4).", user_data['sender'], phone_id)
         return {'step': 'other_services_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-
 
 def send_main_menu(phone_number, phone_id):
     menu_text = (
