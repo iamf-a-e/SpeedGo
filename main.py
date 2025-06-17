@@ -2023,7 +2023,7 @@ action_mapping = {
     "agent_reply": handle_agent_reply,
     "agent_reply": handle_agent_reply,
     "talking_to_customer": handle_agent_conversation,
-    "agent_available": handle_agent_available
+    "agent_available": handle_agent_available,
 
     "select_pump_option": handle_select_pump_option,
     "quote_followup": handle_quote_followup,   
