@@ -19,6 +19,7 @@ phone_id = os.environ.get("PHONE_ID")
 gen_api = os.environ.get("GEN_API")
 owner_phone = os.environ.get("OWNER_PHONE")
 GOOGLE_MAPS_API_KEY = "AlzaSyCXDMMhg7FzP|ElKmrlkv1TqtD3HgHwW50"
+AGENT_NUMBER = "+263789993916"
 
 # Upstash Redis setup
 redis = Redis(
@@ -499,21 +500,28 @@ def handle_main_menu(prompt, user_data, phone_id):
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
+
 def human_agent(prompt, user_data, phone_id):
     customer_number = user_data['sender']
-    
-    # 1. Immediately notify customer
+
+    # 1. Notify customer
     send("Connecting you to a human agent...", customer_number, phone_id)
-    
-    # 2. Notify agent in background
-    agent_number = "+263719835124"
-    agent_message = f"New customer request from {customer_number}\nMessage: {prompt}"
-    threading.Thread(target=send, args=(agent_message, agent_number, phone_id)).start()
-    
-    # 3. After 10 seconds, send fallback options
+
+    # 2. Notify agent
+    agent_message = (
+        f"👋 New customer request on WhatsApp\n\n"
+        f"📱 Customer: {customer_number}\n"
+        f"📩 Message: \"{prompt}\"\n\n"
+        f"Reply with:\n"
+        f"1 - Talk to customer\n"
+        f"2 - Back to bot"
+    )
+    threading.Thread(target=send, args=(agent_message, AGENT_NUMBER, phone_id)).start()
+
+    # 3. Schedule fallback
     def send_fallback():
         user_data = get_user_state(customer_number)
-        if user_data and user_data.get('step') in ['human_agent', 'waiting_for_human_agent_response']:
+        if user_data and user_data.get('step') == 'waiting_for_human_agent_response':
             send("If you haven't been contacted yet, you can call us directly at +263719835124", customer_number, phone_id)
             send("Would you like to:\n1. Return to main menu\n2. Keep waiting", customer_number, phone_id)
             update_user_state(customer_number, {
@@ -521,59 +529,54 @@ def human_agent(prompt, user_data, phone_id):
                 'user': user_data.get('user', {}),
                 'sender': customer_number
             })
-    
+
     threading.Timer(10, send_fallback).start()
-    
-    # 4. Update state to waiting
+
+    # 4. Update customer state
     update_user_state(customer_number, {
         'step': 'waiting_for_human_agent_response',
         'user': user_data.get('user', {}),
         'sender': customer_number,
         'waiting_since': time.time()
     })
-    
+
     return {'step': 'waiting_for_human_agent_response', 'user': user_data.get('user', {}), 'sender': customer_number}
 
+def handle_agent_reply(agent_reply, customer_number, phone_id):
+    agent_reply = agent_reply.strip()
+    
+    if agent_reply == "1":
+        # Agent chooses to talk to customer
+        send("✅ You're now talking to the customer. Bot is paused until you send '2' to return to bot.", AGENT_NUMBER, phone_id)
+        send("✅ You are now connected to a human agent. Please wait for their response.", customer_number, phone_id)
 
-def notify_agent(customer_number, prompt, agent_number, phone_id):
-    agent_message = (
-        f"👋 New customer request on WhatsApp\n\n"
-        f"📱 Number: {customer_number}\n"
-        f"📩 Message: \"{prompt}\""
-    )
-    send(agent_message, agent_number, phone_id)
-
-def send_fallback_option(customer_number, phone_id):
-    # Check if still waiting
-    user_data = get_user_state(customer_number)
-    if user_data and user_data.get('step') == 'waiting_for_human_agent_response':
-        send("Alternatively, you can contact us directly at +263719835124", customer_number, phone_id)
-        send("Would you like to:\n1. Return to main menu\n2. End conversation", customer_number, phone_id)
         update_user_state(customer_number, {
-            'step': 'human_agent_followup',
-            'user': user_data.get('user', {}),
+            'step': 'talking_to_human_agent',
+            'user': get_user_state(customer_number).get('user', {}),
             'sender': customer_number
         })
 
+    elif agent_reply == "2":
+        # Agent returns control to bot
+        send("✅ The bot has resumed and will assist the customer from here.", AGENT_NUMBER, phone_id)
+        send("👋 You're now back with our automated assistant.", customer_number, phone_id)
 
-def send_fallback_option(customer_number, phone_id):
-    # Check if user is still waiting
-    user_data = get_user_state(customer_number)
-    if user_data.get('step') == 'waiting_for_human_agent_response':
-        send(
-            "Alternatively, you can message or call us directly at +263719835124.",
-            customer_number, phone_id
-        )
-        send(
-            "Would you like to return to the main menu?\n1. Yes\n2. No",
-            customer_number, phone_id
-        )
         update_user_state(customer_number, {
-            'step': 'human_agent_followup',
-            'user': user_data.get('user', {}),
+            'step': 'main_menu',
+            'user': get_user_state(customer_number).get('user', {}),
             'sender': customer_number
         })
-        
+        show_main_menu(customer_number, phone_id)
+
+def handle_customer_message_during_agent_chat(message, user_data, phone_id):
+    customer_number = user_data['sender']
+    
+    # If still in agent chat, suppress bot actions
+    if user_data.get('step') == 'talking_to_human_agent':
+        send("💬 You're still connected to a human agent. Please wait for them to respond.", customer_number, phone_id)
+        return True  # means the bot should not process further
+    return False
+
 
 def handle_user_message(prompt, user_data, phone_id):
     if user_data.get('step') == 'human_agent_followup':
@@ -2085,6 +2088,21 @@ def webhook():
                     logging.warning(f"Unsupported message type: {msg_type}")
                     send("Please send a text message or share your location using the 📍 button.", sender, phone_id)
 
+
+          
+            elif from_number == AGENT_NUMBER:
+                data = request.get_json()
+                from_number = data['from']
+                message_text = data['message']['text']
+                # Agent response: must extract customer_number from memory or request context
+                handle_agent_reply(message_text, customer_number, phone_id)
+                return "OK"
+            
+            # For customer messages:
+            user_data = get_user_state(from_number)
+            if handle_customer_message_during_agent_chat(message_text, user_data, phone_id):
+                return "OK"
+                
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
 
