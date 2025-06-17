@@ -2049,7 +2049,6 @@ def index():
 
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
-    from_number = data.get('from') or data.get('sender')
     if request.method == "GET":
         mode = request.args.get("hub.mode")
         token = request.args.get("hub.verify_token")
@@ -2070,45 +2069,45 @@ def webhook():
             phone_id = value.get("metadata", {}).get("phone_number_id")
             messages = value.get("messages", [])
 
+            # Handle messages from users or agents
             if messages:
                 message = messages[0]
-                sender = message.get("from")
+                from_number = message.get("from")
                 msg_type = message.get("type")
-                
+
+                # If it's a message from AGENT
+                if from_number == AGENT_NUMBER:
+                    message_text = message.get("text", {}).get("body", "").strip()
+                    customer_number = get_customer_linked_to_agent()  # implement this
+                    handle_agent_reply(message_text, customer_number, phone_id)
+                    return "OK"
+
+                # If it's a regular user
                 if msg_type == "text":
                     prompt = message["text"]["body"].strip()
-                    logging.info(f"Text message from {sender}: {prompt}")
-                    message_handler(prompt, sender, phone_id, message)
-                
+                    logging.info(f"Text message from {from_number}: {prompt}")
+                    message_handler(prompt, from_number, phone_id, message)
+
                 elif msg_type == "location":
                     gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
-                    logging.info(f"Location from {sender}: {gps_coords}")
-                    message_handler(gps_coords, sender, phone_id, message)
+                    logging.info(f"Location from {from_number}: {gps_coords}")
+                    message_handler(gps_coords, from_number, phone_id, message)
 
                 else:
-                    # Unsupported message type
                     logging.warning(f"Unsupported message type: {msg_type}")
-                    send("Please send a text message or share your location using the 📍 button.", sender, phone_id)
+                    send("Please send a text message or share your location using the 📍 button.", from_number, phone_id)
 
+                # Handle customer during agent conversation
+                user_data = get_user_state(from_number)
+                message_text = message.get("text", {}).get("body", "").strip()
+                if handle_customer_message_during_agent_chat(message_text, user_data, phone_id):
+                    return "OK"
 
-          
-            elif from_number == AGENT_NUMBER:
-                data = request.get_json()
-                from_number = data['from']
-                message_text = data['message']['text']
-                # Agent response: must extract customer_number from memory or request context
-                handle_agent_reply(message_text, customer_number, phone_id)
-                return "OK"
-            
-            # For customer messages:
-            user_data = get_user_state(from_number)
-            if handle_customer_message_during_agent_chat(message_text, user_data, phone_id):
-                return "OK"
-                
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
 
         return jsonify({"status": "ok"}), 200
+
 
 def message_handler(prompt, sender, phone_id, message):
     user_data = get_user_state(sender)
