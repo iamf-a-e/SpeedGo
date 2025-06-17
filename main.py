@@ -519,8 +519,7 @@ def human_agent(prompt, user_data, phone_id):
     )
     send(agent_message, AGENT_NUMBER, phone_id)
     'step': 'agent_reply'
-    return {'step': 'agent_reply'}
-
+    
 
 
     # 3. Schedule fallback
