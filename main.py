@@ -507,20 +507,17 @@ def human_agent(prompt, user_data, phone_id):
     # 1. Notify customer
     send("Connecting you to a human agent...", customer_number, phone_id)
 
-    # 2. Notify agent
-    agent_message = (
-        f"👋 New customer request on WhatsApp\n\n"
-        f"📱 Customer: {customer_number}\n"
-        f"📩 Message: \"{prompt}\"\n\n"
-        f"Reply with:\n"
-        f"1 - Talk to customer\n"
-        f"2 - Back to bot"
-    )
-    try:
+    def send_message_to_agent():
+        # 2. Notify agent
+        agent_message = (
+            f"👋 New customer request on WhatsApp\n\n"
+            f"📱 Customer: {customer_number}\n"
+            f"📩 Message: \"{prompt}\"\n\n"
+            f"Reply with:\n"
+            f"1 - Talk to customer\n"
+            f"2 - Back to bot"
+        )
         send(agent_message, AGENT_NUMBER, phone_id)
-        print("✅ Agent message sent!")
-    except Exception as e:
-        print(f"❌ Failed to send to agent: {e}")
 
 
 
