@@ -330,7 +330,7 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
             message_lines.append(f"- {cls.title()}: ${amt}")
         message_lines.append(f"- Includes depth up to {included_depth}m")
         message_lines.append(f"- Extra charge: ${extra_rate}/m beyond included depth\n")
-        message_lines.append("Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price\n4. Select borehole class")
+        message_lines.append("Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price\n4. Select Borehole Class")
         return "\n".join(message_lines)
 
     # Flat rate or per meter pricing
@@ -1915,11 +1915,44 @@ def handle_quote_followup(prompt, user_data, phone_id):
             "Sure! You can share your proposed price below.\n\n",
             user_data['sender'], phone_id
         )
-        return {'step': 'collect_offer_details', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+    elif prompt.strip() == "4":
+        # Borehole Classes
+        update_user_state(user_data['sender'], {
+            'step': 'borehole_class_pricing',
+            'user': user.to_dict()    
+        })
+        send(
+            "Please select a class\n\n"
+            "1. Class 6\n"
+            "2. Class 9\n"
+            "3. Class 10\n"
+            user_data['sender'], phone_id
+        )
+        
+        return {'step': 'borehole_class_pricing', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
         send("Invalid option. Reply 1 to ask about another service or 2 to return to the main menu or 3 if you want to make a price offer.", user_data['sender'], phone_id)
         return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+
+def handle_borehole_class_pricing(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+
+    if prompt.strip() == "1":
+        # Stay in quote flow, show services again
+        update_user_state(user_data['sender'], {
+            'step': 'selected_borehole_class',
+            'user': user.to_dict()
+        })
+        send(
+            "Class 6 Pricing in {location.title()}:\n"
+            "extra charge is $27 per m",
+            user_data['sender'], phone_id
+        )
+        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+        
+    
 
 # Action mapping
 action_mapping = {
