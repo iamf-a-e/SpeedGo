@@ -2146,6 +2146,13 @@ action_mapping = {
     ),
 }
 
+# Agent Action Mappings
+AGENT_ACTION_MAPPINGS = {
+    "agent_reply": handle_agent_reply,
+    "talking_to_customer": handle_agent_conversation,
+    "agent_available": handle_agent_available
+}
+
 # Flask app
 app = Flask(__name__)
 
@@ -2270,12 +2277,6 @@ def handle_agent_message(prompt, sender, phone_id, message):
     handler = AGENT_ACTION_MAPPINGS.get(current_step, handle_agent_available)
     return handler(prompt, sender, phone_id, message, agent_state)
 
-# Agent Action Mappings
-AGENT_ACTION_MAPPINGS = {
-    'agent_reply': handle_agent_reply,
-    'talking_to_customer': handle_agent_conversation,
-    'agent_available': handle_agent_available
-}
 
 # Agent Handler Functions
 def handle_agent_reply(prompt, sender, phone_id, message, agent_state):
