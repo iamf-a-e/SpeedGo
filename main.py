@@ -326,8 +326,6 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
         message_lines = [f"{service_key} Pricing in {location.title()}:"]
         for cls, amt in classes.items():
             message_lines.append(f"- {cls.title()}: ${amt}")
-        message_lines.append(f"- Includes depth up to {included_depth}m")
-        message_lines.append(f"- Extra charge: ${extra_rate}/m beyond included depth\n")
         message_lines.append("Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price\n4. Select Borehole Class")
         return "\n".join(message_lines)
 
@@ -1944,12 +1942,46 @@ def handle_borehole_class_pricing(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            f"Class 6 Pricing Extension:\n"
-            f"extra_per_m is $27"
+            f"Class 6 Pricing Extension:\n\n"
+            f"extra_per_m is $27\n"
             f"included_depth_m 40m",                                 
             user_data['sender'], phone_id
         )
-        return {'step': 'select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+        message += "\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price"
+        return message
+
+    elif prompt.strip() == "2":
+        # Stay in quote flow, show services again
+        update_user_state(user_data['sender'], {
+            'step': 'selected_borehole_class',
+            'user': user.to_dict()
+        })
+        send(
+            f"Class 9 Pricing Extension:\n\n"
+            f"extra_per_m is $30\n"
+            f"included_depth_m 40m",                                 
+            user_data['sender'], phone_id
+        )
+        return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+        message += "\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price"
+        return message
+
+    elif prompt.strip() == "3":
+        # Stay in quote flow, show services again
+        update_user_state(user_data['sender'], {
+            'step': 'selected_borehole_class',
+            'user': user.to_dict()
+        })
+        send(
+            f"Class 10 Pricing Extension:\n\n"
+            f"extra_per_m is $35\n"
+            f"included_depth_m 40m",                                 
+            user_data['sender'], phone_id
+        )
+        return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
+        message += "\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price"
+        return message
         
     
 
