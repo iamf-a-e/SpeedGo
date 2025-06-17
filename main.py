@@ -158,7 +158,7 @@ location_pricing = {
             "class 9": 1125,
             "class 10": 1250,
             "included_depth_m": 40,
-            "extra_per_m": 27
+            "extra_per_m": 27,
             "select class": 4
         },
         "Commercial Hole Drilling": 80,
