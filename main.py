@@ -151,21 +151,29 @@ def reverse_geocode_location(gps_coords):
 
 # Pricing dictionaries
 location_pricing = {
-    "beitbridge": {
-        "Water Survey": 150,
-        "Borehole Drilling": {
-            "select_class": True,
-            "options": {
-                "class 6": 1000,
-                "class 9": 1125,
-                "class 10": 1250
+"beitbridge": {
+    "Water Survey": 150,
+    "Borehole Drilling": {
+        "selection_required": True,
+        "options": {
+            "Class 6 (40m included)": {
+                "base_price": 1000,
+                "extra_per_m": 27
             },
-            "included_depth_m": 40,
-            "extra_per_m": 27
+            "Class 9 (40m included)": {
+                "base_price": 1125,
+                "extra_per_m": 27
+            },
+            "Class 10 (40m included)": {
+                "base_price": 1250,
+                "extra_per_m": 27
+            }
         },
-        "Commercial Hole Drilling": 80,
-        "Borehole Deepening": 30
+        "common_notes": "Includes depth up to 40m. Extra charge: $27/m beyond included depth"
     },
+    "Commercial Hole Drilling": 80,
+    "Borehole Deepening": 30
+},
     "nyika": {
         "Water Survey": 150,
         "Borehole Drilling": {
