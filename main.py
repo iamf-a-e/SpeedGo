@@ -1944,7 +1944,7 @@ def handle_borehole_class_pricing(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         send(
-            f"Class 6 Pricing in {location.title()}:\n"
+            f"Class 6 Pricing Extension:\n"
             f"extra_per_m is $27"
             f"included_depth_m 40m",                                 
             user_data['sender'], phone_id
