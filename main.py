@@ -28,13 +28,6 @@ redis = Redis(
 )
 
 
-# Agent Action Mappings
-AGENT_ACTION_MAPPINGS = {
-    "agent_reply": handle_agent_reply,
-    "talking_to_customer": handle_agent_conversation,
-    "agent_available": handle_agent_available
-}
-
 
 # User serialization helpers
 class User:
@@ -2105,6 +2098,113 @@ def forward_agent_message(prompt, message, customer_number, phone_id):
     else:
         send(f"Agent: {prompt}", customer_number, phone_id)
 
+
+def handle_agent_message(prompt, sender, phone_id, message):
+    """
+    Handles all messages coming from the agent number.
+    """
+    agent_state = get_user_state(sender) or {}
+    current_step = agent_state.get('step', 'agent_available')
+    
+    # Get the appropriate handler
+    handler = AGENT_ACTION_MAPPINGS.get(current_step, handle_agent_available)
+    return handler(prompt, sender, phone_id, message, agent_state)
+
+
+# Agent Handler Functions
+def handle_agent_reply(prompt, sender, phone_id, message, agent_state):
+    """Handles agent's initial response to customer request"""
+    prompt = prompt.strip() if isinstance(prompt, str) else ""
+    customer_number = agent_state.get('customer_number')
+    
+    if not customer_number:
+        send("⚠️ Error: No customer assigned.", sender, phone_id)
+        return {'step': 'agent_available'}
+
+    if prompt == '1':  # Accept conversation
+        # Notify both parties
+        send("✅ You're now connected. Send '2' to return to bot.", sender, phone_id)
+        send("✅ Connected to agent. Please ask your question.", customer_number, phone_id)
+        
+        # Update states
+        update_user_state(customer_number, {
+            'step': 'talking_to_human_agent',
+            'user': get_user_state(customer_number).get('user', {}),
+            'sender': customer_number
+        })
+        
+        return {
+            'step': 'talking_to_customer',
+            'customer_number': customer_number,
+            'phone_id': phone_id,
+            'started_at': time.time()
+        }
+        
+    elif prompt == '2':  # Decline conversation
+        send("✅ Customer returned to bot.", sender, phone_id)
+        send("👋 You're back with our automated assistant.", customer_number, phone_id)
+        
+        update_user_state(customer_number, {
+            'step': 'main_menu',
+            'user': get_user_state(customer_number).get('user', {}),
+            'sender': customer_number
+        })
+        show_main_menu(customer_number, phone_id)
+        return {'step': 'agent_available'}
+        
+    else:
+        send("⚠️ Reply with:\n1 - Talk to customer\n2 - Back to bot", sender, phone_id)
+        return agent_state  # Maintain current state
+
+def handle_agent_conversation(prompt, sender, phone_id, message, agent_state):
+    """Handles ongoing conversation between agent and customer"""
+    customer_number = agent_state.get('customer_number')
+    
+    if prompt.strip().lower() == '2':  # End conversation
+        send("✅ Conversation ended. Bot will take over.", sender, phone_id)
+        send("👋 Back to automated assistant.", customer_number, phone_id)
+        
+        update_user_state(customer_number, {
+            'step': 'main_menu',
+            'user': get_user_state(customer_number).get('user', {}),
+            'sender': customer_number
+        })
+        show_main_menu(customer_number, phone_id)
+        return {'step': 'agent_available'}
+    else:
+        # Forward message to customer
+        forward_agent_message(prompt, message, customer_number, phone_id)
+        return agent_state  # Maintain current state
+
+def handle_agent_available(prompt, sender, phone_id, message, agent_state):
+    """Handles agent when not in active conversation"""
+    send("ℹ️ You're not currently handling any conversation.", sender, phone_id)
+    return {'step': 'agent_available'}
+
+def forward_agent_message(prompt, message, customer_number, phone_id):
+    """Forwards different message types from agent to customer"""
+    if not customer_number:
+        return
+        
+    if isinstance(message, dict):
+        if message.get("type") == "text":
+            send(f"Agent: {message.get('text', '')}", customer_number, phone_id)
+        elif message.get("type") == "image":
+            caption = f"Agent: {message.get('caption', '')}" if message.get('caption') else "From agent:"
+            send_image(message.get('url'), caption, customer_number, phone_id)
+        elif message.get("type") == "location":
+            send_location(
+                message.get('location', {}).get('latitude'),
+                message.get('location', {}).get('longitude'),
+                "Agent shared location",
+                customer_number,
+                phone_id
+            )
+    else:
+        send(f"Agent: {prompt}", customer_number, phone_id)
+
+
+
 # Action mapping
 action_mapping = {
     "welcome": handle_welcome,
@@ -2153,6 +2253,12 @@ action_mapping = {
     ),
 }
 
+# Agent Action Mappings
+AGENT_ACTION_MAPPINGS = {
+    "agent_reply": handle_agent_reply,
+    "talking_to_customer": handle_agent_conversation,
+    "agent_available": handle_agent_available
+}
         
         
 
@@ -2269,109 +2375,6 @@ def message_handler(prompt, sender, phone_id, message=None):
 
     return next_state
 
-def handle_agent_message(prompt, sender, phone_id, message):
-    """
-    Handles all messages coming from the agent number.
-    """
-    agent_state = get_user_state(sender) or {}
-    current_step = agent_state.get('step', 'agent_available')
-    
-    # Get the appropriate handler
-    handler = AGENT_ACTION_MAPPINGS.get(current_step, handle_agent_available)
-    return handler(prompt, sender, phone_id, message, agent_state)
-
-
-# Agent Handler Functions
-def handle_agent_reply(prompt, sender, phone_id, message, agent_state):
-    """Handles agent's initial response to customer request"""
-    prompt = prompt.strip() if isinstance(prompt, str) else ""
-    customer_number = agent_state.get('customer_number')
-    
-    if not customer_number:
-        send("⚠️ Error: No customer assigned.", sender, phone_id)
-        return {'step': 'agent_available'}
-
-    if prompt == '1':  # Accept conversation
-        # Notify both parties
-        send("✅ You're now connected. Send '2' to return to bot.", sender, phone_id)
-        send("✅ Connected to agent. Please ask your question.", customer_number, phone_id)
-        
-        # Update states
-        update_user_state(customer_number, {
-            'step': 'talking_to_human_agent',
-            'user': get_user_state(customer_number).get('user', {}),
-            'sender': customer_number
-        })
-        
-        return {
-            'step': 'talking_to_customer',
-            'customer_number': customer_number,
-            'phone_id': phone_id,
-            'started_at': time.time()
-        }
-        
-    elif prompt == '2':  # Decline conversation
-        send("✅ Customer returned to bot.", sender, phone_id)
-        send("👋 You're back with our automated assistant.", customer_number, phone_id)
-        
-        update_user_state(customer_number, {
-            'step': 'main_menu',
-            'user': get_user_state(customer_number).get('user', {}),
-            'sender': customer_number
-        })
-        show_main_menu(customer_number, phone_id)
-        return {'step': 'agent_available'}
-        
-    else:
-        send("⚠️ Reply with:\n1 - Talk to customer\n2 - Back to bot", sender, phone_id)
-        return agent_state  # Maintain current state
-
-def handle_agent_conversation(prompt, sender, phone_id, message, agent_state):
-    """Handles ongoing conversation between agent and customer"""
-    customer_number = agent_state.get('customer_number')
-    
-    if prompt.strip().lower() == '2':  # End conversation
-        send("✅ Conversation ended. Bot will take over.", sender, phone_id)
-        send("👋 Back to automated assistant.", customer_number, phone_id)
-        
-        update_user_state(customer_number, {
-            'step': 'main_menu',
-            'user': get_user_state(customer_number).get('user', {}),
-            'sender': customer_number
-        })
-        show_main_menu(customer_number, phone_id)
-        return {'step': 'agent_available'}
-    else:
-        # Forward message to customer
-        forward_agent_message(prompt, message, customer_number, phone_id)
-        return agent_state  # Maintain current state
-
-def handle_agent_available(prompt, sender, phone_id, message, agent_state):
-    """Handles agent when not in active conversation"""
-    send("ℹ️ You're not currently handling any conversation.", sender, phone_id)
-    return {'step': 'agent_available'}
-
-def forward_agent_message(prompt, message, customer_number, phone_id):
-    """Forwards different message types from agent to customer"""
-    if not customer_number:
-        return
-        
-    if isinstance(message, dict):
-        if message.get("type") == "text":
-            send(f"Agent: {message.get('text', '')}", customer_number, phone_id)
-        elif message.get("type") == "image":
-            caption = f"Agent: {message.get('caption', '')}" if message.get('caption') else "From agent:"
-            send_image(message.get('url'), caption, customer_number, phone_id)
-        elif message.get("type") == "location":
-            send_location(
-                message.get('location', {}).get('latitude'),
-                message.get('location', {}).get('longitude'),
-                "Agent shared location",
-                customer_number,
-                phone_id
-            )
-    else:
-        send(f"Agent: {prompt}", customer_number, phone_id)
         
 
 def get_action(current_state, prompt, user_data, phone_id):
