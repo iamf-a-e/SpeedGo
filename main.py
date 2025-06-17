@@ -1174,8 +1174,34 @@ def handle_booking_confirmation(prompt, user_data, phone_id):
         send("Please contact our support team to reschedule.", user_data['sender'], phone_id)
         return {'step': 'booking_confirmation', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+service_map = {
+        "1": "Water Survey",
+        "2": "Borehole Drilling",
+        "3": "Pump Installation",
+        "4": "Commercial Hole Drilling",
+        "5": "Borehole Deepening"
+    }
 
-       
+def display_borehole_options(location):
+    data = location_pricing[location]["Borehole Drilling"]
+    
+    if data["selection_required"]:
+        print(f"Borehole Drilling Pricing in {location.title()}:")
+        for i, (class_name, details) in enumerate(data["options"].items(), 1):
+            print(f"{i}. {class_name} - ${details['base_price']}")
+            print(f"   - Includes depth up to {details['included_depth']}m")
+            print(f"   - Extra charge: ${details['extra_per_m']}/m beyond included depth\n")
+        
+        print("Would you like to:")        
+        print("1. Ask pricing for another service")
+        print("2. Return to Main Menu")
+        print("3. Offer Price")
+        print("4. Select a class for detailed quote")
+    else:
+        # Handle non-selectable pricing
+        pass
+
+
 def handle_select_service_quote(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     location = user.quote_data.get('location')
@@ -1242,25 +1268,7 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         'sender': user_data['sender']
     }
 
-def display_borehole_options(location):
-    data = location_pricing[location]["Borehole Drilling"]
-    
-    if data["selection_required"]:
-        print(f"Borehole Drilling Pricing in {location.title()}:")
-        for i, (class_name, details) in enumerate(data["options"].items(), 1):
-            print(f"{i}. {class_name} - ${details['base_price']}")
-            print(f"   - Includes depth up to {details['included_depth']}m")
-            print(f"   - Extra charge: ${details['extra_per_m']}/m beyond included depth\n")
-        
-        print("Would you like to:")        
-        print("1. Ask pricing for another service")
-        print("2. Return to Main Menu")
-        print("3. Offer Price")
-        print("4. Select a class for detailed quote")
-    else:
-        # Handle non-selectable pricing
-        pass
-        
+
 
 def handle_other_services_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
