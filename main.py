@@ -1947,9 +1947,8 @@ def handle_borehole_class_pricing(prompt, user_data, phone_id):
             f"included_depth_m 40m",                                 
             user_data['sender'], phone_id
         )
+        send("\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
         return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
-        message += "\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price"
-        return message
 
     elif prompt.strip() == "2":
         # Stay in quote flow, show services again
@@ -1963,9 +1962,8 @@ def handle_borehole_class_pricing(prompt, user_data, phone_id):
             f"included_depth_m 40m",                                 
             user_data['sender'], phone_id
         )
+        send("\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
         return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
-        message += "\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price"
-        return message
 
     elif prompt.strip() == "3":
         # Stay in quote flow, show services again
@@ -1979,9 +1977,10 @@ def handle_borehole_class_pricing(prompt, user_data, phone_id):
             f"included_depth_m 40m",                                 
             user_data['sender'], phone_id
         )
+        send("\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
         return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}
-        message += "\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price"
-        return message
+        
+        
         
     
 
