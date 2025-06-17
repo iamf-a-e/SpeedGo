@@ -1936,8 +1936,7 @@ def handle_quote_followup(prompt, user_data, phone_id):
 
 def handle_borehole_class_pricing(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    location = user.location  # Make sure you have location available in user object
-
+    
     if prompt.strip() == "1":
         # Stay in quote flow, show services again
         update_user_state(user_data['sender'], {
