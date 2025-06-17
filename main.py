@@ -2008,6 +2008,93 @@ def handle_borehole_class_pricing(prompt, user_data, phone_id):
             user_data['sender'], phone_id
         )
         return {'step': 'quote_followup', 'user': user.to_dict(), 'sender': user_data['sender']}  
+
+
+
+def handle_agent_reply(prompt, sender, phone_id, message, agent_state):
+    """Handles agent's initial response to customer request"""
+    prompt = prompt.strip() if isinstance(prompt, str) else ""
+    customer_number = agent_state.get('customer_number')
+    
+    if not customer_number:
+        send("⚠️ Error: No customer assigned. Please wait for a new request.", sender, phone_id)
+        update_user_state(sender, {'step': 'agent_available'})
+        return
+    
+    if prompt == '1':  # Accept conversation
+        send("✅ You're now talking to the customer. Send '2' to return to bot.", sender, phone_id)
+        send("✅ You are now connected to a human agent. Please wait for their response.", customer_number, phone_id)
+        
+        update_user_state(customer_number, {
+            'step': 'talking_to_human_agent',
+            'user': get_user_state(customer_number).get('user', {}),
+            'sender': customer_number
+        })
+        update_user_state(sender, {
+            'step': 'talking_to_customer',
+            'customer_number': customer_number,
+            'phone_id': phone_id,
+            'started_at': time.time()
+        })
+        
+    elif prompt == '2':  # Decline conversation
+        send("✅ You've returned the customer to the bot.", sender, phone_id)
+        send("👋 You're now back with our automated assistant.", customer_number, phone_id)
+        
+        update_user_state(customer_number, {
+            'step': 'main_menu',
+            'user': get_user_state(customer_number).get('user', {}),
+            'sender': customer_number
+        })
+        update_user_state(sender, {'step': 'agent_available'})
+        show_main_menu(customer_number, phone_id)
+        
+    else:
+        send("⚠️ Please reply with:\n1 - Talk to customer\n2 - Back to bot", sender, phone_id)
+
+def handle_agent_conversation(prompt, sender, phone_id, message, agent_state):
+    """Handles ongoing agent-customer conversation"""
+    customer_number = agent_state.get('customer_number')
+    
+    if prompt.strip().lower() == '2':  # End conversation
+        send("✅ Conversation ended. The bot will take over.", sender, phone_id)
+        send("👋 The agent has ended the conversation. You're back with our automated assistant.", customer_number, phone_id)
+        
+        update_user_state(customer_number, {
+            'step': 'main_menu',
+            'user': get_user_state(customer_number).get('user', {}),
+            'sender': customer_number
+        })
+        update_user_state(sender, {'step': 'agent_available'})
+        show_main_menu(customer_number, phone_id)
+    else:
+        forward_agent_message(prompt, message, customer_number, phone_id)
+
+def handle_agent_available(prompt, sender, phone_id, message, agent_state):
+    """Handles agent when not in conversation"""
+    send("ℹ️ You're currently not handling any conversation. Please wait for a new customer request.", sender, phone_id)
+
+def forward_agent_message(prompt, message, customer_number, phone_id):
+    """Helper to forward different message types"""
+    if not customer_number:
+        return
+        
+    if isinstance(message, dict):
+        if message.get("type") == "text":
+            send(f"Agent: {message.get('text', '')}", customer_number, phone_id)
+        elif message.get("type") == "image":
+            caption = f"Agent: {message.get('caption', '')}" if message.get('caption') else "From agent:"
+            send_image(message.get('url'), caption, customer_number, phone_id)
+        elif message.get("type") == "location":
+            send_location(
+                message.get('location', {}).get('latitude'),
+                message.get('location', {}).get('longitude'),
+                "Agent shared location",
+                customer_number,
+                phone_id
+            )
+    else:
+        send(f"Agent: {prompt}", customer_number, phone_id)
         
         
 
