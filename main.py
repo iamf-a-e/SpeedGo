@@ -154,7 +154,7 @@ location_pricing = {
     "beitbridge": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": true,
+            "choose class": True,
             "class 6": 1000,
             "class 9": 1125,
             "class 10": 1250,
@@ -167,7 +167,7 @@ location_pricing = {
     "nyika": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": true,
+            "choose class": True,
             "class 6": 1050,
             "class 9": 1181.25,
             "class 10": 1312.5,
@@ -180,7 +180,7 @@ location_pricing = {
     "bindura": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": true,
+            "choose class": True,
             "class 6": 1000,
             "class 9": 1125,
             "class 10": 1250,
@@ -193,7 +193,7 @@ location_pricing = {
     "binga": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": true,
+            "choose class": True,
             "class 6": 1300,
             "class 9": 1462.5,
             "class 10": 1625,
@@ -206,7 +206,7 @@ location_pricing = {
     "bubi": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": true,
+            "choose class": True,
             "class 6": 1200,
             "class 9": 1350,
             "class 10": 1500,
@@ -219,7 +219,7 @@ location_pricing = {
     "murambinda": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": true,
+            "choose class": True,
             "class 6": 1050,
             "class 9": 1181.25,
             "class 10": 1312.5,
@@ -244,7 +244,7 @@ location_pricing = {
     "harare": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": true,
+            "choose class": True,
             "class 6": 1000,
             "class 9": 1125,
             "class 10": 1250,
@@ -257,7 +257,7 @@ location_pricing = {
     "bulawayo": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "choose class": true,
+            "choose class": True,
             "class 6": 1000,
             "class 9": 1125,
             "class 10": 1250,
