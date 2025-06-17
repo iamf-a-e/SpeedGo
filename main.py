@@ -516,7 +516,11 @@ def human_agent(prompt, user_data, phone_id):
         f"1 - Talk to customer\n"
         f"2 - Back to bot"
     )
-    send(agent_message, AGENT_NUMBER, phone_id)
+    try:
+        send(agent_message, AGENT_NUMBER, phone_id)
+        print("✅ Agent message sent!")
+    except Exception as e:
+        print(f"❌ Failed to send to agent: {e}")
 
 
 
