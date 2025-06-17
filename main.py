@@ -517,8 +517,12 @@ def human_agent(prompt, user_data, phone_id):
         f"1 - Talk to customer\n"
         f"2 - Back to bot"
     )
-    send(agent_message, AGENT_NUMBER, phone_id)
-    return {'step': 'agent_reply'}
+    send(agent_message, AGENT_NUMBER, phone_id)    
+    update_user_state(agent_number, {
+            'step': 'agent_reply',
+            'user': user_data.get('user', {}),
+            'sender': agent_number
+        })
     
 
 
@@ -2007,6 +2011,7 @@ action_mapping = {
     "select_service_quote": handle_select_service_quote,
     "select_service": handle_select_service,
     "borehole_class_pricing": handle_borehole_class_pricing,
+    "agent_reply": handle_agent_reply,
     "select_pump_option": handle_select_pump_option,
     "quote_followup": handle_quote_followup,   
     "collect_quote_details": handle_collect_quote_details,
