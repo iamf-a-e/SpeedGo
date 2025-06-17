@@ -1235,23 +1235,23 @@ def handle_select_service_quote(prompt, user_data, phone_id):
             
             if not selected_class:
                 send("Invalid option. Please reply with 1, 2 or 3 to choose a borehole class.", 
-                     user_data['sender'], phone_id)
+                        user_data['sender'], phone_id)
                 return {
                     'step': 'select_borehole_class',
                     'user': user.to_dict(),
                     'sender': user_data['sender']
                 }
-            
+                
             # Store both service and class
             user.quote_data.update({
                 'service': "Borehole Drilling",
                 'borehole_class': selected_class
             })
-            
+                
             # Get pricing data
             pricing_data = get_pricing_data(location)
             drilling_info = pricing_data["Borehole Drilling"]
-            
+                
             # Build pricing message
             pricing_message = (
                 f"💧 Borehole Drilling ({selected_class}) Pricing:\n"
@@ -1262,7 +1262,7 @@ def handle_select_service_quote(prompt, user_data, phone_id):
                 "2. Return to Main Menu\n"
                 "3. Offer Your Price"
             )
-            
+                
             update_user_state(user_data['sender'], {
                 'step': 'quote_followup',
                 'user': user.to_dict()
@@ -1276,10 +1276,10 @@ def handle_select_service_quote(prompt, user_data, phone_id):
 
         # Normal service selection
         selected_service = service_map.get(prompt.strip())
-        
+    
         if not selected_service:
             send("Invalid option. Please reply with 1, 2, 3, 4 or 5 to choose a service.", 
-                 user_data['sender'], phone_id)
+                    user_data['sender'], phone_id)
             return {
                 'step': 'select_service_quote',
                 'user': user.to_dict(),
@@ -1290,22 +1290,22 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         if selected_service == "Borehole Drilling":
             message = (
                 "💧 Please select a borehole class:\n"
-                "1. Class 6 ($1000)\n"
-                "2. Class 9 ($1125)\n"
-                "3. Class 10 ($1250)\n\n"
+                "1. Class 6 \n"
+                "2. Class 9 \n"
+                "3. Class 10 \n\n"
                 "Reply with 1, 2 or 3"
             )
-            
+                
             send(message, user_data['sender'], phone_id)
             return {
                 'step': 'select_borehole_class',
                 'user': user.to_dict(),
                 'sender': user_data['sender']
             }
-
+    
         # Store selected service
         user.quote_data['service'] = selected_service
-
+    
         # Handle Pump Installation separately
         if selected_service == "Pump Installation":
             update_user_state(user_data['sender'], {
@@ -1323,11 +1323,11 @@ def handle_select_service_quote(prompt, user_data, phone_id):
                 'user': user.to_dict(),
                 'sender': user_data['sender']
             }
-
+    
         # Get pricing for other services
         pricing_data = get_pricing_data(location)
         price = pricing_data[selected_service]
-        
+            
         # Build pricing message
         unit = "per meter" if selected_service == "Commercial Hole Drilling" else ""
         pricing_message = (
@@ -1338,13 +1338,13 @@ def handle_select_service_quote(prompt, user_data, phone_id):
             "2. Return to Main Menu\n"
             "3. Offer Your Price"
         )
-        
+            
         update_user_state(user_data['sender'], {
             'step': 'quote_followup',
             'user': user.to_dict()
         })
         send(pricing_message, user_data['sender'], phone_id)
-
+    
         return {
             'step': 'quote_followup',
             'user': user.to_dict(),
@@ -1360,24 +1360,6 @@ def handle_select_service_quote(prompt, user_data, phone_id):
             'sender': user_data['sender'],
             'error': error_msg
         }
-
-
-def get_pricing_data(location):
-    """Returns pricing data for the given location"""
-    # This would come from your actual data source
-    return {
-        "Water Survey": 150,
-        "Borehole Drilling": {
-            "class 6": 1000,
-            "class 9": 1125,
-            "class 10": 1250,
-            "included_depth_m": 40,
-            "extra_per_m": 27
-        },
-        "Pump Installation": 500,  # Base price, actual would depend on options
-        "Commercial Hole Drilling": 80,
-        "Borehole Deepening": 30
-    }
 
     def handle_other_services_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
