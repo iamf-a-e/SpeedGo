@@ -1309,7 +1309,7 @@ def handle_select_service_quote(prompt, user_data, phone_id):
         # Handle Pump Installation separately
         if selected_service == "Pump Installation":
             update_user_state(user_data['sender'], {
-                'step': 'select_pump_option',
+                'step': 'borehole_class_selection',
                 'user': user.to_dict()
             })
             message_lines = ["💧 Pump Installation Options:"]
@@ -1360,6 +1360,88 @@ def handle_select_service_quote(prompt, user_data, phone_id):
             'sender': user_data['sender'],
             'error': error_msg
         }
+
+def handle_borehole_class_selection(prompt, user_data, phone_id):
+    user = User.from_dict(user_data['user'])
+    location = user.quote_data.get('location')
+    
+    if not location:
+        send("Location not set. Please provide your location first.",
+             user_data['sender'], phone_id)
+        return {
+            'step': 'enter_location_for_quote',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+    
+    borehole_classes = {
+        "1": "class 6",
+        "2": "class 9", 
+        "3": "class 10"
+    }
+    
+    selected_class = borehole_classes.get(prompt.strip())
+    
+    if not selected_class:
+        send("Invalid selection. Please choose 1, 2, or 3 for borehole class.",
+             user_data['sender'], phone_id)
+        return {
+            'step': 'select_borehole_class',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+    
+    # Get pricing data
+    pricing_data = get_pricing_data(location)
+    
+    if not pricing_data:
+        send(f"Sorry, we don't have pricing data for {location} yet.",
+             user_data['sender'], phone_id)
+        return {
+            'step': 'main_menu',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+    
+    drilling_pricing = pricing_data.get("Borehole Drilling")
+    
+    if not drilling_pricing:
+        send("Borehole drilling pricing not available for your location.",
+             user_data['sender'], phone_id)
+        return {
+            'step': 'main_menu',
+            'user': user.to_dict(),
+            'sender': user_data['sender']
+        }
+    
+    # Store the selection and pricing
+    user.quote_data.update({
+        'service': "Borehole Drilling",
+        'borehole_class': selected_class,
+        'base_price': drilling_pricing[selected_class],
+        'included_depth': drilling_pricing['included_depth_m'],
+        'extra_per_meter': drilling_pricing['extra_per_m']
+    })
+    
+    # Format the pricing message
+    pricing_message = (
+        f"💧 Borehole Drilling Pricing for {location.title()} ({selected_class.replace('class ', 'Class ')}):\n"
+        f"• Base Price: ${drilling_pricing[selected_class]:.2f} (first {drilling_pricing['included_depth_m']} meters)\n"
+        f"• Extra Depth: ${drilling_pricing['extra_per_m']:.2f} per meter beyond\n\n"
+        "Would you like to:\n"
+        "1. Confirm and proceed\n"
+        "2. Choose another service\n"
+        "3. Return to main menu"
+    )
+    
+    send(pricing_message, user_data['sender'], phone_id)
+    
+    return {
+        'step': 'confirm_drilling_quote',
+        'user': user.to_dict(),
+        'sender': user_data['sender']
+    }
+
 
 def handle_other_services_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
