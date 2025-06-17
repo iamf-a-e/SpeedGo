@@ -154,8 +154,8 @@ location_pricing = {
     "beitbridge": {
         "Water Survey": 150,
         "Borehole Drilling": {
-            "select_class": True,  // Explicitly marks this as a selectable option
-            "options": {           // List of classes with metadata
+            "select_class": True,  
+            "options": {           
                 "class 6": {
                     "price": 1000,
                     "included_depth_m": 40,
