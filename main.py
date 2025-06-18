@@ -561,7 +561,7 @@ def human_agent(prompt, user_data, phone_id):
 
     return {'step': 'waiting_for_human_agent_response', 'user': user_data.get('user', {}), 'sender': customer_number}
 
-def handle_agent_reply(agent_reply, customer_number, phone_id):
+def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
     agent_reply = agent_reply.strip()
     
     if agent_reply == "1":
@@ -2013,7 +2013,7 @@ def handle_borehole_class_pricing(prompt, user_data, phone_id):
 
 
 
-def handle_agent_reply(prompt, sender, phone_id, message, agent_state):
+def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
     """Handles agent's initial response to customer request"""
     prompt = prompt.strip() if isinstance(prompt, str) else ""
     customer_number = agent_state.get('customer_number')
@@ -2112,7 +2112,7 @@ def handle_agent_message(prompt, sender, phone_id, message):
 
 
 # Agent Handler Functions
-def handle_agent_reply(prompt, sender, phone_id, message, agent_state):
+def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
     """Handles agent's initial response to customer request"""
     prompt = prompt.strip() if isinstance(prompt, str) else ""
     customer_number = agent_state.get('customer_number')
