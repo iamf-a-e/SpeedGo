@@ -566,7 +566,8 @@ def handle_agent_exclusive(message, phone_id):
     msg_type = message.get('type')
     
     # Get agent state from dedicated agent storage
-    agent_state = json.loads(redis.get(f"agent:{from_number}") or {}
+    agent_state = json.loads(redis.get(f"agent:{from_number}") or "{}")
+
     
     if not agent_state.get('is_agent'):
         return False
