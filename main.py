@@ -2362,7 +2362,7 @@ def message_handler(prompt, sender, phone_id, message):
             # Override prompt with GPS coordinates
             prompt = f"{location['latitude']},{location['longitude']}"
         else:
-            prompt = ""  # fallback if incomplete location data
+            prompt = (prompt or "").strip()   # fallback if incomplete location data
 
     # Ensure user object exists in state
     if 'user' not in user_data:
