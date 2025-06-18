@@ -562,7 +562,7 @@ def human_agent(prompt, user_data, phone_id):
     return {'step': 'waiting_for_human_agent_response', 'user': user_data.get('user', {}), 'sender': customer_number}
 
 def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
-    agent_reply = agent_reply.strip()
+    agent_reply = message_text.strip()
     
     if agent_reply == "1":
         # Agent chooses to talk to customer
