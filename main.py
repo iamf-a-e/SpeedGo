@@ -2330,18 +2330,10 @@ def webhook():
                     if agent_state.get("step") == "agent_reply":
                         handle_agent_reply(message_text, customer_number, phone_id, agent_state)
 
-                        agent_state["customer_number"] = customer_number
-                        agent_state["step"] = "talking_to_human_agent"
-                        update_user_state(AGENT_NUMBER, agent_state)
-        
                         return "OK"
             
                     if agent_state.get("step") == "talking_to_human_agent":
-                        send(message_text, customer_number, phone_id)
-
-                        agent_state["customer_number"] = customer_number
-                        agent_state["step"] = "talking_to_human_agent"
-                        update_user_state(AGENT_NUMBER, agent_state)
+                        send(message_text, customer_number, phone_id)   
         
                         return "OK"
             
