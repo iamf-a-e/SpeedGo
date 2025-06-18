@@ -506,18 +506,36 @@ def handle_main_menu(prompt, user_data, phone_id):
 def human_agent(prompt, user_data, phone_id):
     customer_number = user_data['sender']
 
-    # Load existing agent state or initialize
-    agent_state = get_user_state(AGENT_NUMBER) or {}
-    queue = agent_state.get('queue', [])
+    # 1. Check if agent is already in a chat
+    agent_state = get_user_state(AGENT_NUMBER)
+    if agent_state.get('step') == 'talking_to_human_agent':
+        send("⚠️ You’re already in a conversation. Finish or send '2' to return the bot before assisting another customer.", AGENT_NUMBER, phone_id)
+        send("✅ You’re in the queue. An agent will assist you shortly.", customer_number, phone_id)
+        return
 
-    # Avoid duplicate queue entries
-    if customer_number not in queue:
-        queue.append(customer_number)
+    # 2. Notify customer
+    send("🔄 Connecting you to a human agent. Please wait...", customer_number, phone_id)
 
-    # Notify customer
-    send("🔄 Connecting you to a human agent. Please wait in the queue...", customer_number, phone_id)
+    # 3. Notify agent
+    agent_message = (
+        f"👋 New customer request on WhatsApp\n\n"
+        f"📱 Customer: {customer_number}\n"
+        f"📩 Message: \"{prompt}\"\n\n"
+        f"Reply with:\n"
+        f"1 - Talk to customer\n"
+        f"2 - Back to bot"
+    )
+    send(agent_message, AGENT_NUMBER, phone_id)
 
-    # Update customer state
+    # 4. Safely update agent state (merge instead of overwrite)
+    agent_state.update({
+        'step': 'agent_reply',
+        'customer_number': customer_number,
+        'phone_id': phone_id
+    })
+    update_user_state(AGENT_NUMBER, agent_state)
+
+    # 5. Safely update customer state
     customer_state = get_user_state(customer_number)
     customer_state.update({
         'step': 'waiting_for_human_agent_response',
@@ -527,30 +545,9 @@ def human_agent(prompt, user_data, phone_id):
     })
     update_user_state(customer_number, customer_state)
 
-    # Update agent state with new queue
-    agent_state.update({
-        'step': 'agent_reply',
-        'queue': queue,
-        'phone_id': phone_id
-    })
-    update_user_state(AGENT_NUMBER, agent_state)
-
-    # Format the queue for agent
-    queue_display = "\n".join(
-        [f"{i + 1}. {c} — \"{get_last_user_message(c)}\"" for i, c in enumerate(queue)]
-    )
-
-    agent_message = (
-        f"👋 New customer added to the queue!\n\n"
-        f"Current queue:\n{queue_display}\n\n"
-        f"Reply with:\n"
-        f"<number> - to talk to that customer\n"
-        f"'2' - to return to the bot"
-    )
-    send(agent_message, AGENT_NUMBER, phone_id)
-
-    logging.info(f"[AGENT_QUEUE] Updated Queue: {queue}")
-
+    # 6. Log for debugging
+    logging.info(f"[AGENT_STATE] -> {json.dumps(agent_state)}")
+    logging.info(f"[CUSTOMER_STATE] -> {json.dumps(customer_state)}")
 
 
     # 3. Schedule fallback
@@ -577,55 +574,36 @@ def human_agent(prompt, user_data, phone_id):
 
     return {'step': 'waiting_for_human_agent_response', 'user': user_data.get('user', {}), 'sender': customer_number}
 
-def handle_agent_reply(message_text, _, phone_id, agent_state):
-    reply = (message_text or "").strip()
 
-    if reply.isdigit() and int(reply) >= 1:
-        index = int(reply) - 1
-        queue = agent_state.get('queue', [])
-        if 0 <= index < len(queue):
-            customer_number = queue.pop(index)
+def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
+    agent_reply = message_text.strip()
+    
+    if agent_reply == "1":
+        # Agent chooses to talk to customer
+        send("✅ You're now talking to the customer. Bot is paused until you send '2' to return to bot.", AGENT_NUMBER, phone_id)
+        send("✅ You are now connected to a human agent. Please wait for their response.", customer_number, phone_id)
 
-            # Save both agent and customer state
-            update_user_state(AGENT_NUMBER, {
-                'step': 'talking_to_human_agent',
-                'customer_number': customer_number,
-                'queue': queue,
-                'phone_id': phone_id,
-                'sender': AGENT_NUMBER
-            })
-            update_user_state(customer_number, {
-                'step': 'talking_to_human_agent',
-                'user': get_user_state(customer_number).get('user', {}),
-                'sender': customer_number
-            })
+        update_user_state(customer_number, {
+            'step': 'talking_to_human_agent',
+            'user': get_user_state(customer_number).get('user', {}),
+            'sender': customer_number
+        })
 
-            send("✅ You are now talking to the customer. Send '2' to return to bot.", AGENT_NUMBER, phone_id)
-            send("✅ You are now connected to a human agent. Please wait for their message.", customer_number, phone_id)
-            return
+    elif agent_reply == "2":
+        # Agent returns control to bot
+        send("✅ The bot has resumed and will assist the customer from here.", AGENT_NUMBER, phone_id)
+        send("👋 You're now back with our automated assistant.", customer_number, phone_id)
 
-        send("❌ Invalid customer number. Try again.", AGENT_NUMBER, phone_id)
-
-    elif reply == "2":
-        customer_number = agent_state.get('customer_number')
-        if customer_number:
-            send("✅ Bot resumed. Customer will now talk to the assistant.", customer_number, phone_id)
-            update_user_state(customer_number, {
-                'step': 'main_menu',
-                'user': get_user_state(customer_number).get('user', {}),
-                'sender': customer_number
-            })
-
-        update_user_state(AGENT_NUMBER, {
-            'step': 'agent_reply',
-            'customer_number': None,
-            'sender': AGENT_NUMBER,
-            'queue': agent_state.get('queue', [])
+        update_user_state(customer_number, {
+            'step': 'main_menu',
+            'user': get_user_state(customer_number).get('user', {}),
+            'sender': customer_number
         })
         show_main_menu(customer_number, phone_id)
 
     else:
-        send("⚠️ Invalid input. Send a number to talk to a customer or '2' to resume the bot.", AGENT_NUMBER, phone_id)
+        # Forward other agent messages to the customer directly
+        send(agent_reply, customer_number, phone_id)
 
 
 def handle_waiting_for_human_agent_response(message, user_data, phone_id):
