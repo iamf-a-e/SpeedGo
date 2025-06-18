@@ -2299,36 +2299,32 @@ def webhook():
             value = changes.get("value", {})
             phone_id = value.get("metadata", {}).get("phone_number_id")
             messages = value.get("messages", [])
-            logging.info(f"From Number: {from_number} | AGENT_NUMBER: {AGENT_NUMBER}")
-
+           
 
             if messages:
                 message = messages[0]
                 from_number = message.get("from")
                 msg_type = message.get("type")
                 message_text = message.get("text", {}).get("body", "").strip()
-                logging.info(f"From Number: {from_number} | AGENT_NUMBER: {AGENT_NUMBER}")
-
+                
 
                 # ✅ Handle agent replies
-                if from_number == AGENT_NUMBER:
+                if from_number.endswith(AGENT_NUMBER.replace("+", "")):
                     agent_state = get_user_state(AGENT_NUMBER)
                     customer_number = agent_state.get("customer_number")
                     if agent_state.get("step") == "agent_reply" and customer_number:
-                        handle_agent_reply(message_text, customer_number, phone_id)
-                        logging.info(f"From Number: {from_number} | AGENT_NUMBER: {AGENT_NUMBER}")
-
+                        handle_agent_reply(message_text, customer_number, phone_id)                        
                     else:
                         send("⚠️ No customer to reply to. Wait for a new request.", AGENT_NUMBER, phone_id)
-                        logging.info(f"From Number: {from_number} | AGENT_NUMBER: {AGENT_NUMBER}")
-
+                       
                     return "OK"
+                    logging.info(f"AGENT check → from_number: {from_number} == AGENT_NUMBER: {AGENT_NUMBER} ? {from_number == AGENT_NUMBER}")
+
 
                 # ✅ Handle customer in agent chat
                 user_data = get_user_state(from_number)
                 if handle_customer_message_during_agent_chat(message_text, user_data, phone_id):
-                    logging.info(f"From Number: {from_number} | AGENT_NUMBER: {AGENT_NUMBER}")
-
+                   
                     return "OK"
 
                 # ✅ Handle regular user messages
