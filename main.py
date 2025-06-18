@@ -506,56 +506,92 @@ def handle_main_menu(prompt, user_data, phone_id):
 
 def human_agent(prompt, user_data, phone_id):
     customer_number = user_data['sender']
-
-    # 1. Notify customer
-    send("Connecting you to a human agent...", customer_number, phone_id)
-
-    # 2. Notify agent with clear options
-    agent_message = (
-        f"👋 New customer request on WhatsApp\n\n"
-        f"📱 Customer: {customer_number}\n"
-        f"📩 Message: \"{prompt}\"\n\n"
-        f"Reply with:\n"
-        f"1 - Take over conversation (customer messages will come to you)\n"
-        f"2 - Let bot handle it (customer returns to main menu)"
-    )
-    send(agent_message, AGENT_NUMBER, phone_id)
     
-    # Initialize agent state
+    # 1. Notify customer they're being connected
+    send("Please wait while we connect you to a human agent...", customer_number, phone_id)
+    
+    # 2. Prepare detailed agent notification
+    agent_context = (
+        f"🚨 New Customer Assistance Request 🚨\n\n"
+        f"📱 Customer: {customer_number}\n"
+        f"📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
+        f"📩 Initial Message: \"{prompt}\"\n\n"
+        f"Current Conversation Context:\n"
+        f"- Language: {user_data.get('user', {}).get('language', 'English')}\n"
+        f"- Last Service: {user_data.get('user', {}).get('quote_data', {}).get('service', 'Not specified')}\n\n"
+        f"🔘 Please choose:\n"
+        f"1 - Take over conversation (I'll handle this)\n"
+        f"2 - Let bot continue (return to main menu)"
+    )
+    
+    # 3. Update agent state with comprehensive context
     update_user_state(AGENT_NUMBER, {
         'step': 'agent_reply',
         'customer_number': customer_number,
         'phone_id': phone_id,
-        'original_message': prompt
-    }, ttl_seconds=3600)  # Longer TTL for agent conversations
+        'original_message': prompt,
+        'customer_data': {
+            'language': user_data.get('user', {}).get('language', 'English'),
+            'service': user_data.get('user', {}).get('quote_data', {}).get('service'),
+            'location': user_data.get('user', {}).get('quote_data', {}).get('location')
+        },
+        'timestamp': time.time()
+    }, ttl_seconds=7200)  # 2 hour TTL for agent conversations
 
-    # Update customer's state (waiting for agent)
+    # 4. Update customer state with waiting status
     update_user_state(customer_number, {
         'step': 'waiting_for_human_agent_response',
         'user': user_data.get('user', {}),
         'sender': customer_number,
-        'waiting_since': time.time()
-    }, ttl_seconds=3600)
+        'waiting_since': time.time(),
+        'agent_requested': True
+    }, ttl_seconds=7200)
 
-    # 3. Schedule fallback
-    def send_fallback():
-        user_data = get_user_state(customer_number)
-        if user_data and user_data.get('step') == 'waiting_for_human_agent_response':
-            send("If you haven't been contacted yet, you can call us directly at +263719835124", customer_number, phone_id)
-            send("Would you like to:\n1. Return to main menu\n2. Keep waiting", customer_number, phone_id)
+    # 5. Send formatted message to agent
+    try:
+        send(agent_context, AGENT_NUMBER, phone_id)
+    except Exception as e:
+        logging.error(f"Failed to notify agent: {e}")
+        send("We're having trouble connecting you to an agent. Please try again later.", customer_number, phone_id)
+        return {
+            'step': 'main_menu',
+            'user': user_data.get('user', {}),
+            'sender': customer_number
+        }
+
+    # 6. Set up fallback handler with retry logic
+    def handle_agent_timeout():
+        current_state = get_user_state(customer_number)
+        if not current_state or current_state.get('step') != 'waiting_for_human_agent_response':
+            return
+            
+        if not get_user_state(AGENT_NUMBER) or get_user_state(AGENT_NUMBER).get('customer_number') != customer_number:
+            # Agent didn't respond
+            options = (
+                "Our agents seem busy right now. Would you like to:\n\n"
+                "1. Try connecting again\n"
+                "2. Leave a message for callback\n"
+                "3. Return to main menu\n"
+                "4. Call us directly at +263719835124"
+            )
+            send(options, customer_number, phone_id)
             update_user_state(customer_number, {
-                'step': 'human_agent_followup',
-                'user': user_data.get('user', {}),
-                'sender': customer_number
+                'step': 'human_agent_fallback',
+                'user': current_state.get('user', {}),
+                'sender': customer_number,
+                'retry_count': current_state.get('retry_count', 0) + 1
             })
 
-    threading.Timer(120, send_fallback).start()  # Increased to 2 minutes
+    # Schedule timeout check (3 minutes instead of 2)
+    threading.Timer(180, handle_agent_timeout).start()
 
     return {
         'step': 'waiting_for_human_agent_response',
         'user': user_data.get('user', {}),
-        'sender': customer_number
+        'sender': customer_number,
+        'agent_requested': True
     }
+    
 
 # Enhanced agent message handling
 def handle_agent_message(prompt, sender, phone_id, message):
