@@ -565,7 +565,7 @@ def check_agent_timeout(customer_number, phone_id):
     if not customer_state or customer_state.get('step') != 'waiting_for_agent':
         return
     
-    agent_state = json.loads(redis.get(f"agent_session:{AGENT_NUMBER}") or {}
+    agent_state = json.loads(redis.get(f"agent_session:{AGENT_NUMBER}") or {})
     if not agent_state or agent_state.get('customer_number') != customer_number:
         # Agent didn't respond - offer options
         options = (
