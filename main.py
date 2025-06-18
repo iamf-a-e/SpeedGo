@@ -508,50 +508,51 @@ def handle_main_menu(prompt, user_data, phone_id):
 def human_agent(prompt, user_data, phone_id):
     customer_number = user_data['sender']
     
-    # Notify customer with estimated wait time
-    send(
-        "Connecting you to a human agent...\n"
-        f"Average wait time: {AGENT_RESPONSE_TIMEOUT//60} minutes\n"
-        "We'll notify you if no agent is available.",
-        customer_number, 
-        phone_id
-    )
+    # Notify customer
+    send("Connecting you to a human agent...", customer_number, phone_id)
     
-    # Prepare agent message with timeout warning
-    agent_message = (
-        f"🔔 NEW CUSTOMER REQUEST (Respond within {AGENT_RESPONSE_TIMEOUT//60} min) 🔔\n\n"
-        f"From: {customer_number}\n"
-        f"Waiting since: {datetime.now().strftime('%H:%M:%S')}\n"
-        f"Initial message: \"{prompt}\"\n\n"
-        f"Reply with:\n"
-        f"1 - Take this conversation\n"
-        f"2 - Unable to help\n\n"
-        f"Timeout in {AGENT_RESPONSE_TIMEOUT//60} minutes"
-    )
+    # Prepare agent message with delivery tracking
+    agent_message = {
+        "type": "text",
+        "text": {
+            "body": (
+                f"🔔 NEW CUSTOMER REQUEST 🔔\n\n"
+                f"From: {customer_number}\n"
+                f"Message: \"{prompt}\"\n\n"
+                f"Reply with:\n"
+                f"1 - Accept conversation\n"
+                f"2 - Decline\n\n"
+                f"Message ID: {generate_message_id()}"
+            )
+        },
+        "delivery": {  # Track delivery status
+            "status": "pending",
+            "attempts": 0,
+            "last_attempt": None
+        }
+    }
     
-    # Initialize agent session with timeout
-    redis.set(f"agent_session:{AGENT_NUMBER}", json.dumps({
+    # Store agent assignment with retry info
+    agent_session = {
         'step': 'awaiting_response',
         'customer_number': customer_number,
         'phone_id': phone_id,
+        'message': agent_message,
         'created_at': time.time(),
         'expires_at': time.time() + AGENT_RESPONSE_TIMEOUT
-    }), ex=AGENT_RESPONSE_TIMEOUT)
+    }
     
-    # Set customer waiting state with timeout
+    redis.set(f"agent_session:{AGENT_NUMBER}", json.dumps(agent_session), ex=AGENT_RESPONSE_TIMEOUT)
+    
+    # Update customer state
     update_user_state(customer_number, {
         'step': 'waiting_for_agent',
         'waiting_since': time.time(),
-        'timeout_at': time.time() + AGENT_RESPONSE_TIMEOUT,
-        'user': user_data.get('user', {})
-    }, ttl_seconds=AGENT_RESPONSE_TIMEOUT)
+        'agent_request_id': agent_message['text']['body'][-8:]  # Last 8 chars as ID
+    })
     
-    # Send to agent
-    send_whatsapp_message(phone_id, AGENT_NUMBER, agent_message)
-    
-    # Start timeout check
-    threading.Timer(AGENT_RESPONSE_TIMEOUT, check_agent_timeout, 
-                   args=[customer_number, phone_id]).start()
+    # Send with delivery confirmation
+    send_agent_notification_with_retry(phone_id, agent_session)
     
     return {
         'step': 'agent_handoff',
@@ -559,128 +560,136 @@ def human_agent(prompt, user_data, phone_id):
         'sender': customer_number
     }
 
-def check_agent_timeout(customer_number, phone_id):
-    """Check if agent failed to respond"""
-    customer_state = get_user_state(customer_number)
-    if not customer_state or customer_state.get('step') != 'waiting_for_agent':
-        return
+def send_agent_notification_with_retry(phone_id, agent_session):
+    """Send message to agent with retry logic"""
+    max_retries = 3
+    retry_delay = 30  # seconds
     
-    agent_state = json.loads(redis.get(f"agent_session:{AGENT_NUMBER}") or {})
-    if not agent_state or agent_state.get('customer_number') != customer_number:
-        # Agent didn't respond - offer options
-        options = (
-            "⚠️ No agent available currently. Please:\n\n"
-            "1. Try again later\n"
-            "2. Leave a message for callback\n"
-            "3. Call us directly at +263719835124\n"
-            "4. Return to main menu"
+    for attempt in range(max_retries):
+        try:
+            # Update attempt info
+            agent_session['message']['delivery']['attempts'] += 1
+            agent_session['message']['delivery']['last_attempt'] = time.time()
+            
+            # Send via WhatsApp API
+            response = requests.post(
+                f"https://graph.facebook.com/v19.0/{phone_id}/messages",
+                headers={
+                    'Authorization': f'Bearer {wa_token}',
+                    'Content-Type': 'application/json'
+                },
+                json={
+                    "messaging_product": "whatsapp",
+                    "to": AGENT_NUMBER,
+                    "type": "text",
+                    "text": agent_session['message']['text']
+                }
+            )
+            response.raise_for_status()
+            
+            # Update delivery status
+            agent_session['message']['delivery']['status'] = 'delivered'
+            redis.set(f"agent_session:{AGENT_NUMBER}", json.dumps(agent_session), 
+                     ex=AGENT_RESPONSE_TIMEOUT)
+            
+            # Start delivery confirmation check
+            threading.Timer(30, verify_agent_message_delivery, 
+                          args=[phone_id, agent_session]).start()
+            return True
+            
+        except Exception as e:
+            logging.error(f"Agent notification attempt {attempt+1} failed: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(retry_delay)
+    
+    # All retries failed
+    agent_session['message']['delivery']['status'] = 'failed'
+    redis.set(f"agent_session:{AGENT_NUMBER}", json.dumps(agent_session),
+             ex=AGENT_RESPONSE_TIMEOUT)
+    
+    # Notify customer
+    customer_number = agent_session['customer_number']
+    send(
+        "We're having trouble reaching our agents right now. "
+        "Please try again later or call +263719835124",
+        customer_number,
+        phone_id
+    )
+    update_user_state(customer_number, {'step': 'main_menu'})
+    return False
+
+def verify_agent_message_delivery(phone_id, agent_session):
+    """Check if agent has seen the message"""
+    try:
+        # Get message status from WhatsApp API
+        message_id = agent_session['message']['text']['body'][-8:]
+        response = requests.get(
+            f"https://graph.facebook.com/v19.0/{phone_id}/messages/{message_id}",
+            headers={'Authorization': f'Bearer {wa_token}'}
         )
-        send(options, customer_number, phone_id)
-        update_user_state(customer_number, {
-            'step': 'agent_timeout',
-            'user': customer_state.get('user', {})
-        })
+        status = response.json().get('status', 'unknown')
+        
+        if status in ['delivered', 'read']:
+            return True
+        
+        # If not delivered, retry
+        if agent_session['message']['delivery']['attempts'] < 3:
+            send_agent_notification_with_retry(phone_id, agent_session)
+            
+    except Exception as e:
+        logging.error(f"Delivery verification failed: {e}")
+
+def generate_message_id():
+    """Generate unique ID for message tracking"""
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
 
 def handle_agent_message(message, phone_id):
-    """Handle agent responses with timeout checks"""
+    """Process agent responses with delivery confirmation"""
     from_number = message.get('from')
     if from_number != AGENT_NUMBER:
         return False
     
-    agent_state = json.loads(redis.get(f"agent_session:{from_number}") or {})
-    if not agent_state:
-        send("No active customer session", from_number, phone_id)
-        return True
-    
-    # Check if response is too late
-    if time.time() > agent_state.get('expires_at', float('inf')):
-        send("⚠️ Too late - customer session expired", from_number, phone_id)
-        redis.delete(f"agent_session:{from_number}")
-        return True
-    
-    msg_type = message.get('type')
-    prompt = message.get('text', {}).get('body', '').strip() if msg_type == 'text' else ''
-    
-    if agent_state['step'] == 'awaiting_response':
-        customer_number = agent_state['customer_number']
+    # Get agent session with lock to prevent race conditions
+    with redis.lock(f"agent_lock:{AGENT_NUMBER}"):
+        agent_state = json.loads(redis.get(f"agent_session:{from_number}") or {})
         
-        if prompt == '1':  # Accept
-            # Update states with conversation timeout
-            redis.set(f"agent_session:{from_number}", json.dumps({
-                'step': 'in_conversation',
-                'customer_number': customer_number,
-                'started_at': time.time(),
-                'expires_at': time.time() + AGENT_CONVERSATION_TIMEOUT
-            }), ex=AGENT_CONVERSATION_TIMEOUT)
+        if not agent_state:
+            send("No active customer request", from_number, phone_id)
+            return True
+        
+        # Verify this is a response to the current message
+        msg_text = message.get('text', {}).get('body', '')
+        if not msg_text.startswith(('1', '2')):
+            send("Please reply with:\n1 - Accept\n2 - Decline", from_number, phone_id)
+            return True
+        
+        # Process response
+        if agent_state['step'] == 'awaiting_response':
+            customer_number = agent_state['customer_number']
             
-            update_user_state(customer_number, {
-                'step': 'with_agent',
-                'agent_number': from_number,
-                'conversation_start': time.time()
-            }, ttl_seconds=AGENT_CONVERSATION_TIMEOUT)
-            
-            # Send confirmations
-            send("✅ You're now connected to the customer", from_number, phone_id)
-            send("✅ You're now speaking with an agent", customer_number, phone_id)
-            
-            # Start conversation timeout check
-            threading.Timer(AGENT_CONVERSATION_TIMEOUT, 
-                           check_conversation_timeout,
-                           args=[customer_number, phone_id]).start()
-            
-        elif prompt == '2':  # Decline
-            send("❌ Agent declined the conversation", agent_state['customer_number'], phone_id)
-            update_user_state(customer_number, {'step': 'main_menu'})
-            send_main_menu(customer_number, phone_id)
-            redis.delete(f"agent_session:{from_number}")
-    
-    elif agent_state['step'] == 'in_conversation':
-        # ... existing conversation handling ...
-        pass
-    
+            if msg_text.strip() == '1':  # Accept
+                # Update states
+                agent_state['step'] = 'in_conversation'
+                agent_state['started_at'] = time.time()
+                redis.set(f"agent_session:{from_number}", json.dumps(agent_state),
+                         ex=AGENT_CONVERSATION_TIMEOUT)
+                
+                update_user_state(customer_number, {
+                    'step': 'with_agent',
+                    'agent_number': from_number,
+                    'conversation_start': time.time()
+                }, ttl_seconds=AGENT_CONVERSATION_TIMEOUT)
+                
+                # Send confirmations
+                send("✅ You're now connected to the customer", from_number, phone_id)
+                send("✅ You're now speaking with an agent", customer_number, phone_id)
+                
+            elif msg_text.strip() == '2':  # Decline
+                send("An agent will contact you later", customer_number, phone_id)
+                update_user_state(customer_number, {'step': 'main_menu'})
+                redis.delete(f"agent_session:{from_number}")
+                
     return True
-
-def check_conversation_timeout(customer_number, phone_id):
-    """Check if conversation has gone too long"""
-    customer_state = get_user_state(customer_number)
-    if not customer_state or customer_state.get('step') != 'with_agent':
-        return
-    
-    # Notify both parties
-    send("⚠️ This conversation will time out soon", customer_state['agent_number'], phone_id)
-    send(
-        "Notice: This conversation will end soon due to timeout\n"
-        "Please summarize or request a callback if needed",
-        customer_number,
-        phone_id
-    )
-    
-    # Set final timeout in 5 minutes
-    threading.Timer(300, end_conversation_timeout, 
-                   args=[customer_number, phone_id]).start()
-
-def end_conversation_timeout(customer_number, phone_id):
-    """Forcefully end a timed-out conversation"""
-    customer_state = get_user_state(customer_number)
-    if not customer_state or customer_state.get('step') != 'with_agent':
-        return
-    
-    agent_number = customer_state.get('agent_number')
-    
-    # Notify both parties
-    send("⏱️ Conversation ended due to timeout", agent_number, phone_id)
-    send(
-        "This conversation has ended due to timeout\n"
-        "Please contact us again if you need further assistance",
-        customer_number,
-        phone_id
-    )
-    
-    # Clean up states
-    update_user_state(customer_number, {'step': 'main_menu'})
-    redis.delete(f"agent_session:{agent_number}")
-    send_main_menu(customer_number, phone_id)
-
 
 
 def human_agent_followup(prompt, user_data, phone_id):
