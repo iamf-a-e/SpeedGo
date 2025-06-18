@@ -2329,6 +2329,11 @@ def webhook():
             
                     if agent_state.get("step") == "agent_reply":
                         handle_agent_reply(message_text, customer_number, phone_id, agent_state)
+                        
+                        # 🔄 Re-save agent state to ensure customer_number is preserved
+                        agent_state["customer_number"] = customer_number
+                        agent_state["step"] = "talking_to_human_agent"
+                        update_user_state(AGENT_NUMBER, agent_state)
 
                         return "OK"
             
@@ -2420,7 +2425,7 @@ def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
         send("✅ You are now connected to a human agent. Please wait for their response.", customer_number, phone_id)
 
         update_user_state(customer_number, {
-            'step': '',
+            'step': 'talking_to_human_agent',
             'user': get_user_state(customer_number).get('user', {}),
             'sender': customer_number
         })
