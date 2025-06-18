@@ -653,6 +653,82 @@ def handle_agent_message_exclusive(message, phone_id):
     )
     return True
 
+
+
+def handle_normal_message(message, phone_id):
+    """Process regular user messages (not agent-related)"""
+    from_number = message.get('from')
+    msg_type = message.get('type')
+    
+    # Get user state or initialize
+    user_state = get_user_state(from_number) or {'step': 'welcome'}
+    
+    # Handle different message types
+    if msg_type == "text":
+        prompt = message.get('text', {}).get('body', '').strip()
+        return process_text_message(prompt, from_number, phone_id, user_state)
+    elif msg_type == "location":
+        return process_location_message(message, from_number, phone_id, user_state)
+    else:
+        send("Please send text or location messages", from_number, phone_id)
+        return False
+
+def process_text_message(prompt, from_number, phone_id, user_state):
+    """Handle text messages from users"""
+    current_step = user_state.get('step', 'welcome')
+    
+    # Get the appropriate handler based on current step
+    handler = action_mapping.get(current_step, handle_welcome)
+    
+    # Process the message
+    new_state = handler(prompt, user_state, phone_id)
+    
+    # Update user state
+    update_user_state(from_number, new_state)
+    return True
+
+def process_location_message(message, from_number, phone_id, user_state):
+    """Handle location messages from users"""
+    location = message.get('location', {})
+    lat = location.get('latitude')
+    lng = location.get('longitude')
+    
+    if lat and lng:
+        # Store location in user state
+        user_state['location'] = f"{lat},{lng}"
+        update_user_state(from_number, user_state)
+        
+        # Continue based on current step
+        current_step = user_state.get('step', 'welcome')
+        handler = action_mapping.get(current_step, handle_welcome)
+        new_state = handler(f"{lat},{lng}", user_state, phone_id)
+        update_user_state(from_number, new_state)
+        return True
+    
+    send("We couldn't read your location. Please try again.", from_number, phone_id)
+    return False
+
+def forward_to_agent(message, phone_id, user_state):
+    """Forward user messages to their assigned agent"""
+    agent_number = user_state.get('agent_number', AGENT_NUMBER)
+    msg_type = message.get('type')
+    
+    if msg_type == "text":
+        text = message.get('text', {}).get('body', '')
+        send(f"Customer: {text}", agent_number, phone_id)
+    elif msg_type == "location":
+        loc = message.get('location', {})
+        send(
+            f"Customer shared location: {loc.get('latitude')},{loc.get('longitude')}",
+            agent_number,
+            phone_id
+        )
+    else:
+        send(f"Customer sent a {msg_type} message", agent_number, phone_id)
+    
+    return True
+    
+
 def human_agent_followup(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
 
