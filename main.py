@@ -2206,7 +2206,7 @@ def forward_agent_message(prompt, message, customer_number, phone_id):
 
 
 # Action mapping
-action_mapping = {
+ACTION_MAPPINGS = {
     "welcome": handle_welcome,
     "select_language": handle_select_language,
     "main_menu": handle_main_menu,
