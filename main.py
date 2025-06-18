@@ -2334,18 +2334,19 @@ def webhook():
 
 def message_handler(prompt, sender, phone_id, message=None):
     """
-    Main message handler that routes messages to appropriate handlers
-    for both customers and agents.
+    Unified message handler for customers and agents.
+    Routes messages based on user state and message type.
     """
+
     # Initialize message if None
     if message is None:
         message = {"type": "text", "text": prompt}
 
-    # Handle agent messages separately
+    # Agent message handler
     if sender == AGENT_NUMBER:
         return handle_agent_message(prompt, sender, phone_id, message)
 
-    # Handle regular customer messages
+    # Load or initialize user state
     user_data = get_user_state(sender) or {}
     user_data['sender'] = sender
 
@@ -2357,20 +2358,23 @@ def message_handler(prompt, sender, phone_id, message=None):
                 "latitude": location["latitude"],
                 "longitude": location["longitude"]
             }
+            # Use location as prompt if needed
             prompt = f"{location['latitude']},{location['longitude']}"
         else:
             prompt = ""
 
-    # Initialize user data if not present
+    # Ensure user object exists
     if 'user' not in user_data:
         user_data['user'] = User(sender).to_dict()
 
-    # Get current step and handler
+    # Determine current step and handler
     current_step = user_data.get('step', 'welcome')
     handler = ACTION_MAPPINGS.get(current_step, handle_default)
-    
-    # Process the message
+
+    # Process the step using the correct handler
     next_state = handler(prompt, user_data, phone_id, message)
+
+    # Persist updated state
     update_user_state(sender, next_state)
 
     return next_state
