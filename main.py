@@ -2203,6 +2203,18 @@ def forward_agent_message(prompt, message, customer_number, phone_id):
     else:
         send(f"Agent: {prompt}", customer_number, phone_id)
 
+def handle_default(prompt, user_data, phone_id, message):
+    send(
+        "Hi there! Welcome to SpeedGo Services for borehole drilling in Zimbabwe. "
+        "We provide reliable borehole drilling and water solutions across Zimbabwe.\n\n"
+        "Choose your preferred language:\n"
+        "1. English\n"
+        "2. Shona\n"
+        "3. Ndebele",
+        user_data['sender'], phone_id
+    )
+    update_user_state(user_data['sender'], {'step': 'select_language'})
+    return {'step': 'select_language', 'sender': user_data['sender']}
 
 
 # Action mapping
