@@ -24,6 +24,8 @@ AGENT_INITIAL_STATE = "agent_available"
 AGENT_RESPONSE_TIMEOUT = 300  # 5 minutes in seconds
 AGENT_CONVERSATION_TIMEOUT = 3600  # 1 hour in seconds
 AGENT_PREFIX = "AGENT-CMD:"
+AGENT_CMD_PREFIX = "💠AGENT:"  # Unique visual prefix
+BYPASS_STEPS = ['agent_request', 'agent_response'] 
 
 # Upstash Redis setup
 redis = Redis(
@@ -510,144 +512,146 @@ def handle_main_menu(prompt, user_data, phone_id):
 def human_agent(prompt, user_data, phone_id):
     customer_number = user_data['sender']
     
-    # Generate unique conversation ID
-    session_id = f"agent_session_{int(time.time())}"
+    # Generate unique session ID
+    session_id = f"agt_{int(time.time())}_{customer_number[-4:]}"
     
-    # Store agent session separately
-    redis.set(f"agent:{AGENT_NUMBER}:{session_id}", json.dumps({
+    # Store agent session in separate namespace
+    redis.set(f"agent_sessions:{session_id}", json.dumps({
         'type': 'agent_request',
-        'customer_number': customer_number,
-        'phone_id': phone_id,
-        'original_message': prompt,
+        'customer': customer_number,
+        'initial_message': prompt,
+        'status': 'pending',
         'created_at': time.time(),
-        'status': 'pending'
-    }), ex=3600)
+        'expires_at': time.time() + 300  # 5 minutes
+    }), ex=300)
     
-    # Store customer waiting state
+    # Update customer state
     update_user_state(customer_number, {
-        'step': 'waiting_for_agent',
+        'step': 'awaiting_agent_response',
         'agent_session_id': session_id
     })
     
-    # Send formatted agent request
-    agent_msg = (
-        f"🔷🔷 AGENT ASSISTANCE REQUEST 🔷🔷\n\n"
-        f"Customer: {customer_number}\n"
-        f"Message: {prompt}\n\n"
-        f"TO RESPOND:\n"
-        f"Type: {AGENT_PREFIX}1 (to accept)\n"
-        f"Type: {AGENT_PREFIX}2 (to decline)\n\n"
-        f"⏱️ This request expires in 5 minutes"
+    # Send formatted agent alert (bypassing normal flow)
+    agent_alert = (
+        f"{AGENT_CMD_PREFIX} ACTION REQUIRED {AGENT_CMD_PREFIX}\n\n"
+        f"🔷 Customer: {customer_number}\n"
+        f"📩 Message: {prompt}\n\n"
+        f"🔘 RESPOND WITH:\n"
+        f"{AGENT_CMD_PREFIX}1 - Accept conversation\n"
+        f"{AGENT_CMD_PREFIX}2 - Decline request\n\n"
+        f"⏱️ Expires in 5 minutes"
     )
     
-    # Send via direct API call (bypass normal flow)
+    # Direct API call to WhatsApp (completely bypasses bot)
     response = requests.post(
         f"https://graph.facebook.com/v19.0/{phone_id}/messages",
         headers={
             'Authorization': f'Bearer {wa_token}',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-Bypass-Bot': 'true'  # Custom header to track
         },
         json={
             "messaging_product": "whatsapp",
             "to": AGENT_NUMBER,
             "type": "text",
-            "text": {"body": agent_msg}
+            "text": {"body": agent_alert}
         }
     )
     
     if response.status_code != 200:
+        logging.error(f"Failed to notify agent: {response.text}")
         send("Couldn't reach an agent. Please try again later.", customer_number, phone_id)
-        return {'step': 'main_menu', 'user': user_data.get('user', {})}
+        return {'step': 'main_menu'}
     
-    send("We've notified an agent. Please wait...", customer_number, phone_id)
-    return {'step': 'agent_transfer_pending'}
+    send("We've contacted an agent. Please wait...", customer_number, phone_id)
+    return {'step': 'agent_handoff'}
 
-def handle_agent_message(message, phone_id):
-    """Exclusive agent message processor"""
+def handle_incoming_message(message, phone_id):
+    """Main message router"""
     from_number = message.get('from')
-    if from_number != AGENT_NUMBER:
-        return False
     
+    # 1. Check if this is an agent message - ABSOLUTE PRIORITY
+    if from_number == AGENT_NUMBER:
+        return handle_agent_message_exclusive(message, phone_id)
+    
+    # 2. Check if user is talking to agent
+    user_state = get_user_state(from_number) or {}
+    if user_state.get('step') == 'talking_to_agent':
+        return forward_to_agent(message, phone_id, user_state)
+    
+    # 3. Normal message processing
+    return handle_normal_message(message, phone_id)
+
+def handle_agent_message_exclusive(message, phone_id):
+    """Completely isolated agent message handler"""
     msg_type = message.get('type')
     if msg_type != "text":
-        send("Please respond with text only", from_number, phone_id)
+        send("Please use text commands only", AGENT_NUMBER, phone_id)
         return True
     
     prompt = message.get('text', {}).get('body', '').strip()
     
-    # Check if this is an agent command
-    if not prompt.startswith(AGENT_PREFIX):
-        # Not a command - check if in active conversation
-        active_session = find_active_agent_session(from_number)
-        if active_session:
-            # Forward to customer
-            send(f"Agent: {prompt}", active_session['customer_number'], phone_id)
+    # Check for agent command prefix
+    if AGENT_CMD_PREFIX in prompt:
+        # Extract clean command
+        cmd = prompt.split(AGENT_CMD_PREFIX)[1].strip()[0]  # Get first char after prefix
+        
+        # Find pending session
+        session = None
+        for key in redis.scan_iter("agent_sessions:*"):
+            data = json.loads(redis.get(key))
+            if data.get('status') == 'pending' and data.get('customer'):
+                session = data
+                session_id = key.split(':')[1]
+                break
+        
+        if not session:
+            send("No active customer requests", AGENT_NUMBER, phone_id)
             return True
-        
-        # Not in conversation - show help
-        send(
-            f"⚠️ You're in agent mode. To respond to requests:\n"
-            f"Use {AGENT_PREFIX}1 / {AGENT_PREFIX}2 commands\n"
-            f"Or type {AGENT_PREFIX}help for assistance",
-            from_number,
-            phone_id
-        )
+            
+        if cmd == '1':  # Accept
+            # Update session
+            session['status'] = 'active'
+            session['agent_number'] = AGENT_NUMBER
+            redis.set(f"agent_sessions:{session_id}", json.dumps(session), ex=3600)
+            
+            # Update customer
+            update_user_state(session['customer'], {
+                'step': 'talking_to_agent',
+                'agent_session_id': session_id
+            })
+            
+            # Send confirmations
+            send(f"{AGENT_CMD_PREFIX} You're now connected to {session['customer']}", AGENT_NUMBER, phone_id)
+            send("✅ You're now speaking with an agent", session['customer'], phone_id)
+            
+        elif cmd == '2':  # Decline
+            send(f"{AGENT_CMD_PREFIX} Request declined", AGENT_NUMBER, phone_id)
+            send("No agent is available right now", session['customer'], phone_id)
+            redis.delete(f"agent_sessions:{session_id}")
+            update_user_state(session['customer'], {'step': 'main_menu'})
+            
         return True
     
-    # Process agent command
-    cmd = prompt[len(AGENT_PREFIX):].strip()
-    session = find_pending_agent_session(from_number)
+    # Check if in active conversation
+    for key in redis.scan_iter("agent_sessions:*"):
+        data = json.loads(redis.get(key))
+        if data.get('status') == 'active' and data.get('agent_number') == AGENT_NUMBER:
+            # Forward message to customer
+            send(f"Agent: {prompt}", data['customer'], phone_id)
+            return True
     
-    if not session:
-        send("No active customer request found", from_number, phone_id)
-        return True
-    
-    if cmd == "1":  # Accept
-        # Update session
-        session['status'] = 'active'
-        session['started_at'] = time.time()
-        redis.set(f"agent:{from_number}:{session['session_id']}", json.dumps(session), ex=7200)
-        
-        # Update customer state
-        update_user_state(session['customer_number'], {
-            'step': 'talking_to_agent',
-            'agent_number': from_number,
-            'agent_session_id': session['session_id']
-        })
-        
-        # Send confirmations
-        send("✅ You're now connected to the customer", from_number, phone_id)
-        send("✅ Connected to agent. Please ask your question", session['customer_number'], phone_id)
-        
-    elif cmd == "2":  # Decline
-        send("❌ Request declined by agent", session['customer_number'], phone_id)
-        update_user_state(session['customer_number'], {'step': 'main_menu'})
-        redis.delete(f"agent:{from_number}:{session['session_id']}")
-        send_main_menu(session['customer_number'], phone_id)
-        
-    else:
-        send(f"Invalid command. Use {AGENT_PREFIX}1 or {AGENT_PREFIX}2", from_number, phone_id)
-    
+    # No active session - show help
+    send(
+        f"{AGENT_CMD_PREFIX} INVALID COMMAND {AGENT_CMD_PREFIX}\n\n"
+        f"To respond to requests:\n"
+        f"1. Wait for {AGENT_CMD_PREFIX} alert\n"
+        f"2. Reply with {AGENT_CMD_PREFIX}1 or {AGENT_CMD_PREFIX}2\n\n"
+        f"Normal messages only work during active conversations",
+        AGENT_NUMBER,
+        phone_id
+    )
     return True
-
-def find_pending_agent_session(agent_number):
-    """Find pending session for agent"""
-    for key in redis.scan_iter(f"agent:{agent_number}:*"):
-        data = json.loads(redis.get(key))
-        if data.get('status') == 'pending':
-            data['session_id'] = key.split(':')[-1]
-            return data
-    return None
-
-def find_active_agent_session(agent_number):
-    """Find active conversation for agent"""
-    for key in redis.scan_iter(f"agent:{agent_number}:*"):
-        data = json.loads(redis.get(key))
-        if data.get('status') == 'active':
-            data['session_id'] = key.split(':')[-1]
-            return data
-    return None
-
 
 def human_agent_followup(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
@@ -2333,6 +2337,7 @@ def webhook():
 
             if messages:
                 message = messages[0]
+                handle_incoming_message(message, phone_id)
                 from_number = message.get("from")
                 msg_type = message.get("type")
                 message_text = message.get("text", {}).get("body", "") if msg_type == "text" else ""
