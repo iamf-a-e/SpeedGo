@@ -2329,10 +2329,20 @@ def webhook():
             
                     if agent_state.get("step") == "agent_reply":
                         handle_agent_reply(message_text, customer_number, phone_id, agent_state)
+
+                        agent_state["customer_number"] = customer_number
+                        agent_state["step"] = "talking_to_human_agent"
+                        update_user_state(AGENT_NUMBER, agent_state)
+        
                         return "OK"
             
                     if agent_state.get("step") == "talking_to_human_agent":
                         send(message_text, customer_number, phone_id)
+
+                        agent_state["customer_number"] = customer_number
+                        agent_state["step"] = "talking_to_human_agent"
+                        update_user_state(AGENT_NUMBER, agent_state)
+        
                         return "OK"
             
                     send("⚠️ No active chat. Please wait for a new request.", AGENT_NUMBER, phone_id)
@@ -2410,7 +2420,7 @@ def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
         send("✅ You are now connected to a human agent. Please wait for their response.", customer_number, phone_id)
 
         update_user_state(customer_number, {
-            'step': 'talking_to_human_agent',
+            'step': '',
             'user': get_user_state(customer_number).get('user', {}),
             'sender': customer_number
         })
