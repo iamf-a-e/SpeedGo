@@ -2488,8 +2488,13 @@ def webhook():
 
 
 def message_handler(prompt, sender, phone_id, message):
+    
+    if sender == AGENT_NUMBER:
+        return
+        
     user_data = get_user_state(sender)
     user_data['sender'] = sender
+    
 
     # If this is a location message, inject location into user_data
     if message.get("type") == "location":
