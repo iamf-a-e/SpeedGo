@@ -510,23 +510,24 @@ def human_agent(prompt, user_data, phone_id):
     # 1. Notify customer
     send("Connecting you to a human agent...", customer_number, phone_id)
 
-    
-    # 2. Notify agent
+    # 2. Notify agent with clear options
     agent_message = (
         f"👋 New customer request on WhatsApp\n\n"
         f"📱 Customer: {customer_number}\n"
         f"📩 Message: \"{prompt}\"\n\n"
         f"Reply with:\n"
-        f"1 - Talk to customer\n"
-        f"2 - Back to bot"
+        f"1 - Take over conversation (customer messages will come to you)\n"
+        f"2 - Let bot handle it (customer returns to main menu)"
     )
-    send(agent_message, AGENT_NUMBER, phone_id) 
+    send(agent_message, AGENT_NUMBER, phone_id)
     
+    # Initialize agent state
     update_user_state(AGENT_NUMBER, {
         'step': 'agent_reply',
-        'customer_number': customer_number,  # Track which customer they're handling
-        'phone_id': phone_id
-    })
+        'customer_number': customer_number,
+        'phone_id': phone_id,
+        'original_message': prompt
+    }, ttl_seconds=3600)  # Longer TTL for agent conversations
 
     # Update customer's state (waiting for agent)
     update_user_state(customer_number, {
@@ -534,9 +535,7 @@ def human_agent(prompt, user_data, phone_id):
         'user': user_data.get('user', {}),
         'sender': customer_number,
         'waiting_since': time.time()
-    })
-    
-
+    }, ttl_seconds=3600)
 
     # 3. Schedule fallback
     def send_fallback():
@@ -550,66 +549,188 @@ def human_agent(prompt, user_data, phone_id):
                 'sender': customer_number
             })
 
-    threading.Timer(10, send_fallback).start()
+    threading.Timer(120, send_fallback).start()  # Increased to 2 minutes
 
-    # 4. Update customer state
-    update_user_state(customer_number, {
+    return {
         'step': 'waiting_for_human_agent_response',
         'user': user_data.get('user', {}),
-        'sender': customer_number,
-        'waiting_since': time.time()
-    })
+        'sender': customer_number
+    }
 
-    return {'step': 'waiting_for_human_agent_response', 'user': user_data.get('user', {}), 'sender': customer_number}
-def handle_agent_reply(prompt, user_data, phone_id):
+# Enhanced agent message handling
+def handle_agent_message(prompt, sender, phone_id, message):
+    """
+    Handles all messages coming from the agent number.
+    """
+    agent_state = get_user_state(sender) or {'step': AGENT_INITIAL_STATE}
+    current_step = agent_state.get('step', AGENT_INITIAL_STATE)
+    
+    logging.info(f"Agent message received. Current state: {current_step}, Message: {message}")
+    
+    # Get text content regardless of message type
+    if isinstance(message, dict) and message.get('type') == 'text':
+        prompt = message.get('text', {}).get('body', '').strip()
+    elif isinstance(prompt, str):
+        prompt = prompt.strip()
+    else:
+        prompt = ""
+
+    # Dispatch to appropriate handler
+    if current_step == 'agent_reply':
+        return handle_agent_reply(prompt, sender, phone_id, message, agent_state)
+    elif current_step == 'talking_to_customer':
+        return handle_agent_conversation(prompt, sender, phone_id, message, agent_state)
+    else:
+        return handle_agent_available(prompt, sender, phone_id, message, agent_state)
+
+# Improved agent reply handler
+def handle_agent_reply(prompt, sender, phone_id, message, agent_state):
     """Handles agent's initial response to customer request"""
-    prompt = prompt.strip()
-    customer_number = user_data.get('customer_number')
+    customer_number = agent_state.get('customer_number')
     
     if not customer_number:
-        send("⚠️ Error: No customer assigned. Please wait for a new request.", 
-             user_data['sender'], phone_id)
-        return {'step': 'agent_available', 'sender': user_data['sender']}
-
-    if prompt == "1":
-        # Agent chooses to talk to customer
-        send("✅ You're now talking to the customer. Bot is paused until you send '2' to return to bot.", 
-             user_data['sender'], phone_id)
-        send("✅ You are now connected to a human agent. Please wait for their response.", 
-             customer_number, phone_id)
-
+        send("⚠️ Error: No customer assigned. Please wait for a new request.", sender, phone_id)
+        return {'step': 'agent_available'}
+    
+    if prompt == '1':  # Accept conversation
+        # Notify both parties
+        send("✅ You're now connected to the customer. Send '2' at any time to return the customer to the bot.", 
+             sender, phone_id)
+        send("✅ You are now connected to a human agent. Please ask your question.", customer_number, phone_id)
+        
+        # Update states
         update_user_state(customer_number, {
             'step': 'talking_to_human_agent',
             'user': get_user_state(customer_number).get('user', {}),
-            'sender': customer_number
-        })
-
+            'sender': customer_number,
+            'agent_number': sender
+        }, ttl_seconds=3600)
+        
+        update_user_state(sender, {
+            'step': 'talking_to_customer',
+            'customer_number': customer_number,
+            'phone_id': phone_id,
+            'started_at': time.time()
+        }, ttl_seconds=3600)
+        
         return {
             'step': 'talking_to_customer',
-            'sender': user_data['sender'],
             'customer_number': customer_number,
-            'phone_id': phone_id
+            'phone_id': phone_id,
+            'started_at': time.time()
         }
-    
-    elif prompt == "2":
-        # Agent returns control to bot
-        send("✅ The bot has resumed and will assist the customer from here.", 
-             user_data['sender'], phone_id)
-        send("👋 You're now back with our automated assistant.", 
-             customer_number, phone_id)
-
+        
+    elif prompt == '2':  # Decline conversation
+        send("✅ You've returned the customer to the bot.", sender, phone_id)
+        send("👋 You're now back with our automated assistant.", customer_number, phone_id)
+        
         update_user_state(customer_number, {
             'step': 'main_menu',
             'user': get_user_state(customer_number).get('user', {}),
             'sender': customer_number
         })
+        update_user_state(sender, {'step': 'agent_available'})
         show_main_menu(customer_number, phone_id)
-        return {'step': 'agent_available', 'sender': user_data['sender']}
-    
+        
     else:
-        send("Please reply with:\n1 - Talk to customer\n2 - Back to bot", 
-             user_data['sender'], phone_id)
-        return user_data  # Maintain current state
+        send("⚠️ Please reply with:\n1 - Talk to customer\n2 - Back to bot", sender, phone_id)
+        return agent_state  # Maintain current state
+
+# Enhanced agent conversation handler
+def handle_agent_conversation(prompt, sender, phone_id, message, agent_state):
+    """Handles ongoing conversation between agent and customer"""
+    customer_number = agent_state.get('customer_number')
+    
+    if prompt.strip().lower() == '2':  # End conversation
+        send("✅ Conversation ended. The bot will take over.", sender, phone_id)
+        send("👋 The agent has ended the conversation. You're back with our automated assistant.", 
+             customer_number, phone_id)
+        
+        update_user_state(customer_number, {
+            'step': 'main_menu',
+            'user': get_user_state(customer_number).get('user', {}),
+            'sender': customer_number
+        })
+        update_user_state(sender, {'step': 'agent_available'})
+        show_main_menu(customer_number, phone_id)
+        return {'step': 'agent_available'}
+    else:
+        # Forward message to customer
+        forward_agent_message(prompt, message, customer_number, phone_id)
+        return agent_state  # Maintain current state
+
+def handle_agent_available(prompt, sender, phone_id, message, agent_state):
+    """Handles agent when not in active conversation"""
+    send("ℹ️ You're currently available. You'll be notified when a customer needs assistance.", sender, phone_id)
+    return {'step': 'agent_available'}
+
+def forward_agent_message(prompt, message, customer_number, phone_id):
+    """Forwards different message types from agent to customer"""
+    if not customer_number:
+        return
+        
+    if isinstance(message, dict):
+        if message.get("type") == "text":
+            send(f"Agent: {message.get('text', {}).get('body', '')}", customer_number, phone_id)
+        elif message.get("type") == "image":
+            caption = f"Agent: {message.get('caption', '')}" if message.get('caption') else "From agent:"
+            send_image(message.get('url'), caption, customer_number, phone_id)
+        elif message.get("type") == "location":
+            send_location(
+                message.get('location', {}).get('latitude'),
+                message.get('location', {}).get('longitude'),
+                "Agent shared location",
+                customer_number,
+                phone_id
+            )
+    else:
+        send(f"Agent: {prompt}", customer_number, phone_id)
+
+# Add this helper function (you'll need to implement send_image and send_location)
+def send_image(image_url, caption, recipient, phone_id):
+    """Sends an image message"""
+    url = f"https://graph.facebook.com/v19.0/{phone_id}/messages"
+    headers = {
+        'Authorization': f'Bearer {wa_token}',
+        'Content-Type': 'application/json'
+    }
+    data = {
+        "messaging_product": "whatsapp",
+        "to": recipient,
+        "type": "image",
+        "image": {
+            "link": image_url,
+            "caption": caption
+        }
+    }
+    try:
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Failed to send image: {e}")
+
+def send_location(latitude, longitude, name, recipient, phone_id):
+    """Sends a location message"""
+    url = f"https://graph.facebook.com/v19.0/{phone_id}/messages"
+    headers = {
+        'Authorization': f'Bearer {wa_token}',
+        'Content-Type': 'application/json'
+    }
+    data = {
+        "messaging_product": "whatsapp",
+        "to": recipient,
+        "type": "location",
+        "location": {
+            "latitude": latitude,
+            "longitude": longitude,
+            "name": name
+        }
+    }
+    try:
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Failed to send location: {e}")
         
 
 def handle_customer_message_during_agent_chat(message, user_data, phone_id):
@@ -2079,31 +2200,23 @@ def handle_agent_reply(prompt, sender, phone_id, message, agent_state):
     else:
         send("⚠️ Please reply with:\n1 - Talk to customer\n2 - Back to bot", sender, phone_id)
 
-def handle_agent_conversation(prompt, user_data, phone_id):
-    """Handles ongoing conversation between agent and customer"""
-    customer_number = user_data.get('customer_number')
+def handle_agent_conversation(prompt, sender, phone_id, message, agent_state):
+    """Handles ongoing agent-customer conversation"""
+    customer_number = agent_state.get('customer_number')
     
     if prompt.strip().lower() == '2':  # End conversation
-        send("✅ Conversation ended. The bot will take over.", 
-             user_data['sender'], phone_id)
-        send("👋 The agent has ended the conversation. You're back with our automated assistant.", 
-             customer_number, phone_id)
+        send("✅ Conversation ended. The bot will take over.", sender, phone_id)
+        send("👋 The agent has ended the conversation. You're back with our automated assistant.", customer_number, phone_id)
         
         update_user_state(customer_number, {
             'step': 'main_menu',
             'user': get_user_state(customer_number).get('user', {}),
             'sender': customer_number
         })
-        update_user_state(user_data['sender'], {
-            'step': 'agent_available'
-        })
+        update_user_state(sender, {'step': 'agent_available'})
         show_main_menu(customer_number, phone_id)
-        return {'step': 'agent_available', 'sender': user_data['sender']}
     else:
-        # Forward agent's message to customer
-        send(f"Agent: {prompt}", customer_number, phone_id)
-        return user_data  # Maintain current state
-
+        forward_agent_message(prompt, message, customer_number, phone_id)
 
 def handle_agent_available(prompt, sender, phone_id, message, agent_state):
     """Handles agent when not in conversation"""
@@ -2140,7 +2253,7 @@ def handle_agent_message(prompt, sender, phone_id, message):
     current_step = agent_state.get('step', 'agent_available')
     
     # Get the appropriate handler
-    handler = AGENT_ACTION_MAPPINGS.get(current_step, handle_agent_available)
+    handler = action_mapping.get(current_step, handle_agent_available)
     return handler(prompt, sender, phone_id, message, agent_state)
 
 
@@ -2248,17 +2361,6 @@ def handle_default(prompt, user_data, phone_id, message):
     )
     update_user_state(user_data['sender'], {'step': 'select_language'})
     return {'step': 'select_language', 'sender': user_data['sender']}
-    
-
-def handle_agent_initial(prompt, user_data, phone_id):
-    """Initial state when agent first interacts with the system"""
-    # When agent first messages, set their state to 'agent_available'
-    update_user_state(user_data['sender'], {
-        'step': 'agent_available'
-    })
-    send("👋 Welcome Agent! You'll be notified when customers need assistance.", 
-         user_data['sender'], phone_id)
-    return {'step': 'agent_available', 'sender': user_data['sender']}
 
 
 # Action mapping
@@ -2275,9 +2377,6 @@ action_mapping = {
     "agent_reply": handle_agent_reply,
     "talking_to_customer": handle_agent_conversation,
     "agent_available": handle_agent_available,
-    "agent_initial": handle_agent_initial, 
-    "talking_to_customer": handle_agent_conversation,
-    "agent_initial": handle_agent_initial,
 
 
     "select_pump_option": handle_select_pump_option,
@@ -2347,40 +2446,40 @@ def webhook():
             phone_id = value.get("metadata", {}).get("phone_number_id")
             messages = value.get("messages", [])
 
-            # Handle messages from users or agents
             if messages:
                 message = messages[0]
                 from_number = message.get("from")
                 msg_type = message.get("type")
 
-                # If it's a message from AGENT
+                # Handle agent messages separately
                 if from_number == AGENT_NUMBER:
-                    message_text = message.get("text", {}).get("body", "").strip()
-                    customer_number = get_customer_linked_to_agent()  # implement this
-                    handle_agent_reply(message_text, customer_number, phone_id)
+                    message_text = message.get("text", {}).get("body", "").strip() if msg_type == "text" else ""
+                    handle_agent_message(message_text, from_number, phone_id, message)
                     return "OK"
 
-                # If it's a regular user
-                if msg_type == "text":
-                    prompt = message["text"]["body"].strip()
-                    logging.info(f"Text message from {from_number}: {prompt}")
-                    message_handler(prompt, from_number, phone_id, message)
-
-                elif msg_type == "location":
-                    gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
-                    logging.info(f"Location from {from_number}: {gps_coords}")
-                    message_handler(gps_coords, from_number, phone_id, message)
-
-                else:
-                    logging.warning(f"Unsupported message type: {msg_type}")
-                    send("Please send a text message or share your location using the 📍 button.", from_number, phone_id)
-
-                # Handle customer during agent conversation
-                user_data = get_user_state(from_number)
-                message_text = message.get("text", {}).get("body", "").strip()
-                if handle_customer_message_during_agent_chat(message_text, user_data, phone_id):
+                # Handle regular user messages
+                user_data = get_user_state(from_number) or {'step': 'welcome', 'sender': from_number}
+                
+                # Check if user is talking to agent
+                if user_data.get('step') == 'talking_to_human_agent':
+                    agent_number = user_data.get('agent_number', AGENT_NUMBER)
+                    forward_agent_message(
+                        message.get("text", {}).get("body", "") if msg_type == "text" else "[Media message]",
+                        message,
+                        agent_number,
+                        phone_id
+                    )
                     return "OK"
+                
+                # Normal message processing
+                message_handler(
+                    message.get("text", {}).get("body", "") if msg_type == "text" else "",
+                    from_number,
+                    phone_id,
+                    message
+                )
 
+        
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
 
@@ -2391,28 +2490,6 @@ def webhook():
 def message_handler(prompt, sender, phone_id, message):
     user_data = get_user_state(sender)
     user_data['sender'] = sender
-
-    if sender == AGENT_NUMBER:
-        user_data = get_user_state(sender)
-        if not user_data or 'step' not in user_data:
-            # This is agent's first interaction, set initial state
-            update_user_state(sender, {'step': 'agent_initial'})
-            user_data = get_user_state(sender)
-        
-        user_data['sender'] = sender
-        step = user_data.get('step', 'agent_initial')  # Default to agent_initial for agent
-    else:
-        # Regular user handling (your existing code)
-        user_data = get_user_state(sender)
-        user_data['sender'] = sender
-        if 'user' not in user_data:
-            user_data['user'] = User(sender).to_dict()
-        step = user_data.get('step', 'welcome')
-
-    # Dispatch to the correct step
-    next_state = get_action(step, prompt, user_data, phone_id)
-    update_user_state(sender, next_state)
-
 
     # If this is a location message, inject location into user_data
     if message.get("type") == "location":
