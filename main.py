@@ -2345,6 +2345,7 @@ def webhook():
                 
                 # If user is talking to a human agent, suppress bot
                 if handle_customer_message_during_agent_chat(message_text, user_data, phone_id):
+                    forward_message_to_agent(message_text, user_data, phone_id)
                     return "OK"
                 
                 # Continue with normal bot processing
@@ -2393,7 +2394,10 @@ def get_action(current_state, prompt, user_data, phone_id):
 
 def forward_message_to_agent(message_text, user_data, phone_id):
     agent_number = AGENT_NUMBER
-    send(message_text, agent_number, phone_id)
+    customer_number = user_data['sender']
+    
+    send(f"💬 Customer ({customer_number}): {message_text}", agent_number, phone_id)
+
 
     
 
