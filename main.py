@@ -2324,14 +2324,14 @@ def webhook():
                     handle_agent_reply(message_text, customer_number, phone_id, agent_state)
                     return "OK"
     
-    # If agent is currently talking to customer, forward any text messages to customer
-    if agent_state.get("step") == "talking_to_human_agent":
-        send(message_text, customer_number, phone_id)
-        return "OK"
-    
-    # Otherwise, no active session
-    send("⚠️ No active chat. Please wait for a new request.", AGENT_NUMBER, phone_id)
-    return "OK"
+                # If agent is currently talking to customer, forward any text messages to customer
+                if agent_state.get("step") == "talking_to_human_agent":
+                    send(message_text, customer_number, phone_id)
+                    return "OK"
+                
+                # Otherwise, no active session
+                send("⚠️ No active chat. Please wait for a new request.", AGENT_NUMBER, phone_id)
+                return "OK"
 
 
                 if msg_type == "text":
