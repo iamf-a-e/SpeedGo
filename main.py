@@ -2305,42 +2305,39 @@ def webhook():
             messages = value.get("messages", [])
 
             if messages:
-                message = messages[0]
-                from_number = message.get("from")
-                msg_type = message.get("type")
-                message_text = message.get("text", {}).get("body", "").strip()
-
-            
+            message = messages[0]
+            from_number = message.get("from")
+            msg_type = message.get("type")
+            message_text = message.get("text", {}).get("body", "").strip()
+        
+            # Handle agent messages
             if from_number.endswith(AGENT_NUMBER.replace("+", "")):
                 agent_state = get_user_state(AGENT_NUMBER)
                 customer_number = agent_state.get("customer_number")
-                
+        
                 if not customer_number:
                     send("⚠️ No customer to reply to. Wait for a new request.", AGENT_NUMBER, phone_id)
                     return "OK"
-                
-                # If agent step is 'agent_reply', handle special commands
+        
                 if agent_state.get("step") == "agent_reply":
                     handle_agent_reply(message_text, customer_number, phone_id, agent_state)
                     return "OK"
-    
-                # If agent is currently talking to customer, forward any text messages to customer
+        
                 if agent_state.get("step") == "talking_to_human_agent":
                     send(message_text, customer_number, phone_id)
                     return "OK"
-                
-                # Otherwise, no active session
+        
                 send("⚠️ No active chat. Please wait for a new request.", AGENT_NUMBER, phone_id)
                 return "OK"
-
-
-                if msg_type == "text":
-                    message_handler(message_text, from_number, phone_id, message)
-                elif msg_type == "location":
-                    gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
-                    message_handler(gps_coords, from_number, phone_id, message)
-                else:
-                    send("Please send a text message or share your location using the 📍 button.", from_number, phone_id)
+        
+            # Handle normal user messages (only if NOT agent)
+            if msg_type == "text":
+                message_handler(message_text, from_number, phone_id, message)
+            elif msg_type == "location":
+                gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
+                message_handler(gps_coords, from_number, phone_id, message)
+            else:
+                send("Please send a text message or share your location using the 📍 button.", from_number, phone_id)
 
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
