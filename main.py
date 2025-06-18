@@ -591,14 +591,21 @@ def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
         # Forward other agent messages to the customer directly
         send(agent_reply, customer_number, phone_id)
 
-def handle_talking_to_human_agent(message, user_data, phone_id):
+def handle_waiting_for_human_agent_response(message, user_data, phone_id):
     customer_number = user_data['sender']
-    
-    # If still in agent chat, suppress bot actions
-    if user_data.get('step') == 'talking_to_human_agent':
-        send("💬 You're still connected to a human agent. Please wait for them to respond.", customer_number, phone_id)
-        return True  # means the bot should not process further
-    return False
+    step = user_data.get('step', '')
+
+    # If the user is in agent chat mode (either waiting or active)
+    if step in ['waiting_for_human_agent_response', 'talking_to_human_agent']:
+        if step == 'waiting_for_human_agent_response':
+            send("💬 You're still connected to a human agent. Please wait for them to respond.", customer_number, phone_id)
+        elif step == 'talking_to_human_agent':
+            # Forward customer message to the agent
+            send(f"👤 Customer says:\n{message}", AGENT_NUMBER, phone_id)
+        return True  # Suppress bot's default flow
+
+    return False  # Continue with bot's normal flow
+
 
 
 def handle_user_message(prompt, user_data, phone_id):
