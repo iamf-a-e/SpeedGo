@@ -553,7 +553,7 @@ def human_agent(prompt, user_data, phone_id):
         return {'step': 'main_menu', 'user': user_data.get('user', {})}
     
     return {
-        'step': 'agent_transfer',
+        'step': 'agent_message',
         'user': user_data.get('user', {}),
         'sender': customer_number
     }
