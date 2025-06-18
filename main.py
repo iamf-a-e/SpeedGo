@@ -2405,10 +2405,10 @@ def webhook():
             return "OK"
             
 
-        except Exception as e:
-            logging.error(f"Error processing webhook: {e}", exc_info=True)
-
-        return jsonify({"status": "ok"}), 200
+            except Exception as e:
+                logging.error(f"Error processing webhook: {e}", exc_info=True)
+    
+            return jsonify({"status": "ok"}), 200
         
 
 def message_handler(prompt, sender, phone_id, message):
