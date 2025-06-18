@@ -2380,6 +2380,14 @@ def message_handler(prompt, sender, phone_id, message):
     user_data = get_user_state(sender)
     user_data['sender'] = sender
 
+    # 🚨 Early exit if user is in human agent chat
+    if user_data.get('step') == 'talking_to_human_agent':
+        forward_message_to_agent(prompt, user_data, phone_id)
+
+        # 🔄 Preserve customer state
+        update_user_state(sender, user_data)
+        return
+
     if message.get("type") == "location":
         location = message.get("location", {})
         if "latitude" in location and "longitude" in location:
