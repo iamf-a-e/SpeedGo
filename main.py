@@ -587,6 +587,10 @@ def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
         })
         show_main_menu(customer_number, phone_id)
 
+    else:
+        # Forward other agent messages to the customer directly
+        send(agent_reply, customer_number, phone_id)
+
 def handle_customer_message_during_agent_chat(message, user_data, phone_id):
     customer_number = user_data['sender']
     
