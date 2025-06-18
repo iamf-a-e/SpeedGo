@@ -560,14 +560,22 @@ def human_agent(prompt, user_data, phone_id):
     })
 
     return {'step': 'waiting_for_human_agent_response', 'user': user_data.get('user', {}), 'sender': customer_number}
-
-def handle_agent_reply(agent_reply, customer_number, phone_id):
-    agent_reply = agent_reply.strip()
+def handle_agent_reply(prompt, user_data, phone_id):
+    """Handles agent's initial response to customer request"""
+    prompt = prompt.strip()
+    customer_number = user_data.get('customer_number')
     
-    if agent_reply == "1":
+    if not customer_number:
+        send("⚠️ Error: No customer assigned. Please wait for a new request.", 
+             user_data['sender'], phone_id)
+        return {'step': 'agent_available', 'sender': user_data['sender']}
+
+    if prompt == "1":
         # Agent chooses to talk to customer
-        send("✅ You're now talking to the customer. Bot is paused until you send '2' to return to bot.", AGENT_NUMBER, phone_id)
-        send("✅ You are now connected to a human agent. Please wait for their response.", customer_number, phone_id)
+        send("✅ You're now talking to the customer. Bot is paused until you send '2' to return to bot.", 
+             user_data['sender'], phone_id)
+        send("✅ You are now connected to a human agent. Please wait for their response.", 
+             customer_number, phone_id)
 
         update_user_state(customer_number, {
             'step': 'talking_to_human_agent',
@@ -575,10 +583,19 @@ def handle_agent_reply(agent_reply, customer_number, phone_id):
             'sender': customer_number
         })
 
-    elif agent_reply == "2":
+        return {
+            'step': 'talking_to_customer',
+            'sender': user_data['sender'],
+            'customer_number': customer_number,
+            'phone_id': phone_id
+        }
+    
+    elif prompt == "2":
         # Agent returns control to bot
-        send("✅ The bot has resumed and will assist the customer from here.", AGENT_NUMBER, phone_id)
-        send("👋 You're now back with our automated assistant.", customer_number, phone_id)
+        send("✅ The bot has resumed and will assist the customer from here.", 
+             user_data['sender'], phone_id)
+        send("👋 You're now back with our automated assistant.", 
+             customer_number, phone_id)
 
         update_user_state(customer_number, {
             'step': 'main_menu',
@@ -586,6 +603,13 @@ def handle_agent_reply(agent_reply, customer_number, phone_id):
             'sender': customer_number
         })
         show_main_menu(customer_number, phone_id)
+        return {'step': 'agent_available', 'sender': user_data['sender']}
+    
+    else:
+        send("Please reply with:\n1 - Talk to customer\n2 - Back to bot", 
+             user_data['sender'], phone_id)
+        return user_data  # Maintain current state
+        
 
 def handle_customer_message_during_agent_chat(message, user_data, phone_id):
     customer_number = user_data['sender']
@@ -2054,23 +2078,31 @@ def handle_agent_reply(prompt, sender, phone_id, message, agent_state):
     else:
         send("⚠️ Please reply with:\n1 - Talk to customer\n2 - Back to bot", sender, phone_id)
 
-def handle_agent_conversation(prompt, sender, phone_id, message, agent_state):
-    """Handles ongoing agent-customer conversation"""
-    customer_number = agent_state.get('customer_number')
+def handle_agent_conversation(prompt, user_data, phone_id):
+    """Handles ongoing conversation between agent and customer"""
+    customer_number = user_data.get('customer_number')
     
     if prompt.strip().lower() == '2':  # End conversation
-        send("✅ Conversation ended. The bot will take over.", sender, phone_id)
-        send("👋 The agent has ended the conversation. You're back with our automated assistant.", customer_number, phone_id)
+        send("✅ Conversation ended. The bot will take over.", 
+             user_data['sender'], phone_id)
+        send("👋 The agent has ended the conversation. You're back with our automated assistant.", 
+             customer_number, phone_id)
         
         update_user_state(customer_number, {
             'step': 'main_menu',
             'user': get_user_state(customer_number).get('user', {}),
             'sender': customer_number
         })
-        update_user_state(sender, {'step': 'agent_available'})
+        update_user_state(user_data['sender'], {
+            'step': 'agent_available'
+        })
         show_main_menu(customer_number, phone_id)
+        return {'step': 'agent_available', 'sender': user_data['sender']}
     else:
-        forward_agent_message(prompt, message, customer_number, phone_id)
+        # Forward agent's message to customer
+        send(f"Agent: {prompt}", customer_number, phone_id)
+        return user_data  # Maintain current state
+
 
 def handle_agent_available(prompt, sender, phone_id, message, agent_state):
     """Handles agent when not in conversation"""
@@ -2215,6 +2247,17 @@ def handle_default(prompt, user_data, phone_id, message):
     )
     update_user_state(user_data['sender'], {'step': 'select_language'})
     return {'step': 'select_language', 'sender': user_data['sender']}
+    
+
+def handle_agent_initial(prompt, user_data, phone_id):
+    """Initial state when agent first interacts with the system"""
+    # When agent first messages, set their state to 'agent_available'
+    update_user_state(user_data['sender'], {
+        'step': 'agent_available'
+    })
+    send("👋 Welcome Agent! You'll be notified when customers need assistance.", 
+         user_data['sender'], phone_id)
+    return {'step': 'agent_available', 'sender': user_data['sender']}
 
 
 # Action mapping
@@ -2231,6 +2274,9 @@ action_mapping = {
     "agent_reply": handle_agent_reply,
     "talking_to_customer": handle_agent_conversation,
     "agent_available": handle_agent_available,
+    "agent_initial": handle_agent_initial, 
+    "talking_to_customer": handle_agent_conversation,
+    "agent_initial": handle_agent_initial,
 
 
     "select_pump_option": handle_select_pump_option,
@@ -2344,6 +2390,28 @@ def webhook():
 def message_handler(prompt, sender, phone_id, message):
     user_data = get_user_state(sender)
     user_data['sender'] = sender
+
+    if sender == AGENT_NUMBER:
+        user_data = get_user_state(sender)
+        if not user_data or 'step' not in user_data:
+            # This is agent's first interaction, set initial state
+            update_user_state(sender, {'step': 'agent_initial'})
+            user_data = get_user_state(sender)
+        
+        user_data['sender'] = sender
+        step = user_data.get('step', 'agent_initial')  # Default to agent_initial for agent
+    else:
+        # Regular user handling (your existing code)
+        user_data = get_user_state(sender)
+        user_data['sender'] = sender
+        if 'user' not in user_data:
+            user_data['user'] = User(sender).to_dict()
+        step = user_data.get('step', 'welcome')
+
+    # Dispatch to the correct step
+    next_state = get_action(step, prompt, user_data, phone_id)
+    update_user_state(sender, next_state)
+
 
     # If this is a location message, inject location into user_data
     if message.get("type") == "location":
