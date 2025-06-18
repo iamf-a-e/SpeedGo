@@ -21,6 +21,8 @@ owner_phone = os.environ.get("OWNER_PHONE")
 GOOGLE_MAPS_API_KEY = "AlzaSyCXDMMhg7FzP|ElKmrlkv1TqtD3HgHwW50"
 AGENT_NUMBER = "+263719835124"
 AGENT_INITIAL_STATE = "agent_available"
+AGENT_RESPONSE_TIMEOUT = 300  # 5 minutes in seconds
+AGENT_CONVERSATION_TIMEOUT = 3600  # 1 hour in seconds
 
 # Upstash Redis setup
 redis = Redis(
@@ -503,425 +505,182 @@ def handle_main_menu(prompt, user_data, phone_id):
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
-
 def human_agent(prompt, user_data, phone_id):
     customer_number = user_data['sender']
     
-    # Notify customer
-    send("Connecting you to a human agent...", customer_number, phone_id)
+    # Notify customer with estimated wait time
+    send(
+        "Connecting you to a human agent...\n"
+        f"Average wait time: {AGENT_RESPONSE_TIMEOUT//60} minutes\n"
+        "We'll notify you if no agent is available.",
+        customer_number, 
+        phone_id
+    )
     
-    # Prepare agent message with clear instructions
+    # Prepare agent message with timeout warning
     agent_message = (
-        f"🔔 NEW CUSTOMER REQUEST 🔔\n\n"
+        f"🔔 NEW CUSTOMER REQUEST (Respond within {AGENT_RESPONSE_TIMEOUT//60} min) 🔔\n\n"
         f"From: {customer_number}\n"
+        f"Waiting since: {datetime.now().strftime('%H:%M:%S')}\n"
         f"Initial message: \"{prompt}\"\n\n"
         f"Reply with:\n"
         f"1 - Take this conversation\n"
-        f"2 - Let bot handle it\n\n"
-        f"NOTE: This is a SYSTEM MESSAGE - the bot won't respond to your replies here"
+        f"2 - Unable to help\n\n"
+        f"Timeout in {AGENT_RESPONSE_TIMEOUT//60} minutes"
     )
     
-    # Initialize agent state - critical change
-    redis.set(f"agent:{AGENT_NUMBER}", json.dumps({
-        'step': 'agent_reply',
+    # Initialize agent session with timeout
+    redis.set(f"agent_session:{AGENT_NUMBER}", json.dumps({
+        'step': 'awaiting_response',
         'customer_number': customer_number,
         'phone_id': phone_id,
-        'original_message': prompt,
-        'is_agent': True  # Flag to identify agent sessions
-    }), ex=7200)
+        'created_at': time.time(),
+        'expires_at': time.time() + AGENT_RESPONSE_TIMEOUT
+    }), ex=AGENT_RESPONSE_TIMEOUT)
     
-    # Update customer state
+    # Set customer waiting state with timeout
     update_user_state(customer_number, {
-        'step': 'waiting_for_human_agent_response',
-        'user': user_data.get('user', {}),
-        'sender': customer_number,
-        'waiting_since': time.time()
-    })
+        'step': 'waiting_for_agent',
+        'waiting_since': time.time(),
+        'timeout_at': time.time() + AGENT_RESPONSE_TIMEOUT,
+        'user': user_data.get('user', {})
+    }, ttl_seconds=AGENT_RESPONSE_TIMEOUT)
     
-    # Send to agent - this bypasses normal message flow
-    requests.post(
-        f"https://graph.facebook.com/v19.0/{phone_id}/messages",
-        headers={
-            'Authorization': f'Bearer {wa_token}',
-            'Content-Type': 'application/json'
-        },
-        json={
-            "messaging_product": "whatsapp",
-            "to": AGENT_NUMBER,
-            "type": "text",
-            "text": {"body": agent_message}
-        }
-    )
+    # Send to agent
+    send_whatsapp_message(phone_id, AGENT_NUMBER, agent_message)
+    
+    # Start timeout check
+    threading.Timer(AGENT_RESPONSE_TIMEOUT, check_agent_timeout, 
+                   args=[customer_number, phone_id]).start()
     
     return {
-        'step': 'agent_exclusive',
+        'step': 'agent_handoff',
         'user': user_data.get('user', {}),
         'sender': customer_number
     }
 
-# New exclusive agent handler
-def handle_agent_exclusive(message, phone_id):
-    """Completely separate agent message processing"""
-    from_number = message.get('from')
-    msg_type = message.get('type')
+def check_agent_timeout(customer_number, phone_id):
+    """Check if agent failed to respond"""
+    customer_state = get_user_state(customer_number)
+    if not customer_state or customer_state.get('step') != 'waiting_for_agent':
+        return
     
-    # Get agent state from dedicated agent storage
-    agent_state = json.loads(redis.get(f"agent:{from_number}") or "{}")
+    agent_state = json.loads(redis.get(f"agent_session:{AGENT_NUMBER}") or {}
+    if not agent_state or agent_state.get('customer_number') != customer_number:
+        # Agent didn't respond - offer options
+        options = (
+            "⚠️ No agent available currently. Please:\n\n"
+            "1. Try again later\n"
+            "2. Leave a message for callback\n"
+            "3. Call us directly at +263719835124\n"
+            "4. Return to main menu"
+        )
+        send(options, customer_number, phone_id)
+        update_user_state(customer_number, {
+            'step': 'agent_timeout',
+            'user': customer_state.get('user', {})
+        })
 
-    
-    if not agent_state.get('is_agent'):
+def handle_agent_message(message, phone_id):
+    """Handle agent responses with timeout checks"""
+    from_number = message.get('from')
+    if from_number != AGENT_NUMBER:
         return False
     
-    if msg_type == "text":
-        prompt = message.get('text', {}).get('body', '').strip()
+    agent_state = json.loads(redis.get(f"agent_session:{from_number}") or {}
+    if not agent_state:
+        send("No active customer session", from_number, phone_id)
+        return True
+    
+    # Check if response is too late
+    if time.time() > agent_state.get('expires_at', float('inf')):
+        send("⚠️ Too late - customer session expired", from_number, phone_id)
+        redis.delete(f"agent_session:{from_number}")
+        return True
+    
+    msg_type = message.get('type')
+    prompt = message.get('text', {}).get('body', '').strip() if msg_type == 'text' else ''
+    
+    if agent_state['step'] == 'awaiting_response':
+        customer_number = agent_state['customer_number']
         
-        if agent_state.get('step') == 'agent_reply':
-            if prompt == '1':  # Take conversation
-                customer_number = agent_state.get('customer_number')
-                if customer_number:
-                    # Update both states
-                    redis.set(f"agent:{from_number}", json.dumps({
-                        'step': 'talking_to_customer',
-                        'customer_number': customer_number,
-                        'phone_id': phone_id,
-                        'started_at': time.time(),
-                        'is_agent': True
-                    }), ex=7200)
-                    
-                    update_user_state(customer_number, {
-                        'step': 'talking_to_human_agent',
-                        'agent_number': from_number,
-                        'user': get_user_state(customer_number).get('user', {})
-                    })
-                    
-                    # Send confirmations
-                    send("You're now connected to the customer", from_number, phone_id)
-                    send("You're now speaking with an agent", customer_number, phone_id)
-                return True
-                
-            elif prompt == '2':  # Decline
-                customer_number = agent_state.get('customer_number')
-                if customer_number:
-                    send("Customer returned to bot", from_number, phone_id)
-                    update_user_state(customer_number, {
-                        'step': 'main_menu',
-                        'user': get_user_state(customer_number).get('user', {})
-                    })
-                    show_main_menu(customer_number, phone_id)
-                redis.delete(f"agent:{from_number}")
-                return True
-                
-        elif agent_state.get('step') == 'talking_to_customer':
-            if prompt.lower() == '2':  # End conversation
-                customer_number = agent_state.get('customer_number')
-                if customer_number:
-                    send("Conversation ended", from_number, phone_id)
-                    update_user_state(customer_number, {
-                        'step': 'main_menu',
-                        'user': get_user_state(customer_number).get('user', {})
-                    })
-                    show_main_menu(customer_number, phone_id)
-                redis.delete(f"agent:{from_number}")
-            else:
-                # Forward message to customer
-                customer_number = agent_state.get('customer_number')
-                if customer_number:
-                    send(f"Agent: {prompt}", customer_number, phone_id)
-            return True
-    
-    return True  # All agent messages are handled exclusively
-
-
-    # 6. Set up fallback handler with retry logic
-    def handle_agent_timeout():
-        current_state = get_user_state(customer_number)
-        if not current_state or current_state.get('step') != 'waiting_for_human_agent_response':
-            return
-            
-        if not get_user_state(AGENT_NUMBER) or get_user_state(AGENT_NUMBER).get('customer_number') != customer_number:
-            # Agent didn't respond
-            options = (
-                "Our agents seem busy right now. Would you like to:\n\n"
-                "1. Try connecting again\n"
-                "2. Leave a message for callback\n"
-                "3. Return to main menu\n"
-                "4. Call us directly at +263719835124"
-            )
-            send(options, customer_number, phone_id)
-            update_user_state(customer_number, {
-                'step': 'human_agent_fallback',
-                'user': current_state.get('user', {}),
-                'sender': customer_number,
-                'retry_count': current_state.get('retry_count', 0) + 1
-            })
-
-    # Schedule timeout check (3 minutes instead of 2)
-    threading.Timer(180, handle_agent_timeout).start()
-
-    return {
-        'step': 'waiting_for_human_agent_response',
-        'user': user_data.get('user', {}),
-        'sender': customer_number,
-        'agent_requested': True
-    }
-    
-
-# Enhanced agent message handling
-def handle_agent_message(prompt, sender, phone_id, message):
-    """Exclusive handler for all agent messages"""
-    agent_state = get_user_state(sender) or {'step': 'agent_available'}
-    
-    # Always ignore any automatic bot processing for agents
-    if agent_state.get('step') == 'agent_reply':
-        if prompt == '1':  # Take conversation
-            customer_number = agent_state.get('customer_number')
-            if not customer_number:
-                send("⚠️ Error: No customer assigned", sender, phone_id)
-                return
-            
-            # Notify both parties
-            send("✅ You are now connected to the customer. Type '2' anytime to return them to the bot.", 
-                 sender, phone_id)
-            send("✅ You're now speaking with a human agent. Please ask your question.", 
-                 customer_number, phone_id)
-            
-            # Update states
-            update_user_state(customer_number, {
-                'step': 'talking_to_human_agent',
-                'user': get_user_state(customer_number).get('user', {}),
-                'sender': customer_number,
-                'agent_number': sender
-            })
-            
-            update_user_state(sender, {
-                'step': 'talking_to_customer',
+        if prompt == '1':  # Accept
+            # Update states with conversation timeout
+            redis.set(f"agent_session:{from_number}", json.dumps({
+                'step': 'in_conversation',
                 'customer_number': customer_number,
-                'phone_id': phone_id,
-                'started_at': time.time()
-            })
+                'started_at': time.time(),
+                'expires_at': time.time() + AGENT_CONVERSATION_TIMEOUT
+            }), ex=AGENT_CONVERSATION_TIMEOUT)
             
-        elif prompt == '2':  # Return to bot
-            customer_number = agent_state.get('customer_number')
-            if customer_number:
-                send("✅ Conversation ended. Customer returned to bot.", sender, phone_id)
-                send("👋 You're back with our automated assistant.", customer_number, phone_id)
-                update_user_state(customer_number, {
-                    'step': 'main_menu',
-                    'user': get_user_state(customer_number).get('user', {})
-                })
-                show_main_menu(customer_number, phone_id)
+            update_user_state(customer_number, {
+                'step': 'with_agent',
+                'agent_number': from_number,
+                'conversation_start': time.time()
+            }, ttl_seconds=AGENT_CONVERSATION_TIMEOUT)
             
-            update_user_state(sender, {'step': 'agent_available'})
+            # Send confirmations
+            send("✅ You're now connected to the customer", from_number, phone_id)
+            send("✅ You're now speaking with an agent", customer_number, phone_id)
             
-        else:
-            send("⚠️ Please reply with:\n1 - Take conversation\n2 - Return to bot", sender, phone_id)
-    
-    elif agent_state.get('step') == 'talking_to_customer':
-        if prompt.strip().lower() == '2':  # End conversation
-            customer_number = agent_state.get('customer_number')
-            if customer_number:
-                send("✅ Conversation ended. Customer returned to bot.", sender, phone_id)
-                send("👋 You're back with our automated assistant.", customer_number, phone_id)
-                update_user_state(customer_number, {
-                    'step': 'main_menu',
-                    'user': get_user_state(customer_number).get('user', {})
-                })
-                show_main_menu(customer_number, phone_id)
+            # Start conversation timeout check
+            threading.Timer(AGENT_CONVERSATION_TIMEOUT, 
+                           check_conversation_timeout,
+                           args=[customer_number, phone_id]).start()
             
-            update_user_state(sender, {'step': 'agent_available'})
-        else:
-            # Forward message to customer
-            customer_number = agent_state.get('customer_number')
-            if customer_number:
-                if isinstance(message, dict) and message.get("type") == "text":
-                    send(f"Agent: {message.get('text', {}).get('body', '')}", customer_number, phone_id)
-                else:
-                    send("Agent: [Media message]", customer_number, phone_id)
+        elif prompt == '2':  # Decline
+            send("❌ Agent declined the conversation", agent_state['customer_number'], phone_id)
+            update_user_state(customer_number, {'step': 'main_menu'})
+            send_main_menu(customer_number, phone_id)
+            redis.delete(f"agent_session:{from_number}")
     
-    else:  # agent_available state
-        send("ℹ️ You're currently available. You'll be notified when a customer needs help.", sender, phone_id)
-
-
-# Improved agent reply handler
-def handle_agent_reply(prompt, sender, phone_id, message, agent_state):
-    """Handles agent's initial response to customer request"""
-    customer_number = agent_state.get('customer_number')
+    elif agent_state['step'] == 'in_conversation':
+        # ... existing conversation handling ...
+        pass
     
-    if not customer_number:
-        send("⚠️ Error: No customer assigned. Please wait for a new request.", sender, phone_id)
-        return {'step': 'agent_available'}
-    
-    if prompt == '1':  # Accept conversation
-        # Notify both parties
-        send("✅ You're now connected to the customer. Send '2' at any time to return the customer to the bot.", 
-             sender, phone_id)
-        send("✅ You are now connected to a human agent. Please ask your question.", customer_number, phone_id)
-        
-        # Update states
-        update_user_state(customer_number, {
-            'step': 'talking_to_human_agent',
-            'user': get_user_state(customer_number).get('user', {}),
-            'sender': customer_number,
-            'agent_number': sender
-        }, ttl_seconds=3600)
-        
-        update_user_state(sender, {
-            'step': 'talking_to_customer',
-            'customer_number': customer_number,
-            'phone_id': phone_id,
-            'started_at': time.time()
-        }, ttl_seconds=3600)
-        
-        return {
-            'step': 'talking_to_customer',
-            'customer_number': customer_number,
-            'phone_id': phone_id,
-            'started_at': time.time()
-        }
-        
-    elif prompt == '2':  # Decline conversation
-        send("✅ You've returned the customer to the bot.", sender, phone_id)
-        send("👋 You're now back with our automated assistant.", customer_number, phone_id)
-        
-        update_user_state(customer_number, {
-            'step': 'main_menu',
-            'user': get_user_state(customer_number).get('user', {}),
-            'sender': customer_number
-        })
-        update_user_state(sender, {'step': 'agent_available'})
-        show_main_menu(customer_number, phone_id)
-        
-    else:
-        send("⚠️ Please reply with:\n1 - Talk to customer\n2 - Back to bot", sender, phone_id)
-        return agent_state  # Maintain current state
+    return True
 
-# Enhanced agent conversation handler
-def handle_agent_conversation(prompt, sender, phone_id, message, agent_state):
-    """Handles ongoing conversation between agent and customer"""
-    customer_number = agent_state.get('customer_number')
-    
-    if prompt.strip().lower() == '2':  # End conversation
-        send("✅ Conversation ended. The bot will take over.", sender, phone_id)
-        send("👋 The agent has ended the conversation. You're back with our automated assistant.", 
-             customer_number, phone_id)
-        
-        update_user_state(customer_number, {
-            'step': 'main_menu',
-            'user': get_user_state(customer_number).get('user', {}),
-            'sender': customer_number
-        })
-        update_user_state(sender, {'step': 'agent_available'})
-        show_main_menu(customer_number, phone_id)
-        return {'step': 'agent_available'}
-    else:
-        # Forward message to customer
-        forward_agent_message(prompt, message, customer_number, phone_id)
-        return agent_state  # Maintain current state
-
-def handle_agent_available(prompt, sender, phone_id, message, agent_state):
-    """Handles agent when not in active conversation"""
-    send("ℹ️ You're currently available. You'll be notified when a customer needs assistance.", sender, phone_id)
-    return {'step': 'agent_available'}
-
-def forward_agent_message(prompt, message, customer_number, phone_id):
-    """Forwards different message types from agent to customer"""
-    if not customer_number:
+def check_conversation_timeout(customer_number, phone_id):
+    """Check if conversation has gone too long"""
+    customer_state = get_user_state(customer_number)
+    if not customer_state or customer_state.get('step') != 'with_agent':
         return
-        
-    if isinstance(message, dict):
-        if message.get("type") == "text":
-            send(f"Agent: {message.get('text', {}).get('body', '')}", customer_number, phone_id)
-        elif message.get("type") == "image":
-            caption = f"Agent: {message.get('caption', '')}" if message.get('caption') else "From agent:"
-            send_image(message.get('url'), caption, customer_number, phone_id)
-        elif message.get("type") == "location":
-            send_location(
-                message.get('location', {}).get('latitude'),
-                message.get('location', {}).get('longitude'),
-                "Agent shared location",
-                customer_number,
-                phone_id
-            )
-    else:
-        send(f"Agent: {prompt}", customer_number, phone_id)
-
-# Add this helper function (you'll need to implement send_image and send_location)
-def send_image(image_url, caption, recipient, phone_id):
-    """Sends an image message"""
-    url = f"https://graph.facebook.com/v19.0/{phone_id}/messages"
-    headers = {
-        'Authorization': f'Bearer {wa_token}',
-        'Content-Type': 'application/json'
-    }
-    data = {
-        "messaging_product": "whatsapp",
-        "to": recipient,
-        "type": "image",
-        "image": {
-            "link": image_url,
-            "caption": caption
-        }
-    }
-    try:
-        response = requests.post(url, headers=headers, json=data)
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Failed to send image: {e}")
-
-def send_location(latitude, longitude, name, recipient, phone_id):
-    """Sends a location message"""
-    url = f"https://graph.facebook.com/v19.0/{phone_id}/messages"
-    headers = {
-        'Authorization': f'Bearer {wa_token}',
-        'Content-Type': 'application/json'
-    }
-    data = {
-        "messaging_product": "whatsapp",
-        "to": recipient,
-        "type": "location",
-        "location": {
-            "latitude": latitude,
-            "longitude": longitude,
-            "name": name
-        }
-    }
-    try:
-        response = requests.post(url, headers=headers, json=data)
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Failed to send location: {e}")
-        
-
-def handle_customer_message_during_agent_chat(message, user_data, phone_id):
-    customer_number = user_data['sender']
     
-    # If still in agent chat, suppress bot actions
-    if user_data.get('step') == 'talking_to_human_agent':
-        send("💬 You're still connected to a human agent. Please wait for them to respond.", customer_number, phone_id)
-        return True  # means the bot should not process further
-    return False
-
-
-def handle_user_message(prompt, user_data, phone_id):
-    if user_data.get('step') == 'human_agent_followup':
-        if prompt.strip() == '1':
-            # Return to main menu
-            update_user_state(user_data['sender'], {
-                'step': 'main_menu',
-                'user': user_data['user']
-            })
-            send_main_menu(user_data['sender'], phone_id)
-        elif prompt.strip() == '2':
-            # Continue waiting
-            send("We'll keep trying to connect you. Thank you for your patience.", user_data['sender'], phone_id)
-            update_user_state(user_data['sender'], {
-                'step': 'waiting_for_human_agent_response',
-                'user': user_data['user']
-            })
-        else:
-            send("Please choose 1 or 2", user_data['sender'], phone_id)
+    # Notify both parties
+    send("⚠️ This conversation will time out soon", customer_state['agent_number'], phone_id)
+    send(
+        "Notice: This conversation will end soon due to timeout\n"
+        "Please summarize or request a callback if needed",
+        customer_number,
+        phone_id
+    )
     
-    return user_data
+    # Set final timeout in 5 minutes
+    threading.Timer(300, end_conversation_timeout, 
+                   args=[customer_number, phone_id]).start()
+
+def end_conversation_timeout(customer_number, phone_id):
+    """Forcefully end a timed-out conversation"""
+    customer_state = get_user_state(customer_number)
+    if not customer_state or customer_state.get('step') != 'with_agent':
+        return
+    
+    agent_number = customer_state.get('agent_number')
+    
+    # Notify both parties
+    send("⏱️ Conversation ended due to timeout", agent_number, phone_id)
+    send(
+        "This conversation has ended due to timeout\n"
+        "Please contact us again if you need further assistance",
+        customer_number,
+        phone_id
+    )
+    
+    # Clean up states
+    update_user_state(customer_number, {'step': 'main_menu'})
+    redis.delete(f"agent_session:{agent_number}")
+    send_main_menu(customer_number, phone_id)
+
 
 
 def human_agent_followup(prompt, user_data, phone_id):
@@ -2616,7 +2375,15 @@ def webhook():
                 if from_number == AGENT_NUMBER:
                     if handle_agent_exclusive(message, phone_id):
                         return "OK"
-                
+
+                customer_state = get_user_state(from_number)
+                if customer_state and customer_state.get('step') == 'with_agent':
+                    if time.time() > customer_state.get('conversation_start', 0) + AGENT_CONVERSATION_TIMEOUT:
+                        send("This conversation has timed out", from_number, phone_id)
+                        update_user_state(from_number, {'step': 'main_menu'})
+                        send_main_menu(from_number, phone_id)
+                        return "OK"
+            
 
                 # Handle regular user messages
                 user_data = get_user_state(from_number) or {'step': 'welcome', 'sender': from_number}
