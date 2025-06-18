@@ -2349,67 +2349,67 @@ app = Flask(__name__)
 def index():
     return render_template("connected.html")
 
+
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    # ... [previous webhook code] ...
+    try:
+        # ... [previous webhook code] ...
+        if messages:
+            message = messages[0]
+            from_number = message.get("from")
+            msg_type = message.get("type")
 
-    if messages:
-        message = messages[0]
-        from_number = message.get("from")
-        msg_type = message.get("type")
+            # Handle agent messages FIRST
+            if from_number == AGENT_NUMBER:
+                agent_state = get_user_state(AGENT_NUMBER) or {}
 
-        # Handle agent messages FIRST
-        if from_number == AGENT_NUMBER:
-            agent_state = get_user_state(AGENT_NUMBER) or {}
-            
-            if msg_type == "text":
-                prompt = message.get("text", {}).get("body", "").strip()
-                
-                # Handle agent reply
-                if agent_state.get('step') == 'agent_reply':
-                    if prompt == "1":
-                        # Accept conversation
-                        customer_number = agent_state.get('customer_number')
-                        
-                        # Update customer state FIRST
-                        update_user_state(customer_number, {
-                            'step': 'talking_to_human_agent',
-                            'user': get_user_state(customer_number).get('user', {}),
-                            'sender': customer_number,
-                            'agent_connected': True
-                        })
-                        
-                        # Then update agent state
-                        update_user_state(AGENT_NUMBER, {
-                            'step': 'talking_to_customer',
-                            'customer_number': customer_number,
-                            'phone_id': phone_id
-                        })
-                        
-                        # Send confirmations
-                        send("✅ You're now connected to the customer.", AGENT_NUMBER, phone_id)
-                        send("✅ You are now connected to a human agent.", customer_number, phone_id)
-                        return "OK"
-                    
-                    elif prompt == "2":
-                        # Reject conversation
-                        customer_number = agent_state.get('customer_number')
-                        update_user_state(customer_number, {
-                            'step': 'main_menu',
-                            'user': get_user_state(customer_number).get('user', {})
-                        })
-                        send("👋 You're back with our automated assistant.", customer_number, phone_id)
-                        show_main_menu(customer_number, phone_id)
-                        return "OK"
-            
-            return "OK"
-            
+                if msg_type == "text":
+                    prompt = message.get("text", {}).get("body", "").strip()
 
-            except Exception as e:
-                logging.error(f"Error processing webhook: {e}", exc_info=True)
-    
-            return jsonify({"status": "ok"}), 200
-        
+                    # Handle agent reply
+                    if agent_state.get('step') == 'agent_reply':
+                        if prompt == "1":
+                            # Accept conversation
+                            customer_number = agent_state.get('customer_number')
+
+                            # Update customer state FIRST
+                            update_user_state(customer_number, {
+                                'step': 'talking_to_human_agent',
+                                'user': get_user_state(customer_number).get('user', {}),
+                                'sender': customer_number,
+                                'agent_connected': True
+                            })
+
+                            # Then update agent state
+                            update_user_state(AGENT_NUMBER, {
+                                'step': 'talking_to_customer',
+                                'customer_number': customer_number,
+                                'phone_id': phone_id
+                            })
+
+                            # Send confirmations
+                            send("✅ You're now connected to the customer.", AGENT_NUMBER, phone_id)
+                            send("✅ You are now connected to a human agent.", customer_number, phone_id)
+                            return "OK"
+
+                        elif prompt == "2":
+                            # Reject conversation
+                            customer_number = agent_state.get('customer_number')
+                            update_user_state(customer_number, {
+                                'step': 'main_menu',
+                                'user': get_user_state(customer_number).get('user', {})
+                            })
+                            send("👋 You're back with our automated assistant.", customer_number, phone_id)
+                            show_main_menu(customer_number, phone_id)
+                            return "OK"
+
+        return "OK"
+
+    except Exception as e:
+        logging.error(f"Error processing webhook: {e}", exc_info=True)
+        return jsonify({"status": "error"}), 500
+
+
 
 def message_handler(prompt, sender, phone_id, message):
     user_data = get_user_state(sender)
