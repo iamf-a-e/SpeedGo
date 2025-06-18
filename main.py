@@ -2353,7 +2353,22 @@ def index():
 @app.route("/webhook", methods=["POST"])
 def webhook():
     try:
-        # ... [previous webhook code] ...
+        data = request.get_json()
+        if not data:
+            return jsonify({"status": "no data"}), 400
+
+        entry = data.get("entry", [])[0]
+        changes = entry.get("changes", [])[0]
+        value = changes.get("value", {})
+        messages = value.get("messages", [])
+
+        if not messages:
+            return jsonify({"status": "no message"}), 200
+
+        message = messages[0]
+        from_number = message.get("from")
+        msg_type = message.get("type")
+        
         if messages:
             message = messages[0]
             from_number = message.get("from")
