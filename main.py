@@ -2300,51 +2300,35 @@ def webhook():
             phone_id = value.get("metadata", {}).get("phone_number_id")
             messages = value.get("messages", [])
 
-            # Handle messages from users or agents
             if messages:
                 message = messages[0]
                 from_number = message.get("from")
                 msg_type = message.get("type")
+                message_text = message.get("text", {}).get("body", "").strip()
 
-                # If it's a message from AGENT
+                # ✅ Handle agent replies
                 if from_number == AGENT_NUMBER:
-                    message_text = message.get("text", {}).get("body", "").strip()
-                    customer_number = get_customer_linked_to_agent()  # implement this
-                    handle_agent_reply(message_text, customer_number, phone_id)
+                    agent_state = get_user_state(AGENT_NUMBER)
+                    customer_number = agent_state.get("customer_number")
+                    if agent_state.get("step") == "agent_reply" and customer_number:
+                        handle_agent_reply(message_text, customer_number, phone_id)
+                    else:
+                        send("⚠️ No customer to reply to. Wait for a new request.", AGENT_NUMBER, phone_id)
                     return "OK"
 
-                # If it's a regular user
-                if msg_type == "text":
-                    prompt = message["text"]["body"].strip()
-                    logging.info(f"Text message from {from_number}: {prompt}")
-                    message_handler(prompt, from_number, phone_id, message)
-
-                elif msg_type == "location":
-                    gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
-                    logging.info(f"Location from {from_number}: {gps_coords}")
-                    message_handler(gps_coords, from_number, phone_id, message)
-
-                else:
-                    logging.warning(f"Unsupported message type: {msg_type}")
-                    send("Please send a text message or share your location using the 📍 button.", from_number, phone_id)
-
-                def process_message(incoming_message, sender_number, phone_id):
-                # Check if this message is from the agent
-                    if sender_number == AGENT_NUMBER:
-                        agent_state = get_user_state(AGENT_NUMBER)
-                        customer_number = agent_state.get("customer_number")
-                
-                        if customer_number:
-                            handle_agent_reply(incoming_message, customer_number, phone_id)
-                        else:
-                            send("⚠️ No active customer session. Wait for a new request.", AGENT_NUMBER, phone_id)
-                        return
-                
-                # Handle customer during agent conversation
+                # ✅ Handle customer in agent chat
                 user_data = get_user_state(from_number)
-                message_text = message.get("text", {}).get("body", "").strip()
                 if handle_customer_message_during_agent_chat(message_text, user_data, phone_id):
                     return "OK"
+
+                # ✅ Handle regular user messages
+                if msg_type == "text":
+                    message_handler(message_text, from_number, phone_id, message)
+                elif msg_type == "location":
+                    gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
+                    message_handler(gps_coords, from_number, phone_id, message)
+                else:
+                    send("Please send a text message or share your location using the 📍 button.", from_number, phone_id)
 
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
