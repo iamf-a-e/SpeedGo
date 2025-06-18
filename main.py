@@ -554,7 +554,7 @@ def human_agent(prompt, user_data, phone_id):
     )
     
     return {
-        'step': 'waiting_for_human_agent_response',
+        'step': 'agent_exclusive',
         'user': user_data.get('user', {}),
         'sender': customer_number
     }
