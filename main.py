@@ -2326,6 +2326,13 @@ def webhook():
                     if not customer_number:
                         send("⚠️ No customer to reply to. Wait for a new request.", AGENT_NUMBER, phone_id)
                         return "OK"
+
+                        # Always re-store the agent state with the customer_number to ensure it's not lost
+                        agent_state["customer_number"] = customer_number
+                        agent_state["sender"] = AGENT_NUMBER
+                    
+                        # Persist again defensively
+                        update_user_state(AGENT_NUMBER, agent_state)
             
                     if agent_state.get("step") == "agent_reply":
                         handle_agent_reply(message_text, customer_number, phone_id, agent_state)
