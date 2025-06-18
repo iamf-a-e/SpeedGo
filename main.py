@@ -2313,7 +2313,7 @@ def webhook():
                     agent_state = get_user_state(AGENT_NUMBER)
                     customer_number = agent_state.get("customer_number")
                     if agent_state.get("step") == "agent_reply" and customer_number:
-                        def handle_agent_reply(agent_reply, customer_number, phone_id, agent_state):                       
+                        handle_agent_reply(agent_reply, customer_number, phone_id, agent_state):                       
                     else:
                         send("⚠️ No customer to reply to. Wait for a new request.", AGENT_NUMBER, phone_id)
                        
