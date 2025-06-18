@@ -2344,10 +2344,14 @@ def webhook():
 
 
 def message_handler(prompt, sender, phone_id, message):
+    # Ensure prompt is always a non-null, stripped string
+    prompt = (prompt or "").strip()
+
+    # Retrieve user state or initialize
     user_data = get_user_state(sender)
     user_data['sender'] = sender
 
-    # If this is a location message, inject location into user_data
+    # Handle location message
     if message.get("type") == "location":
         location = message.get("location", {})
         if "latitude" in location and "longitude" in location:
@@ -2355,18 +2359,23 @@ def message_handler(prompt, sender, phone_id, message):
                 "latitude": location["latitude"],
                 "longitude": location["longitude"]
             }
-            # override prompt with coordinates if needed
+            # Override prompt with GPS coordinates
             prompt = f"{location['latitude']},{location['longitude']}"
         else:
-            prompt = ""
+            prompt = ""  # fallback if incomplete location data
 
-    # Ensure user object is present
+    # Ensure user object exists in state
     if 'user' not in user_data:
         user_data['user'] = User(sender).to_dict()
 
-    # Dispatch to the correct step
+    # Logging for debugging
+    logging.info(f"[{sender}] Step: {user_data.get('step', 'welcome')} | Prompt: {prompt}")
+
+    # Determine current step and take appropriate action
     step = user_data.get('step', 'welcome')
     next_state = get_action(step, prompt, user_data, phone_id)
+
+    # Persist updated user state
     update_user_state(sender, next_state)
 
 def get_action(current_state, prompt, user_data, phone_id):
