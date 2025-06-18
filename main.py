@@ -2382,7 +2382,7 @@ def message_handler(prompt, sender, phone_id, message=None):
         
 
 def get_action(current_state, prompt, user_data, phone_id):
-    handler = action_mapping.get(current_state, handle_welcome)
+    handler = ACTION_MAPPINGS.get(current_state, handle_welcome)
     return handler(prompt, user_data, phone_id)
     
 
