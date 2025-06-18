@@ -2218,7 +2218,7 @@ def handle_default(prompt, user_data, phone_id, message):
 
 
 # Action mapping
-ACTION_MAPPINGS = {
+action_mapping = {
     "welcome": handle_welcome,
     "select_language": handle_select_language,
     "main_menu": handle_main_menu,
@@ -2227,6 +2227,10 @@ ACTION_MAPPINGS = {
     "select_service": handle_select_service,
     "borehole_class_pricing": handle_borehole_class_pricing,
     "agent_reply": handle_agent_reply,
+    
+    "agent_reply": handle_agent_reply,
+    "talking_to_customer": handle_agent_conversation,
+    "agent_available": handle_agent_available,
 
 
     "select_pump_option": handle_select_pump_option,
@@ -2265,14 +2269,7 @@ ACTION_MAPPINGS = {
     ),
 }
 
-# Agent Action Mappings
-AGENT_ACTION_MAPPINGS = {
-    "agent_reply": handle_agent_reply,
-    "talking_to_customer": handle_agent_conversation,
-    "agent_available": handle_agent_available
-}
-        
-        
+       
 
 # Flask app
 app = Flask(__name__)
@@ -2344,57 +2341,34 @@ def webhook():
 
 
 
-def message_handler(prompt, sender, phone_id, message=None):
-    """
-    Unified message handler for customers and agents.
-    Routes messages based on user state and message type.
-    """
-
-    # Initialize message if None
-    if message is None:
-        message = {"type": "text", "text": prompt}
-
-    # Agent message handler
-    if sender == AGENT_NUMBER:
-        return handle_agent_message(prompt, sender, phone_id, message)
-
-    # Load or initialize user state
-    user_data = get_user_state(sender) or {}
+def message_handler(prompt, sender, phone_id, message):
+    user_data = get_user_state(sender)
     user_data['sender'] = sender
 
-    # Process location messages
-    if isinstance(message, dict) and message.get("type") == "location":
+    # If this is a location message, inject location into user_data
+    if message.get("type") == "location":
         location = message.get("location", {})
         if "latitude" in location and "longitude" in location:
             user_data["location"] = {
                 "latitude": location["latitude"],
                 "longitude": location["longitude"]
             }
-            # Use location as prompt if needed
+            # override prompt with coordinates if needed
             prompt = f"{location['latitude']},{location['longitude']}"
         else:
             prompt = ""
 
-    # Ensure user object exists
+    # Ensure user object is present
     if 'user' not in user_data:
         user_data['user'] = User(sender).to_dict()
 
-    # Determine current step and handler
-    current_step = user_data.get('step', 'welcome')
-    handler = ACTION_MAPPINGS.get(current_step, handle_default)
-
-    # Process the step using the correct handler
-    next_state = handler(prompt, user_data, phone_id, message)
-
-    # Persist updated state
+    # Dispatch to the correct step
+    step = user_data.get('step', 'welcome')
+    next_state = get_action(step, prompt, user_data, phone_id)
     update_user_state(sender, next_state)
 
-    return next_state
-
-        
-
 def get_action(current_state, prompt, user_data, phone_id):
-    handler = ACTION_MAPPINGS.get(current_state, handle_welcome)
+    handler = action_mapping.get(current_state, handle_welcome)
     return handler(prompt, user_data, phone_id)
     
 
