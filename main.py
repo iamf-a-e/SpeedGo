@@ -2288,6 +2288,8 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def index():
     return render_template("connected.html")
+
+
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     if request.method == "GET":
@@ -2337,6 +2339,15 @@ def webhook():
                     return "OK"
             
                 # Handle normal user messages (only if NOT agent)
+
+                user_data = get_user_state(from_number)
+                user_data['sender'] = from_number
+                
+                # If user is talking to a human agent, suppress bot
+                if handle_customer_message_during_agent_chat(message_text, user_data, phone_id):
+                    return "OK"
+                
+                # Continue with normal bot processing
                 if msg_type == "text":
                     message_handler(message_text, from_number, phone_id, message)
                 elif msg_type == "location":
@@ -2344,6 +2355,7 @@ def webhook():
                     message_handler(gps_coords, from_number, phone_id, message)
                 else:
                     send("Please send a text message or share your location using the 📍 button.", from_number, phone_id)
+
 
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
