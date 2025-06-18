@@ -20,6 +20,7 @@ gen_api = os.environ.get("GEN_API")
 owner_phone = os.environ.get("OWNER_PHONE")
 GOOGLE_MAPS_API_KEY = "AlzaSyCXDMMhg7FzP|ElKmrlkv1TqtD3HgHwW50"
 AGENT_NUMBER = "+263719835124"
+AGENT_INITIAL_STATE = "agent_available"
 
 # Upstash Redis setup
 redis = Redis(
