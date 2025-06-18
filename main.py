@@ -505,191 +505,116 @@ def handle_main_menu(prompt, user_data, phone_id):
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 
+
 def human_agent(prompt, user_data, phone_id):
     customer_number = user_data['sender']
     
     # Notify customer
     send("Connecting you to a human agent...", customer_number, phone_id)
     
-    # Prepare agent message with delivery tracking
-    agent_message = {
-        "type": "text",
-        "text": {
-            "body": (
-                f"🔔 NEW CUSTOMER REQUEST 🔔\n\n"
-                f"From: {customer_number}\n"
-                f"Message: \"{prompt}\"\n\n"
-                f"Reply with:\n"
-                f"1 - Accept conversation\n"
-                f"2 - Decline\n\n"
-                f"Message ID: {generate_message_id()}"
-            )
-        },
-        "delivery": {  # Track delivery status
-            "status": "pending",
-            "attempts": 0,
-            "last_attempt": None
-        }
-    }
+    # Prepare agent message with explicit command format
+    agent_message = (
+        f"🚨 AGENT REQUEST - DO NOT REPLY NORMALLY 🚨\n\n"
+        f"Customer: {customer_number}\n"
+        f"Message: {prompt}\n\n"
+        f"🔘 Reply with EXACTLY:\n"
+        f"AGENT-1 (to accept)\n"
+        f"AGENT-2 (to decline)\n\n"
+        f"⚠️ Normal messages won't work here"
+    )
     
-    # Store agent assignment with retry info
-    agent_session = {
-        'step': 'awaiting_response',
+    # Store agent assignment with special prefix
+    redis.set(f"agent:{AGENT_NUMBER}", json.dumps({
+        'type': 'agent_command',
         'customer_number': customer_number,
         'phone_id': phone_id,
-        'message': agent_message,
-        'created_at': time.time(),
-        'expires_at': time.time() + AGENT_RESPONSE_TIMEOUT
-    }
+        'original_message': prompt,
+        'created_at': time.time()
+    }), ex=3600)
     
-    redis.set(f"agent_session:{AGENT_NUMBER}", json.dumps(agent_session), ex=AGENT_RESPONSE_TIMEOUT)
+    # Send directly to agent (bypass normal flow)
+    response = requests.post(
+        f"https://graph.facebook.com/v19.0/{phone_id}/messages",
+        headers={
+            'Authorization': f'Bearer {wa_token}',
+            'Content-Type': 'application/json'
+        },
+        json={
+            "messaging_product": "whatsapp",
+            "to": AGENT_NUMBER,
+            "type": "text",
+            "text": {"body": agent_message}
+        }
+    )
     
-    # Update customer state
-    update_user_state(customer_number, {
-        'step': 'waiting_for_agent',
-        'waiting_since': time.time(),
-        'agent_request_id': agent_message['text']['body'][-8:]  # Last 8 chars as ID
-    })
-    
-    # Send with delivery confirmation
-    send_agent_notification_with_retry(phone_id, agent_session)
+    # Verify delivery
+    if response.status_code != 200:
+        send("We're having trouble reaching agents. Please try again later.", customer_number, phone_id)
+        return {'step': 'main_menu', 'user': user_data.get('user', {})}
     
     return {
-        'step': 'agent_handoff',
+        'step': 'agent_transfer',
         'user': user_data.get('user', {}),
         'sender': customer_number
     }
 
-def send_agent_notification_with_retry(phone_id, agent_session):
-    """Send message to agent with retry logic"""
-    max_retries = 3
-    retry_delay = 30  # seconds
-    
-    for attempt in range(max_retries):
-        try:
-            # Update attempt info
-            agent_session['message']['delivery']['attempts'] += 1
-            agent_session['message']['delivery']['last_attempt'] = time.time()
-            
-            # Send via WhatsApp API
-            response = requests.post(
-                f"https://graph.facebook.com/v19.0/{phone_id}/messages",
-                headers={
-                    'Authorization': f'Bearer {wa_token}',
-                    'Content-Type': 'application/json'
-                },
-                json={
-                    "messaging_product": "whatsapp",
-                    "to": AGENT_NUMBER,
-                    "type": "text",
-                    "text": agent_session['message']['text']
-                }
-            )
-            response.raise_for_status()
-            
-            # Update delivery status
-            agent_session['message']['delivery']['status'] = 'delivered'
-            redis.set(f"agent_session:{AGENT_NUMBER}", json.dumps(agent_session), 
-                     ex=AGENT_RESPONSE_TIMEOUT)
-            
-            # Start delivery confirmation check
-            threading.Timer(30, verify_agent_message_delivery, 
-                          args=[phone_id, agent_session]).start()
-            return True
-            
-        except Exception as e:
-            logging.error(f"Agent notification attempt {attempt+1} failed: {e}")
-            if attempt < max_retries - 1:
-                time.sleep(retry_delay)
-    
-    # All retries failed
-    agent_session['message']['delivery']['status'] = 'failed'
-    redis.set(f"agent_session:{AGENT_NUMBER}", json.dumps(agent_session),
-             ex=AGENT_RESPONSE_TIMEOUT)
-    
-    # Notify customer
-    customer_number = agent_session['customer_number']
-    send(
-        "We're having trouble reaching our agents right now. "
-        "Please try again later or call +263719835124",
-        customer_number,
-        phone_id
-    )
-    update_user_state(customer_number, {'step': 'main_menu'})
-    return False
-
-def verify_agent_message_delivery(phone_id, agent_session):
-    """Check if agent has seen the message"""
-    try:
-        # Get message status from WhatsApp API
-        message_id = agent_session['message']['text']['body'][-8:]
-        response = requests.get(
-            f"https://graph.facebook.com/v19.0/{phone_id}/messages/{message_id}",
-            headers={'Authorization': f'Bearer {wa_token}'}
-        )
-        status = response.json().get('status', 'unknown')
-        
-        if status in ['delivered', 'read']:
-            return True
-        
-        # If not delivered, retry
-        if agent_session['message']['delivery']['attempts'] < 3:
-            send_agent_notification_with_retry(phone_id, agent_session)
-            
-    except Exception as e:
-        logging.error(f"Delivery verification failed: {e}")
-
-def generate_message_id():
-    """Generate unique ID for message tracking"""
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-
 def handle_agent_message(message, phone_id):
-    """Process agent responses with delivery confirmation"""
+    """Exclusive agent message handler"""
     from_number = message.get('from')
     if from_number != AGENT_NUMBER:
         return False
     
-    # Get agent session with lock to prevent race conditions
-    with redis.lock(f"agent_lock:{AGENT_NUMBER}"):
-        agent_state = json.loads(redis.get(f"agent_session:{from_number}") or {})
+    # Get agent command state (not regular user state)
+    agent_state = json.loads(redis.get(f"agent:{from_number}") or "{}")
+    
+    # Only process if it's an agent command session
+    if not agent_state.get('type') == 'agent_command':
+        return True  # Ignore but mark as handled
+    
+    msg_type = message.get('type')
+    if msg_type != "text":
+        send("⚠️ Please respond with text command: AGENT-1 or AGENT-2", from_number, phone_id)
+        return True
+    
+    prompt = message.get('text', {}).get('body', '').strip().upper()
+    customer_number = agent_state.get('customer_number')
+    
+    if prompt == "AGENT-1":
+        # Successful connection
+        redis.set(f"agent:{from_number}", json.dumps({
+            'type': 'active_conversation',
+            'customer_number': customer_number,
+            'started_at': time.time()
+        }), ex=7200)
         
-        if not agent_state:
-            send("No active customer request", from_number, phone_id)
-            return True
+        update_user_state(customer_number, {
+            'step': 'talking_to_human_agent',
+            'agent_number': from_number
+        })
         
-        # Verify this is a response to the current message
-        msg_text = message.get('text', {}).get('body', '')
-        if not msg_text.startswith(('1', '2')):
-            send("Please reply with:\n1 - Accept\n2 - Decline", from_number, phone_id)
-            return True
+        # Send confirmations
+        send("✅ You are now connected to the customer", from_number, phone_id)
+        send("✅ You're now speaking with an agent", customer_number, phone_id)
         
-        # Process response
-        if agent_state['step'] == 'awaiting_response':
-            customer_number = agent_state['customer_number']
-            
-            if msg_text.strip() == '1':  # Accept
-                # Update states
-                agent_state['step'] = 'in_conversation'
-                agent_state['started_at'] = time.time()
-                redis.set(f"agent_session:{from_number}", json.dumps(agent_state),
-                         ex=AGENT_CONVERSATION_TIMEOUT)
-                
-                update_user_state(customer_number, {
-                    'step': 'with_agent',
-                    'agent_number': from_number,
-                    'conversation_start': time.time()
-                }, ttl_seconds=AGENT_CONVERSATION_TIMEOUT)
-                
-                # Send confirmations
-                send("✅ You're now connected to the customer", from_number, phone_id)
-                send("✅ You're now speaking with an agent", customer_number, phone_id)
-                
-            elif msg_text.strip() == '2':  # Decline
-                send("An agent will contact you later", customer_number, phone_id)
-                update_user_state(customer_number, {'step': 'main_menu'})
-                redis.delete(f"agent_session:{from_number}")
-                
-    return True
+    elif prompt == "AGENT-2":
+        # Decline
+        send("❌ Request declined by agent", customer_number, phone_id)
+        update_user_state(customer_number, {'step': 'main_menu'})
+        redis.delete(f"agent:{from_number}")
+        send_main_menu(customer_number, phone_id)
+        
+    else:
+        send(
+            "⚠️ INVALID AGENT COMMAND ⚠️\n\n"
+            "For this customer request, you MUST reply with:\n"
+            "AGENT-1 (to accept)\n"
+            "AGENT-2 (to decline)",
+            from_number,
+            phone_id
+        )
+    
+    return True  # Mark as handled
+    
 
 
 def human_agent_followup(prompt, user_data, phone_id):
