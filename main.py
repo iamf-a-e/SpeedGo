@@ -2328,6 +2328,18 @@ def webhook():
                     logging.warning(f"Unsupported message type: {msg_type}")
                     send("Please send a text message or share your location using the 📍 button.", from_number, phone_id)
 
+                def process_message(incoming_message, sender_number, phone_id):
+                # Check if this message is from the agent
+                if sender_number == AGENT_NUMBER:
+                    agent_state = get_user_state(AGENT_NUMBER)
+                    customer_number = agent_state.get("customer_number")
+            
+                    if customer_number:
+                        handle_agent_reply(incoming_message, customer_number, phone_id)
+                    else:
+                        send("⚠️ No active customer session. Wait for a new request.", AGENT_NUMBER, phone_id)
+                    return
+                
                 # Handle customer during agent conversation
                 user_data = get_user_state(from_number)
                 message_text = message.get("text", {}).get("body", "").strip()
