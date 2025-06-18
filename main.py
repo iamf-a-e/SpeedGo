@@ -2374,9 +2374,21 @@ def message_handler(prompt, sender, phone_id, message):
     update_user_state(sender, next_state)
 
 def get_action(current_state, prompt, user_data, phone_id):
-    prompt = (prompt or "").strip()
+    if current_state == 'waiting_for_human_agent_response':
+        # You might want to just forward message to agent or suppress bot replies here
+        forward_message_to_agent(prompt, user_data, phone_id)
+        return user_data  # keep current state unchanged
+
+    # normal flow for other states
     handler = action_mapping.get(current_state, handle_welcome)
     return handler(prompt, user_data, phone_id)
+
+
+def forward_message_to_agent(message_text, user_data, phone_id):
+    agent_number = AGENT_NUMBER
+    send(message_text, agent_number, phone_id)
+
+    
 
 def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
     agent_reply = (message_text or "").strip()
