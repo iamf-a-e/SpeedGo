@@ -587,7 +587,7 @@ def handle_agent_message(message, phone_id):
     if from_number != AGENT_NUMBER:
         return False
     
-    agent_state = json.loads(redis.get(f"agent_session:{from_number}") or {}
+    agent_state = json.loads(redis.get(f"agent_session:{from_number}") or {})
     if not agent_state:
         send("No active customer session", from_number, phone_id)
         return True
