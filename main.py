@@ -9503,30 +9503,27 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
     return (f"{service_key} in {location.title()}: ${price} {unit}\n\n"
             "Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
 
-
-# State handlers
 def handle_welcome(prompt, user_data, phone_id):
-    send(
+    welcome_msg = (
         "Hi there! Welcome to SpeedGo Services for borehole drilling in Zimbabwe. "
         "We provide reliable borehole drilling and water solutions across Zimbabwe.\n\n"
         "Choose your preferred language:\n"
         "1. English\n"
         "2. Shona\n"
-        "3. Ndebele",
-        user_data['sender'], phone_id
+        "3. Ndebele"
     )
+    send(welcome_msg, user_data['sender'], phone_id)
+    save_message(user_data['sender'], welcome_msg, 'outbound', phone_id)
     update_user_state(user_data['sender'], {'step': 'select_language'})
     return {'step': 'select_language', 'sender': user_data['sender']}
 
 def handle_select_language(prompt, user_data, phone_id):
     user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
+    save_message(user_data['sender'], prompt, 'inbound', phone_id)
+    
     if prompt == "1":
         user.language = "English"
-        update_user_state(user_data['sender'], {
-            'step': 'main_menu',
-            'user': user.to_dict()
-        })
-        send(
+        response_msg = (
             "Thank you!\n"
             "How can we help you today?\n\n"
             "1. Request a quote\n"
@@ -9535,18 +9532,19 @@ def handle_select_language(prompt, user_data, phone_id):
             "4. FAQs or Learn About Borehole Drilling\n"
             "5. Other services\n"
             "6. Talk to a Human Agent\n\n"
-            "Please reply with a number (e.g., 1)",
-            user_data['sender'], phone_id
+            "Please reply with a number (e.g., 1)"
         )
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu',
+            'user': user.to_dict()
+        })
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
     
     elif prompt == "2":
         user.language = "Shona"
-        update_user_state(user_data['sender'], {
-            'step': 'main_menu_shona',
-            'user': user.to_dict()
-        })
-        send(
+        response_msg = (
             "Tatenda!\n"
             "Tinokubatsirai sei nhasi?\n\n"
             "1. Kukumbira quotation\n"
@@ -9555,18 +9553,19 @@ def handle_select_language(prompt, user_data, phone_id):
             "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Chibhorani\n"
             "5. Zvimwe Zvatinoita\n"
             "6. Taura neMunhu\n\n"
-            "Pindura nenhamba (semuenzaniso, 1)",
-            user_data['sender'], phone_id
+            "Pindura nenhamba (semuenzaniso, 1)"
         )
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu_shona',
+            'user': user.to_dict()
+        })
         return {'step': 'main_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "3":
         user.language = "Ndebele"
-        update_user_state(user_data['sender'], {
-            'step': 'main_menu_ndebele',
-            'user': user.to_dict()
-        })
-        send(
+        response_msg = (
             "Siyabonga!\n"
             "Singakusiza njani lamuhla?\n\n"
             "1. Cela isiphakamiso\n"
@@ -9575,86 +9574,103 @@ def handle_select_language(prompt, user_data, phone_id):
             "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
             "5. Eminye Imisebenzi\n"
             "6. Khuluma Nomuntu\n\n"
-            "Phendula ngenombolo (umzekeliso: 1)",
-            user_data['sender'], phone_id
+            "Phendula ngenombolo (umzekeliso: 1)"
         )
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu_ndebele',
+            'user': user.to_dict()
+        })
         return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
     
     else:
-        send("Please select a valid language option (1 for English, 2 for Shona, 3 for Ndebele).", user_data['sender'], phone_id)
+        error_msg = "Please select a valid language option (1 for English, 2 for Shona, 3 for Ndebele)."
+        send(error_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], error_msg, 'outbound', phone_id)
         return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 def handle_main_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
+    save_message(user_data['sender'], prompt, 'inbound', phone_id)
+    
     if prompt == "1":  # Request a quote
+        response_msg = "Please enter your location (City/Town or GPS coordinates) to get started."
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         update_user_state(user_data['sender'], {
             'step': 'enter_location_for_quote',
             'user': user.to_dict()
         })
-        send("please enter your location (City/Town or GPS coordinates) to get started.", user_data['sender'], phone_id)
         return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":  # Search Price Using Location
+        response_msg = "To get you pricing, please enter your location (City/Town or GPS coordinates):"
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         update_user_state(user_data['sender'], {
             'step': 'enter_location_for_quote',
             'user': user.to_dict()
         })
-        send(
-           "To get you pricing, please enter your location (City/Town or GPS coordinates):",
-            user_data['sender'], phone_id
-        )
         return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+        
     elif prompt == "3":  # Check Project Status
-        update_user_state(user_data['sender'], {
-            'step': 'check_project_status_menu',
-            'user': user.to_dict()
-        })
-        send(
+        response_msg = (
             "Please choose an option:\n"
             "1. Check status of borehole drilling\n"
             "2. Check status of pump installation\n"
             "3. Speak to a human agent\n"
-            "4. Main Menu",
-            user_data['sender'], phone_id
+            "4. Main Menu"
         )
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
+        update_user_state(user_data['sender'], {
+            'step': 'check_project_status_menu',
+            'user': user.to_dict()
+        })
         return {'step': 'check_project_status_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "4":
-        update_user_state(user_data['sender'], {
-            'step': 'faq_menu',
-            'user': user.to_dict()
-        })
-        send(
+        response_msg = (
             "Please choose an FAQ category:\n\n"
             "1. Borehole Drilling FAQs\n"
             "2. Pump Installation FAQs\n"
             "3. Ask a different question\n"
             "4. Speak to a human agent\n"
-            "5. Main Menu",
-            user_data['sender'], phone_id
+            "5. Main Menu"
         )
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
+        update_user_state(user_data['sender'], {
+            'step': 'faq_menu',
+            'user': user.to_dict()
+        })
         return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "5":  # Other Services
-        update_user_state(user_data['sender'], {
-            'step': 'other_services_menu',
-            'user': user.to_dict()
-        })
-        send(
+        response_msg = (
             "Welcome to Other Borehole Services. What service do you need?\n"
             "1. Borehole Deepening\n"
             "2. Borehole Flushing\n"
             "3. PVC Casing Pipe Selection\n"
-            "4. Back to Main Menu",
-            user_data['sender'], phone_id
+            "4. Back to Main Menu"
         )
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
+        update_user_state(user_data['sender'], {
+            'step': 'other_services_menu',
+            'user': user.to_dict()
+        })
         return {'step': 'other_services_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
         
     elif prompt == "6":  # Human agent
+        response_msg = "Connecting you to a human agent..."
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         update_user_state(user_data['sender'], {
             'step': 'human_agent',
             'user': user.to_dict(),
-            'original_prompt': prompt  # Store the original message
+            'original_prompt': prompt
         })
         # Immediately call the human_agent handler
         return human_agent(prompt, {
@@ -9664,8 +9680,11 @@ def handle_main_menu(prompt, user_data, phone_id):
         }, phone_id)
     
     else:
-        send("Please select a valid option (1-6).", user_data['sender'], phone_id)
+        error_msg = "Please select a valid option (1-6)."
+        send(error_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], error_msg, 'outbound', phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
+
 
 def human_agent(prompt, user_data, phone_id):
     customer_number = user_data['sender']
