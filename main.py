@@ -9526,13 +9526,15 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
         return response
 
     # Flat rate or per meter pricing
+    # Define unit based on service type
+    unit = "per meter" if service_key in ["Commercial Hole Drilling", "Borehole Deepening"] else "flat rate"
+    
     response = (f"{service_key} in {location.title()}: ${price} {unit}\n\n"
                "Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
     
     if sender and phone_id:
         save_message(sender, response, 'outbound', phone_id)
     return response
-
 
 
 # State handlers
