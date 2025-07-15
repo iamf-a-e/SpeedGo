@@ -10525,16 +10525,19 @@ def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
             
             # Update states
             update_user_state(AGENT_NUMBER, {
-                'step': 'talking_to_human_agent',
-                'customer_number': customer_number,
-                'phone_id': phone_id
-            })
-            
-            update_user_state(customer_number, {
-                'step': 'talking_to_human_agent',
-                'user': get_user_state(customer_number).get('user', {}),
-                'sender': customer_number
-            })
+            'step': 'agent_reply',
+            'customer_number': customer_number,  # Track which customer they're handling
+            'phone_id': phone_id
+        })
+    
+        # Update customer's state (waiting for agent)
+        update_user_state(customer_number, {
+            'step': 'waiting_for_human_agent_response',
+            'user': user_data.get('user', {}),
+            'sender': customer_number,
+            'waiting_since': time.time()
+        })
+        
 
         elif prompt == "2":  # Reject conversation
             send("✅ You've ended the conversation. Waiting for new requests.", 
