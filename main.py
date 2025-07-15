@@ -10524,7 +10524,7 @@ def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
             # Update session
             session['status'] = 'active'
             redis.set(session_key, json.dumps(session))
-            return None
+            return {'step': 'handle_agent_reply', 'user': user_data['user'], 'sender': user_data['sender']}
             
         elif prompt == "2":
             # Agent wants to return to bot
@@ -10545,7 +10545,7 @@ def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
             # Update last interaction time
             session['last_interaction'] = time.time()
             redis.set(session_key, json.dumps(session))
-            return None
+            return {'step': 'handle_agent_reply', 'user': user_data['user'], 'sender': user_data['sender']}
             
     else:
         save_message(user_data['sender'], prompt, 'inbound', phone_id)
@@ -10556,7 +10556,7 @@ def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
             # Update last interaction time
             session['last_interaction'] = time.time()
             redis.set(session_key, json.dumps(session))
-            return None
+            return {'step': 'handle_agent_reply', 'user': user_data['user'], 'sender': user_data['sender']}
         else:
             # Agent hasn't accepted yet
             response_msg = "Please wait while we connect you to an agent..."
@@ -34091,6 +34091,18 @@ def webhook():
                         update_user_state(AGENT_NUMBER, agent_state)
 
                         return "OK"
+
+                    if agent_state.get("step") == "human_agent_offer":
+                        handle_agent_reply(message_text, customer_number, phone_id, agent_state)
+                        
+                        # 🔄 Re-save agent state to ensure customer_number is preserved
+                        agent_state["customer_number"] = customer_number
+                        agent_state["step"] = "talking_to_human_agent"
+                        update_user_state(AGENT_NUMBER, agent_state)
+
+                        return "OK"
+
+                    
             
                     if agent_state.get("step") == "talking_to_human_agent":
                         if message_text.strip() == "2":
