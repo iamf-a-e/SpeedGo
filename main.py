@@ -34155,10 +34155,28 @@ def message_handler(prompt, sender, phone_id, message):
     prompt = (prompt or "").strip()
     user_data = get_user_state(sender)
     user_data['sender'] = sender
-
     text = prompt.strip().lower()
 
-# English greetings
+    # Check if sender is an agent
+    is_agent = sender == AGENT_NUMBER
+    
+    # 🚨 Handle agent messages first
+    if is_agent:
+        # Check if agent is in an active conversation
+        session_key = find_agent_session(sender)
+        if session_key:
+            # Handle agent's message (could be commands or message to forward)
+            handle_agent_message(prompt, session_key, phone_id)
+            return
+        else:
+            # Agent not in active session - show available commands
+            send("You're not currently in any conversation. Available commands:\n"
+                 "/list - View waiting customers\n"
+                 "/history [number] - View customer history", sender, phone_id)
+            return
+
+    # Regular user processing
+    # English greetings
     if text in ["hi", "hey", "hie"]:
         user_state = {'step': 'welcome', 'sender': sender}
         updated_state = get_action('welcome', prompt, user_state, phone_id)
@@ -34179,11 +34197,10 @@ def message_handler(prompt, sender, phone_id, message):
         update_user_state(sender, updated_state)
         return updated_state
     
-    # 🚨 Early exit if user is in human agent chat
+    # 🚨 Handle user messages when in agent conversation
     if user_data.get('step') == 'talking_to_human_agent':
-        forward_message_to_agent(prompt, user_data, phone_id)
-
-        # 🔄 Preserve customer state
+        forward_to_agent(prompt, user_data, phone_id)
+        # Preserve customer state
         update_user_state(sender, user_data)
         return
 
@@ -34203,6 +34220,112 @@ def message_handler(prompt, sender, phone_id, message):
     step = user_data.get('step', 'welcome')
     next_state = get_action(step, prompt, user_data, phone_id)
     update_user_state(sender, next_state)
+
+def find_agent_session(agent_number):
+    """Find active session for agent"""
+    # This searches Redis for keys matching agent_session:* that have this agent_number
+    # Implementation depends on your Redis key structure
+    keys = redis.keys("agent_session:*")
+    for key in keys:
+        session = json.loads(redis.get(key))
+        if session.get('agent_number') == agent_number:
+            return key
+    return None
+
+def handle_agent_message(prompt, session_key, phone_id):
+    session = json.loads(redis.get(session_key))
+    
+    if prompt == "1":
+        # Agent accepts conversation
+        session['status'] = 'active'
+        redis.set(session_key, json.dumps(session))
+        send("You've accepted the conversation. Start messaging with the customer.", 
+             session['agent_number'], phone_id)
+        send("You're now connected to an agent. Please describe your needs.", 
+             session['customer_number'], phone_id)
+    elif prompt == "2":
+        # Agent ends conversation
+        send("The agent has ended the conversation. You'll be returned to the bot.", 
+             session['customer_number'], phone_id)
+        # Update customer state
+        update_user_state(session['customer_number'], {
+            'step': 'main_menu',
+            'user': get_user_state(session['customer_number']).get('user', {})
+        })
+        redis.delete(session_key)
+    else:
+        # Forward message to customer
+        if session.get('status') == 'active':
+            send(f"Agent: {prompt}", session['customer_number'], phone_id)
+            # Update last interaction time
+            session['last_interaction'] = time.time()
+            redis.set(session_key, json.dumps(session))
+        else:
+            send("Please accept the conversation first by replying '1'", 
+                 session['agent_number'], phone_id)
+
+def forward_to_agent(prompt, user_data, phone_id):
+    """Forward user message to agent"""
+    session_key = f"agent_session:{user_data['sender']}"
+    session = json.loads(redis.get(session_key))
+    
+    if session.get('status') == 'active':
+        # Format message with customer info
+        message = f"Customer ({user_data['sender']}): {prompt}"
+        send(message, session['agent_number'], phone_id)
+        
+        # Update last interaction time
+        session['last_interaction'] = time.time()
+        redis.set(session_key, json.dumps(session))
+    else:
+        send("Please wait while we connect you to an agent...", 
+             user_data['sender'], phone_id)
+
+def connect_to_agent(user_data, phone_id, reason=""):
+    """Initiate connection to agent"""
+    # Get conversation history
+    history = redis.lrange(f"conversation:{user_data['sender']}", 0, 50)
+    history_msg = "📋 Conversation History:\n"
+    for msg in reversed(history):
+        try:
+            msg_data = json.loads(msg)
+            sender = "Customer" if msg_data['direction'] == 'inbound' else "Bot"
+            history_msg += f"{sender}: {msg_data['message']}\n"
+        except:
+            continue
+
+    # Notify user
+    send("Connecting you to a human agent...", user_data['sender'], phone_id)
+
+    # Prepare agent message
+    agent_msg = "\n".join([
+        "💬 New Customer Request",
+        f"📱 Customer: {user_data['sender']}",
+        f"📅 Reason: {reason}",
+        "",
+        history_msg,
+        "",
+        "Agent options:",
+        "1. Accept conversation ✅",
+        "2. Decline ❌"
+    ])
+    send(agent_msg, AGENT_NUMBER, phone_id)
+
+    # Create session
+    redis.set(f"agent_session:{user_data['sender']}", json.dumps({
+        "agent_number": AGENT_NUMBER,
+        "customer_number": user_data['sender'],
+        "phone_id": phone_id,
+        "status": "pending",
+        "start_time": time.time(),
+        "last_interaction": time.time()
+    }))
+
+    # Update user state
+    update_user_state(user_data['sender'], {
+        'step': 'talking_to_human_agent',
+        'user': user_data.get('user', {})
+    })
 
    
 def get_action(current_state, prompt, user_data, phone_id):
