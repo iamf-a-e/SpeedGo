@@ -34146,125 +34146,118 @@ def webhook():
         logging.info(f"Incoming webhook data: {json.dumps(data, indent=2)}")
     
         try:
-            entry = data.get("entry", [])[0]
-            changes = entry.get("changes", [])[0]
+            entry = data.get("entry", [{}])[0]  # Default empty dict if no entry
+            changes = entry.get("changes", [{}])[0]  # Default empty dict if no changes
             value = changes.get("value", {})
-            phone_id = value.get("metadata", {}).get("phone_number_id")
+            phone_id = value.get("metadata", {}).get("phone_number_id", "")
             messages = value.get("messages", [])
     
             if messages:
                 message = messages[0]
-                from_number = message.get("from")
-                msg_type = message.get("type")
+                from_number = message.get("from", "")
+                msg_type = message.get("type", "")
                 message_text = message.get("text", {}).get("body", "").strip()
-            
+                
+                # Initialize user_data safely
+                user_data = get_user_state(from_number) or {'sender': from_number}
+                if 'user' not in user_data:
+                    user_data['user'] = User(from_number).to_dict()
+    
                 # Handle agent messages
                 if from_number.endswith(AGENT_NUMBER.replace("+", "")):
-                    agent_state = get_user_state(AGENT_NUMBER)
+                    agent_state = get_user_state(AGENT_NUMBER) or {'sender': AGENT_NUMBER}
                     
-                    # Check if this is a handover acceptance (message is "1" and no current customer)
-                    if message_text.strip() == "1" and not agent_state.get("customer_number"):
-                        # Look for pending handover requests
+                    # Handle agent accepting chat
+                    if message_text.strip() == "1":
                         pending_requests = redis.keys("handover_request:*")
                         if pending_requests:
-                            # Get the oldest request
                             oldest_request = sorted(pending_requests)[0]
                             request_data = json.loads(redis.get(oldest_request))
                             customer_number = request_data['customer_number']
                             
-                            # Create agent session
-                            agent_state = {
+                            # Initialize agent state
+                            agent_state.update({
                                 "customer_number": customer_number,
-                                "sender": AGENT_NUMBER,
                                 "step": "talking_to_human_agent",
                                 "phone_id": phone_id,
                                 "start_time": time.time()
-                            }
-                            update_user_state(AGENT_NUMBER, agent_state)
+                            })
                             
-                            # Update customer state
-                            customer_state = get_user_state(customer_number)
+                            # Initialize customer state
+                            customer_state = get_user_state(customer_number) or {'sender': customer_number}
                             customer_state["step"] = "talking_to_human_agent"
+                            if 'user' not in customer_state:
+                                customer_state['user'] = User(customer_number).to_dict()
+                            
+                            update_user_state(AGENT_NUMBER, agent_state)
                             update_user_state(customer_number, customer_state)
                             
-                            # Send confirmation messages
-                            send("✅ You have accepted the chat handover. You're now connected to the customer.", 
-                                 AGENT_NUMBER, phone_id)
-                            send("You're now connected to an agent. Please describe your needs.", 
-                                 customer_number, phone_id)
+                            # Send notifications
+                            send("✅ Chat accepted. You're now connected.", AGENT_NUMBER, phone_id)
+                            send("You're now connected to an agent.", customer_number, phone_id)
                             
-                            # Send conversation history to agent
+                            # Send history
                             history = get_conversation_history(customer_number)
-                            send(f"📋 Conversation history with customer:\n\n{history}", 
-                                 AGENT_NUMBER, phone_id)
+                            send(f"📋 Conversation history:\n{history}", AGENT_NUMBER, phone_id)
                             
-                            # Remove the handover request
                             redis.delete(oldest_request)
                             return "OK"
                         else:
-                            send("⚠️ No pending chat handover requests available.", AGENT_NUMBER, phone_id)
+                            send("⚠️ No pending requests.", AGENT_NUMBER, phone_id)
                             return "OK"
                     
-                    # Existing agent conversation handling
-                    customer_number = agent_state.get("customer_number")
-                    if not customer_number:
-                        send("⚠️ No active customer conversation. Send '1' to accept a new handover request.", 
-                             AGENT_NUMBER, phone_id)
+                    # Handle ongoing agent conversation
+                    if agent_state.get("customer_number"):
+                        if message_text.strip() == "2":
+                            # End conversation
+                            customer_number = agent_state["customer_number"]
+                            send("Agent ended the conversation.", customer_number, phone_id)
+                            
+                            # Reset customer state
+                            customer_state = get_user_state(customer_number) or {'sender': customer_number}
+                            customer_state["step"] = "main_menu"
+                            update_user_state(customer_number, customer_state)
+                            
+                            # Reset agent state
+                            agent_state = {"step": "awaiting_handover"}
+                            update_user_state(AGENT_NUMBER, agent_state)
+                        else:
+                            # Forward message
+                            send(f"Agent: {message_text}", agent_state["customer_number"], phone_id)
                         return "OK"
                     
-                    # Handle ongoing agent conversation
-                    if message_text.strip() == "2":
-                        # Agent ends conversation
-                        send("The agent has ended the conversation. You'll be returned to the bot.", 
-                             customer_number, phone_id)
-                        
-                        # Update customer state
-                        customer_state = get_user_state(customer_number)
-                        customer_state["step"] = "main_menu"
-                        update_user_state(customer_number, customer_state)
-                        
-                        # Clear agent state
-                        agent_state = {
-                            "step": "awaiting_handover",
-                            "sender": AGENT_NUMBER
-                        }
-                        update_user_state(AGENT_NUMBER, agent_state)
-                    else:
-                        # Forward agent message to customer
-                        send(f"Agent: {message_text}", customer_number, phone_id)
-                        save_message(customer_number, f"Agent: {message_text}", "outbound", phone_id)
-                    
+                    send("⚠️ No active conversation. Send '1' to accept a request.", AGENT_NUMBER, phone_id)
                     return "OK"
     
-                # Handle normal user messages
-                user_data = get_user_state(from_number)
-                user_data['sender'] = from_number
-                
-                # If user is in agent conversation, forward to agent
+                # Handle user messages
                 if user_data.get('step') == 'talking_to_human_agent':
-                    # Forward message to agent
-                    agent_state = get_user_state(AGENT_NUMBER)
+                    agent_state = get_user_state(AGENT_NUMBER) or {}
                     if agent_state.get('customer_number') == from_number:
                         send(f"Customer: {message_text}", AGENT_NUMBER, phone_id)
-                        save_message(AGENT_NUMBER, f"Customer: {message_text}", "inbound", phone_id)
                     else:
-                        send("The agent is currently unavailable. Please try again later.", from_number, phone_id)
+                        send("Agent unavailable. Please try later.", from_number, phone_id)
                     return "OK"
                 
-                # Continue with normal bot processing
+                # Normal message handling
                 if msg_type == "text":
                     message_handler(message_text, from_number, phone_id, message)
                 elif msg_type == "location":
-                    gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
-                    message_handler(gps_coords, from_number, phone_id, message)
+                    location = message.get('location', {})
+                    if location:
+                        gps_coords = f"{location.get('latitude','')},{location.get('longitude','')}"
+                        message_handler(gps_coords, from_number, phone_id, message)
+                    else:
+                        send("Invalid location. Please try again.", from_number, phone_id)
                 else:
-                    send("Please send a text message or share your location using the 📍 button.", from_number, phone_id)
+                    send("Please send text or location.", from_number, phone_id)
     
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
+            return jsonify({"status": "error", "message": str(e)}), 500
     
         return jsonify({"status": "ok"}), 200
-
+    
+       
 def get_conversation_history(customer_number):
     """Retrieve formatted conversation history"""
     history = redis.lrange(f"conversation:{customer_number}", 0, 50)
