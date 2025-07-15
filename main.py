@@ -9503,27 +9503,30 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
     return (f"{service_key} in {location.title()}: ${price} {unit}\n\n"
             "Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
 
+
+# State handlers
 def handle_welcome(prompt, user_data, phone_id):
-    welcome_msg = (
+    send(
         "Hi there! Welcome to SpeedGo Services for borehole drilling in Zimbabwe. "
         "We provide reliable borehole drilling and water solutions across Zimbabwe.\n\n"
         "Choose your preferred language:\n"
         "1. English\n"
         "2. Shona\n"
-        "3. Ndebele"
+        "3. Ndebele",
+        user_data['sender'], phone_id
     )
-    send(welcome_msg, user_data['sender'], phone_id)
-    save_message(user_data['sender'], welcome_msg, 'outbound', phone_id)
     update_user_state(user_data['sender'], {'step': 'select_language'})
     return {'step': 'select_language', 'sender': user_data['sender']}
 
 def handle_select_language(prompt, user_data, phone_id):
     user = User.from_dict(user_data.get('user', {'phone_number': user_data['sender']}))
-    save_message(user_data['sender'], prompt, 'inbound', phone_id)
-    
     if prompt == "1":
         user.language = "English"
-        response_msg = (
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu',
+            'user': user.to_dict()
+        })
+        send(
             "Thank you!\n"
             "How can we help you today?\n\n"
             "1. Request a quote\n"
@@ -9532,19 +9535,18 @@ def handle_select_language(prompt, user_data, phone_id):
             "4. FAQs or Learn About Borehole Drilling\n"
             "5. Other services\n"
             "6. Talk to a Human Agent\n\n"
-            "Please reply with a number (e.g., 1)"
+            "Please reply with a number (e.g., 1)",
+            user_data['sender'], phone_id
         )
-        send(response_msg, user_data['sender'], phone_id)
-        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
-        update_user_state(user_data['sender'], {
-            'step': 'main_menu',
-            'user': user.to_dict()
-        })
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
     
     elif prompt == "2":
         user.language = "Shona"
-        response_msg = (
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu_shona',
+            'user': user.to_dict()
+        })
+        send(
             "Tatenda!\n"
             "Tinokubatsirai sei nhasi?\n\n"
             "1. Kukumbira quotation\n"
@@ -9553,19 +9555,18 @@ def handle_select_language(prompt, user_data, phone_id):
             "4. Mibvunzo Inowanzo bvunzwa kana Dzidza Nezve Chibhorani\n"
             "5. Zvimwe Zvatinoita\n"
             "6. Taura neMunhu\n\n"
-            "Pindura nenhamba (semuenzaniso, 1)"
+            "Pindura nenhamba (semuenzaniso, 1)",
+            user_data['sender'], phone_id
         )
-        send(response_msg, user_data['sender'], phone_id)
-        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
-        update_user_state(user_data['sender'], {
-            'step': 'main_menu_shona',
-            'user': user.to_dict()
-        })
         return {'step': 'main_menu_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "3":
         user.language = "Ndebele"
-        response_msg = (
+        update_user_state(user_data['sender'], {
+            'step': 'main_menu_ndebele',
+            'user': user.to_dict()
+        })
+        send(
             "Siyabonga!\n"
             "Singakusiza njani lamuhla?\n\n"
             "1. Cela isiphakamiso\n"
@@ -9574,103 +9575,86 @@ def handle_select_language(prompt, user_data, phone_id):
             "4. Imibuzo Evame Ukubuzwa noma Funda Ngokuqhuba Ibhorehole\n"
             "5. Eminye Imisebenzi\n"
             "6. Khuluma Nomuntu\n\n"
-            "Phendula ngenombolo (umzekeliso: 1)"
+            "Phendula ngenombolo (umzekeliso: 1)",
+            user_data['sender'], phone_id
         )
-        send(response_msg, user_data['sender'], phone_id)
-        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
-        update_user_state(user_data['sender'], {
-            'step': 'main_menu_ndebele',
-            'user': user.to_dict()
-        })
         return {'step': 'main_menu_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
     
     else:
-        error_msg = "Please select a valid language option (1 for English, 2 for Shona, 3 for Ndebele)."
-        send(error_msg, user_data['sender'], phone_id)
-        save_message(user_data['sender'], error_msg, 'outbound', phone_id)
+        send("Please select a valid language option (1 for English, 2 for Shona, 3 for Ndebele).", user_data['sender'], phone_id)
         return {'step': 'select_language', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 def handle_main_menu(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    save_message(user_data['sender'], prompt, 'inbound', phone_id)
-    
     if prompt == "1":  # Request a quote
-        response_msg = "Please enter your location (City/Town or GPS coordinates) to get started."
-        send(response_msg, user_data['sender'], phone_id)
-        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         update_user_state(user_data['sender'], {
             'step': 'enter_location_for_quote',
             'user': user.to_dict()
         })
+        send("please enter your location (City/Town or GPS coordinates) to get started.", user_data['sender'], phone_id)
         return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":  # Search Price Using Location
-        response_msg = "To get you pricing, please enter your location (City/Town or GPS coordinates):"
-        send(response_msg, user_data['sender'], phone_id)
-        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         update_user_state(user_data['sender'], {
             'step': 'enter_location_for_quote',
             'user': user.to_dict()
         })
-        return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
-        
-    elif prompt == "3":  # Check Project Status
-        response_msg = (
-            "Please choose an option:\n"
-            "1. Check status of borehole drilling\n"
-            "2. Check status of pump installation\n"
-            "3. Speak to a human agent\n"
-            "4. Main Menu"
+        send(
+           "To get you pricing, please enter your location (City/Town or GPS coordinates):",
+            user_data['sender'], phone_id
         )
-        send(response_msg, user_data['sender'], phone_id)
-        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
+        return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
+    elif prompt == "3":  # Check Project Status
         update_user_state(user_data['sender'], {
             'step': 'check_project_status_menu',
             'user': user.to_dict()
         })
+        send(
+            "Please choose an option:\n"
+            "1. Check status of borehole drilling\n"
+            "2. Check status of pump installation\n"
+            "3. Speak to a human agent\n"
+            "4. Main Menu",
+            user_data['sender'], phone_id
+        )
         return {'step': 'check_project_status_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "4":
-        response_msg = (
+        update_user_state(user_data['sender'], {
+            'step': 'faq_menu',
+            'user': user.to_dict()
+        })
+        send(
             "Please choose an FAQ category:\n\n"
             "1. Borehole Drilling FAQs\n"
             "2. Pump Installation FAQs\n"
             "3. Ask a different question\n"
             "4. Speak to a human agent\n"
-            "5. Main Menu"
+            "5. Main Menu",
+            user_data['sender'], phone_id
         )
-        send(response_msg, user_data['sender'], phone_id)
-        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
-        update_user_state(user_data['sender'], {
-            'step': 'faq_menu',
-            'user': user.to_dict()
-        })
         return {'step': 'faq_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "5":  # Other Services
-        response_msg = (
-            "Welcome to Other Borehole Services. What service do you need?\n"
-            "1. Borehole Deepening\n"
-            "2. Borehole Flushing\n"
-            "3. PVC Casing Pipe Selection\n"
-            "4. Back to Main Menu"
-        )
-        send(response_msg, user_data['sender'], phone_id)
-        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         update_user_state(user_data['sender'], {
             'step': 'other_services_menu',
             'user': user.to_dict()
         })
+        send(
+            "Welcome to Other Borehole Services. What service do you need?\n"
+            "1. Borehole Deepening\n"
+            "2. Borehole Flushing\n"
+            "3. PVC Casing Pipe Selection\n"
+            "4. Back to Main Menu",
+            user_data['sender'], phone_id
+        )
         return {'step': 'other_services_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
         
     elif prompt == "6":  # Human agent
-        response_msg = "Connecting you to a human agent..."
-        send(response_msg, user_data['sender'], phone_id)
-        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         update_user_state(user_data['sender'], {
             'step': 'human_agent',
             'user': user.to_dict(),
-            'original_prompt': prompt
+            'original_prompt': prompt  # Store the original message
         })
         # Immediately call the human_agent handler
         return human_agent(prompt, {
@@ -9680,11 +9664,8 @@ def handle_main_menu(prompt, user_data, phone_id):
         }, phone_id)
     
     else:
-        error_msg = "Please select a valid option (1-6)."
-        send(error_msg, user_data['sender'], phone_id)
-        save_message(user_data['sender'], error_msg, 'outbound', phone_id)
+        send("Please select a valid option (1-6).", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
-
 
 def human_agent(prompt, user_data, phone_id):
     customer_number = user_data['sender']
@@ -34089,41 +34070,80 @@ def webhook():
                 if from_number.endswith(AGENT_NUMBER.replace("+", "")):
                     agent_state = get_user_state(AGENT_NUMBER)
                     customer_number = agent_state.get("customer_number")
-            
+                
                     if not customer_number:
                         send("⚠️ No customer to reply to. Wait for a new request.", AGENT_NUMBER, phone_id)
                         return "OK"
-
-                        # Always re-store the agent state with the customer_number to ensure it's not lost
-                        agent_state["customer_number"] = customer_number
-                        agent_state["sender"] = AGENT_NUMBER
+                
+                    # Always re-store the agent state with the customer_number to ensure it's not lost
+                    agent_state["customer_number"] = customer_number
+                    agent_state["sender"] = AGENT_NUMBER
                     
-                        # Persist again defensively
-                        update_user_state(AGENT_NUMBER, agent_state)
-            
-                    if agent_state.get("step") == "agent_reply":
-                        handle_agent_reply(message_text, customer_number, phone_id, agent_state)
-                        
-                        # 🔄 Re-save agent state to ensure customer_number is preserved
-                        agent_state["customer_number"] = customer_number
-                        agent_state["step"] = "talking_to_human_agent"
-                        update_user_state(AGENT_NUMBER, agent_state)
-
+                    # Persist again defensively
+                    update_user_state(AGENT_NUMBER, agent_state)
+                
+                    # Handle both agent_reply and human_agent_offer states
+                    if agent_state.get("step") in ["agent_reply", "human_agent_offer"]:
+                        if message_text.strip() == "1":
+                            # Agent accepts the conversation
+                            send("✅ You've accepted the conversation. Start messaging with the customer.", AGENT_NUMBER, phone_id)
+                            send("You're now connected to an agent. Please describe your needs.", customer_number, phone_id)
+                            
+                            # Update both agent and customer states
+                            agent_state["step"] = "talking_to_human_agent"
+                            update_user_state(AGENT_NUMBER, agent_state)
+                            
+                            customer_state = get_user_state(customer_number)
+                            customer_state["step"] = "talking_to_human_agent"
+                            update_user_state(customer_number, customer_state)
+                            
+                        elif message_text.strip() == "2":
+                            # Agent ends the conversation
+                            handle_agent_reply("2", customer_number, phone_id, agent_state)
+                            
+                            # Update customer state to return to main menu
+                            customer_state = get_user_state(customer_number)
+                            customer_state["step"] = "main_menu"
+                            update_user_state(customer_number, customer_state)
+                            
+                            # Clear agent state
+                            agent_state["step"] = "awaiting_customer"
+                            agent_state.pop("customer_number", None)
+                            update_user_state(AGENT_NUMBER, agent_state)
+                            
+                        else:
+                            # Forward agent message to customer
+                            send(f"Agent: {message_text}", customer_number, phone_id)
+                            
+                            # Save message to conversation history
+                            save_message(customer_number, f"Agent: {message_text}", "outbound", phone_id)
+                            
                         return "OK"
-            
+                
                     if agent_state.get("step") == "talking_to_human_agent":
                         if message_text.strip() == "2":
-                            # ✅ This is the agent saying "return to bot"
-                            handle_agent_reply("2", customer_number, phone_id, agent_state)
+                            # Agent wants to end conversation
+                            send("The agent has ended the conversation. You'll be returned to the bot.", customer_number, phone_id)
+                            
+                            # Update customer state
+                            customer_state = get_user_state(customer_number)
+                            customer_state["step"] = "main_menu"
+                            update_user_state(customer_number, customer_state)
+                            
+                            # Clear agent state
+                            agent_state["step"] = "awaiting_customer"
+                            agent_state.pop("customer_number", None)
+                            update_user_state(AGENT_NUMBER, agent_state)
                         else:
-                            # ✅ Forward any other message to the customer
+                            # Forward any other message to customer
                             send(message_text, customer_number, phone_id)
+                            save_message(customer_number, f"Agent: {message_text}", "outbound", phone_id)
                         return "OK"
-
-            
+                
                     send("⚠️ No active chat. Please wait for a new request.", AGENT_NUMBER, phone_id)
                     return "OK"
-            
+
+                
                 # Handle normal user messages (only if NOT agent)
 
                 user_data = get_user_state(from_number)
@@ -34155,28 +34175,10 @@ def message_handler(prompt, sender, phone_id, message):
     prompt = (prompt or "").strip()
     user_data = get_user_state(sender)
     user_data['sender'] = sender
+
     text = prompt.strip().lower()
 
-    # Check if sender is an agent
-    is_agent = sender == AGENT_NUMBER
-    
-    # 🚨 Handle agent messages first
-    if is_agent:
-        # Check if agent is in an active conversation
-        session_key = find_agent_session(sender)
-        if session_key:
-            # Handle agent's message (could be commands or message to forward)
-            handle_agent_message(prompt, session_key, phone_id)
-            return
-        else:
-            # Agent not in active session - show available commands
-            send("You're not currently in any conversation. Available commands:\n"
-                 "/list - View waiting customers\n"
-                 "/history [number] - View customer history", sender, phone_id)
-            return
-
-    # Regular user processing
-    # English greetings
+# English greetings
     if text in ["hi", "hey", "hie"]:
         user_state = {'step': 'welcome', 'sender': sender}
         updated_state = get_action('welcome', prompt, user_state, phone_id)
@@ -34197,10 +34199,11 @@ def message_handler(prompt, sender, phone_id, message):
         update_user_state(sender, updated_state)
         return updated_state
     
-    # 🚨 Handle user messages when in agent conversation
+    # 🚨 Early exit if user is in human agent chat
     if user_data.get('step') == 'talking_to_human_agent':
-        forward_to_agent(prompt, user_data, phone_id)
-        # Preserve customer state
+        forward_message_to_agent(prompt, user_data, phone_id)
+
+        # 🔄 Preserve customer state
         update_user_state(sender, user_data)
         return
 
@@ -34220,112 +34223,6 @@ def message_handler(prompt, sender, phone_id, message):
     step = user_data.get('step', 'welcome')
     next_state = get_action(step, prompt, user_data, phone_id)
     update_user_state(sender, next_state)
-
-def find_agent_session(agent_number):
-    """Find active session for agent"""
-    # This searches Redis for keys matching agent_session:* that have this agent_number
-    # Implementation depends on your Redis key structure
-    keys = redis.keys("agent_session:*")
-    for key in keys:
-        session = json.loads(redis.get(key))
-        if session.get('agent_number') == agent_number:
-            return key
-    return None
-
-def handle_agent_message(prompt, session_key, phone_id):
-    session = json.loads(redis.get(session_key))
-    
-    if prompt == "1":
-        # Agent accepts conversation
-        session['status'] = 'active'
-        redis.set(session_key, json.dumps(session))
-        send("You've accepted the conversation. Start messaging with the customer.", 
-             session['agent_number'], phone_id)
-        send("You're now connected to an agent. Please describe your needs.", 
-             session['customer_number'], phone_id)
-    elif prompt == "2":
-        # Agent ends conversation
-        send("The agent has ended the conversation. You'll be returned to the bot.", 
-             session['customer_number'], phone_id)
-        # Update customer state
-        update_user_state(session['customer_number'], {
-            'step': 'main_menu',
-            'user': get_user_state(session['customer_number']).get('user', {})
-        })
-        redis.delete(session_key)
-    else:
-        # Forward message to customer
-        if session.get('status') == 'active':
-            send(f"Agent: {prompt}", session['customer_number'], phone_id)
-            # Update last interaction time
-            session['last_interaction'] = time.time()
-            redis.set(session_key, json.dumps(session))
-        else:
-            send("Please accept the conversation first by replying '1'", 
-                 session['agent_number'], phone_id)
-
-def forward_to_agent(prompt, user_data, phone_id):
-    """Forward user message to agent"""
-    session_key = f"agent_session:{user_data['sender']}"
-    session = json.loads(redis.get(session_key))
-    
-    if session.get('status') == 'active':
-        # Format message with customer info
-        message = f"Customer ({user_data['sender']}): {prompt}"
-        send(message, session['agent_number'], phone_id)
-        
-        # Update last interaction time
-        session['last_interaction'] = time.time()
-        redis.set(session_key, json.dumps(session))
-    else:
-        send("Please wait while we connect you to an agent...", 
-             user_data['sender'], phone_id)
-
-def connect_to_agent(user_data, phone_id, reason=""):
-    """Initiate connection to agent"""
-    # Get conversation history
-    history = redis.lrange(f"conversation:{user_data['sender']}", 0, 50)
-    history_msg = "📋 Conversation History:\n"
-    for msg in reversed(history):
-        try:
-            msg_data = json.loads(msg)
-            sender = "Customer" if msg_data['direction'] == 'inbound' else "Bot"
-            history_msg += f"{sender}: {msg_data['message']}\n"
-        except:
-            continue
-
-    # Notify user
-    send("Connecting you to a human agent...", user_data['sender'], phone_id)
-
-    # Prepare agent message
-    agent_msg = "\n".join([
-        "💬 New Customer Request",
-        f"📱 Customer: {user_data['sender']}",
-        f"📅 Reason: {reason}",
-        "",
-        history_msg,
-        "",
-        "Agent options:",
-        "1. Accept conversation ✅",
-        "2. Decline ❌"
-    ])
-    send(agent_msg, AGENT_NUMBER, phone_id)
-
-    # Create session
-    redis.set(f"agent_session:{user_data['sender']}", json.dumps({
-        "agent_number": AGENT_NUMBER,
-        "customer_number": user_data['sender'],
-        "phone_id": phone_id,
-        "status": "pending",
-        "start_time": time.time(),
-        "last_interaction": time.time()
-    }))
-
-    # Update user state
-    update_user_state(user_data['sender'], {
-        'step': 'talking_to_human_agent',
-        'user': user_data.get('user', {})
-    })
 
    
 def get_action(current_state, prompt, user_data, phone_id):
