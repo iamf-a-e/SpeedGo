@@ -9455,7 +9455,11 @@ pump_installation_options = {
 }
 
 
-def get_pricing_for_location_quotes(location, service_type, pump_option_selected=None):
+def get_pricing_for_location_quotes(location, service_type, pump_option_selected=None, sender=None, phone_id=None):
+    """
+    Returns pricing information for a location and service type.
+    Optionally stores messages in conversation history if sender and phone_id are provided.
+    """
     location_key = location.strip().lower()
     service_key = service_type.strip().title()  # Normalize e.g. "Pump Installation"
 
@@ -9466,25 +9470,44 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
             for key, option in pump_installation_options.items():
                 desc = option.get('description', 'No description')
                 message_lines.append(f"{key}. {desc}")
-            return "\n".join(message_lines)
+            response = "\n".join(message_lines)
+            
+            # Store the response if sender info is provided
+            if sender and phone_id:
+                save_message(sender, response, 'outbound', phone_id)
+            return response
+            
         else:
             option = pump_installation_options.get(pump_option_selected)
             if not option:
-                return "Sorry, invalid Pump Installation option selected."
+                error_msg = "Sorry, invalid Pump Installation option selected."
+                if sender and phone_id:
+                    save_message(sender, error_msg, 'outbound', phone_id)
+                return error_msg
+                
             desc = option.get('description', 'No description')
             price = option.get('price', 'N/A')
             message = f"💧 Pricing for option {pump_option_selected}:\n{desc}\nPrice: ${price}\n"
             message += "\nWould you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price"
+            
+            if sender and phone_id:
+                save_message(sender, message, 'outbound', phone_id)
             return message
 
-    # Rest of the function remains the same...
+    # Check location pricing
     loc_data = location_pricing.get(location_key)
     if not loc_data:
-        return "Sorry, pricing not available for this location."
+        error_msg = "Sorry, pricing not available for this location."
+        if sender and phone_id:
+            save_message(sender, error_msg, 'outbound', phone_id)
+        return error_msg
 
     price = loc_data.get(service_key)
     if not price:
-        return f"Sorry, pricing for {service_key} not found in {location.title()}."
+        error_msg = f"Sorry, pricing for {service_key} not found in {location.title()}."
+        if sender and phone_id:
+            save_message(sender, error_msg, 'outbound', phone_id)
+        return error_msg
 
     # Format complex pricing dicts nicely
     if isinstance(price, dict):
@@ -9496,12 +9519,20 @@ def get_pricing_for_location_quotes(location, service_type, pump_option_selected
         for cls, amt in classes.items():
             message_lines.append(f"- {cls.title()}: ${amt}")
         message_lines.append("Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price\n4. Select Borehole Class")
-        return "\n".join(message_lines)
+        response = "\n".join(message_lines)
+        
+        if sender and phone_id:
+            save_message(sender, response, 'outbound', phone_id)
+        return response
 
     # Flat rate or per meter pricing
-    unit = "per meter" if service_key in ["Commercial Hole Drilling", "Borehole Deepening"] else "flat rate"
-    return (f"{service_key} in {location.title()}: ${price} {unit}\n\n"
-            "Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
+    response = (f"{service_key} in {location.title()}: ${price} {unit}\n\n"
+               "Would you like to:\n1. Ask pricing for another service\n2. Return to Main Menu\n3. Offer Price")
+    
+    if sender and phone_id:
+        save_message(sender, response, 'outbound', phone_id)
+    return response
+
 
 
 # State handlers
@@ -11321,30 +11352,89 @@ def handle_drilling_status_info_request(prompt, user_data, phone_id):
 
 def handle_select_pump_option(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
+    sender = user_data['sender']
     location = user.quote_data.get('location')
     
+    # Save user's selection to database
+    save_message(sender, prompt, 'inbound', phone_id)
+    
     if prompt.strip() not in pump_installation_options:
-        send("Invalid option. Please select a valid pump installation option (1-6).", user_data['sender'], phone_id)
-        return {'step': 'select_pump_option', 'user': user.to_dict(), 'sender': user_data['sender']}
+        error_msg = "Invalid option. Please select a valid pump installation option (1-6)."
+        send(error_msg, sender, phone_id)
+        save_message(sender, error_msg, 'outbound', phone_id)
+        return {'step': 'select_pump_option', 'user': user.to_dict(), 'sender': sender}
     
     # Store the selected pump option
     user.quote_data['pump_option'] = prompt.strip()
     
-    # Get pricing for the selected pump option
-    pricing_message = get_pricing_for_location_quotes(location, "Pump Installation", prompt.strip())
+    # Get pricing for the selected pump option and save to database
+    pricing_message = get_pricing_for_location_quotes(
+        location, 
+        "Pump Installation", 
+        prompt.strip(),
+        sender,  # Pass sender for message tracking
+        phone_id  # Pass phone_id for message tracking
+    )
     
-    update_user_state(user_data['sender'], {
+    # Update user state and save to database
+    update_user_state(sender, {
         'step': 'quote_followup',
         'user': user.to_dict()
     })
-    send(pricing_message, user_data['sender'], phone_id)
+    
+    # Send response and save to database (already saved in get_pricing_for_location_quotes)
+    send(pricing_message, sender, phone_id)
+    
+    # Also save the state transition to database
+    save_message(sender, f"System: Transitioned to quote_followup state", 'system', phone_id)
     
     return {
         'step': 'quote_followup',
         'user': user.to_dict(),
-        'sender': user_data['sender']
+        'sender': sender
     }
 
+def save_message(sender, message, direction, phone_id):
+    """
+    Stores a message in the conversation history with timestamp.
+    Also saves to SQL database if configured.
+    
+    Args:
+        sender: Phone number or user identifier
+        message: Content of the message
+        direction: 'inbound' (user to bot), 'outbound' (bot to user), or 'system'
+        phone_id: Identifier for the phone/channel
+    """
+    timestamp = datetime.now().isoformat()
+    
+    # 1. Save to Redis for quick access
+    message_data = {
+        'message': message,
+        'direction': direction,
+        'timestamp': timestamp,
+        'phone_id': phone_id
+    }
+    redis.lpush(f"conversation:{sender}", json.dumps(message_data))
+    redis.ltrim(f"conversation:{sender}", 0, 99)  # Keep last 100 messages
+    
+    # 2. Save to SQL database for persistent storage
+    try:
+        db.execute(
+            """
+            INSERT INTO message_history 
+            (sender, message, direction, timestamp, phone_id) 
+            VALUES (%s, %s, %s, %s, %s)
+            """,
+            (sender, message, direction, timestamp, phone_id)
+        )
+        db.commit()
+    except Exception as e:
+        logging.error(f"Failed to save message to database: {str(e)}")
+        # Optionally implement retry logic here
+    
+    # 3. Optionally update analytics
+    update_message_analytics(sender, direction)
+    
 
 def forward_message_to_agent(message_text, user_data, phone_id):
     agent_number = AGENT_NUMBER
@@ -34050,126 +34140,141 @@ def webhook():
         return "Failed", 403
 
     elif request.method == "POST":
-        data = request.get_json()
-        logging.info(f"Incoming webhook data: {json.dumps(data, indent=2)}")
+    data = request.get_json()
+    logging.info(f"Incoming webhook data: {json.dumps(data, indent=2)}")
 
-        try:
-            entry = data.get("entry", [])[0]
-            changes = entry.get("changes", [])[0]
-            value = changes.get("value", {})
-            phone_id = value.get("metadata", {}).get("phone_number_id")
-            messages = value.get("messages", [])
+    try:
+        entry = data.get("entry", [])[0]
+        changes = entry.get("changes", [])[0]
+        value = changes.get("value", {})
+        phone_id = value.get("metadata", {}).get("phone_number_id")
+        messages = value.get("messages", [])
 
-            if messages:
-                message = messages[0]
-                from_number = message.get("from")
-                msg_type = message.get("type")
-                message_text = message.get("text", {}).get("body", "").strip()
-            
-                # Handle agent messages
-                if from_number.endswith(AGENT_NUMBER.replace("+", "")):
-                    agent_state = get_user_state(AGENT_NUMBER)
-                    customer_number = agent_state.get("customer_number")
+        if messages:
+            message = messages[0]
+            from_number = message.get("from")
+            msg_type = message.get("type")
+            message_text = message.get("text", {}).get("body", "").strip()
+        
+            # Handle agent messages
+            if from_number.endswith(AGENT_NUMBER.replace("+", "")):
+                agent_state = get_user_state(AGENT_NUMBER)
                 
-                    if not customer_number:
-                        send("⚠️ No customer to reply to. Wait for a new request.", AGENT_NUMBER, phone_id)
+                # Check if this is a handover acceptance (message is "1" and no current customer)
+                if message_text.strip() == "1" and not agent_state.get("customer_number"):
+                    # Look for pending handover requests
+                    pending_requests = redis.keys("handover_request:*")
+                    if pending_requests:
+                        # Get the oldest request
+                        oldest_request = sorted(pending_requests)[0]
+                        request_data = json.loads(redis.get(oldest_request))
+                        customer_number = request_data['customer_number']
+                        
+                        # Create agent session
+                        agent_state = {
+                            "customer_number": customer_number,
+                            "sender": AGENT_NUMBER,
+                            "step": "talking_to_human_agent",
+                            "phone_id": phone_id,
+                            "start_time": time.time()
+                        }
+                        update_user_state(AGENT_NUMBER, agent_state)
+                        
+                        # Update customer state
+                        customer_state = get_user_state(customer_number)
+                        customer_state["step"] = "talking_to_human_agent"
+                        update_user_state(customer_number, customer_state)
+                        
+                        # Send confirmation messages
+                        send("✅ You have accepted the chat handover. You're now connected to the customer.", 
+                             AGENT_NUMBER, phone_id)
+                        send("You're now connected to an agent. Please describe your needs.", 
+                             customer_number, phone_id)
+                        
+                        # Send conversation history to agent
+                        history = get_conversation_history(customer_number)
+                        send(f"📋 Conversation history with customer:\n\n{history}", 
+                             AGENT_NUMBER, phone_id)
+                        
+                        # Remove the handover request
+                        redis.delete(oldest_request)
+                        return "OK"
+                    else:
+                        send("⚠️ No pending chat handover requests available.", AGENT_NUMBER, phone_id)
                         return "OK"
                 
-                    # Always re-store the agent state with the customer_number to ensure it's not lost
-                    agent_state["customer_number"] = customer_number
-                    agent_state["sender"] = AGENT_NUMBER
+                # Existing agent conversation handling
+                customer_number = agent_state.get("customer_number")
+                if not customer_number:
+                    send("⚠️ No active customer conversation. Send '1' to accept a new handover request.", 
+                         AGENT_NUMBER, phone_id)
+                    return "OK"
+                
+                # Handle ongoing agent conversation
+                if message_text.strip() == "2":
+                    # Agent ends conversation
+                    send("The agent has ended the conversation. You'll be returned to the bot.", 
+                         customer_number, phone_id)
                     
-                    # Persist again defensively
+                    # Update customer state
+                    customer_state = get_user_state(customer_number)
+                    customer_state["step"] = "main_menu"
+                    update_user_state(customer_number, customer_state)
+                    
+                    # Clear agent state
+                    agent_state = {
+                        "step": "awaiting_handover",
+                        "sender": AGENT_NUMBER
+                    }
                     update_user_state(AGENT_NUMBER, agent_state)
-                
-                    # Handle both agent_reply and human_agent_offer states
-                    if agent_state.get("step") in ["agent_reply", "human_agent_offer"]:
-                        if message_text.strip() == "1":
-                            # Agent accepts the conversation
-                            send("✅ You've accepted the conversation. Start messaging with the customer.", AGENT_NUMBER, phone_id)
-                            send("You're now connected to an agent. Please describe your needs.", customer_number, phone_id)
-                            
-                            # Update both agent and customer states
-                            agent_state["step"] = "talking_to_human_agent"
-                            update_user_state(AGENT_NUMBER, agent_state)
-                            
-                            customer_state = get_user_state(customer_number)
-                            customer_state["step"] = "talking_to_human_agent"
-                            update_user_state(customer_number, customer_state)
-                            
-                        elif message_text.strip() == "2":
-                            # Agent ends the conversation
-                            handle_agent_reply("2", customer_number, phone_id, agent_state)
-                            
-                            # Update customer state to return to main menu
-                            customer_state = get_user_state(customer_number)
-                            customer_state["step"] = "main_menu"
-                            update_user_state(customer_number, customer_state)
-                            
-                            # Clear agent state
-                            agent_state["step"] = "awaiting_customer"
-                            agent_state.pop("customer_number", None)
-                            update_user_state(AGENT_NUMBER, agent_state)
-                            
-                        else:
-                            # Forward agent message to customer
-                            send(f"Agent: {message_text}", customer_number, phone_id)
-                            
-                            # Save message to conversation history
-                            save_message(customer_number, f"Agent: {message_text}", "outbound", phone_id)
-                            
-                        return "OK"
-                
-                    if agent_state.get("step") == "talking_to_human_agent":
-                        if message_text.strip() == "2":
-                            # Agent wants to end conversation
-                            send("The agent has ended the conversation. You'll be returned to the bot.", customer_number, phone_id)
-                            
-                            # Update customer state
-                            customer_state = get_user_state(customer_number)
-                            customer_state["step"] = "main_menu"
-                            update_user_state(customer_number, customer_state)
-                            
-                            # Clear agent state
-                            agent_state["step"] = "awaiting_customer"
-                            agent_state.pop("customer_number", None)
-                            update_user_state(AGENT_NUMBER, agent_state)
-                        else:
-                            # Forward any other message to customer
-                            send(message_text, customer_number, phone_id)
-                            save_message(customer_number, f"Agent: {message_text}", "outbound", phone_id)
-                        return "OK"
-                
-                    send("⚠️ No active chat. Please wait for a new request.", AGENT_NUMBER, phone_id)
-                    return "OK"
-
-                
-                # Handle normal user messages (only if NOT agent)
-
-                user_data = get_user_state(from_number)
-                user_data['sender'] = from_number
-                
-                # If user is talking to a human agent, suppress bot
-                if handle_customer_message_during_agent_chat(message_text, user_data, phone_id):
-                    forward_message_to_agent(message_text, user_data, phone_id)
-                    update_user_state(from_number, user_data) 
-                    return "OK"
-                
-                # Continue with normal bot processing
-                if msg_type == "text":
-                    message_handler(message_text, from_number, phone_id, message)
-                elif msg_type == "location":
-                    gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
-                    message_handler(gps_coords, from_number, phone_id, message)
                 else:
-                    send("Please send a text message or share your location using the 📍 button.", from_number, phone_id)
+                    # Forward agent message to customer
+                    send(f"Agent: {message_text}", customer_number, phone_id)
+                    save_message(customer_number, f"Agent: {message_text}", "outbound", phone_id)
+                
+                return "OK"
 
+            # Handle normal user messages
+            user_data = get_user_state(from_number)
+            user_data['sender'] = from_number
+            
+            # If user is in agent conversation, forward to agent
+            if user_data.get('step') == 'talking_to_human_agent':
+                # Forward message to agent
+                agent_state = get_user_state(AGENT_NUMBER)
+                if agent_state.get('customer_number') == from_number:
+                    send(f"Customer: {message_text}", AGENT_NUMBER, phone_id)
+                    save_message(AGENT_NUMBER, f"Customer: {message_text}", "inbound", phone_id)
+                else:
+                    send("The agent is currently unavailable. Please try again later.", from_number, phone_id)
+                return "OK"
+            
+            # Continue with normal bot processing
+            if msg_type == "text":
+                message_handler(message_text, from_number, phone_id, message)
+            elif msg_type == "location":
+                gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
+                message_handler(gps_coords, from_number, phone_id, message)
+            else:
+                send("Please send a text message or share your location using the 📍 button.", from_number, phone_id)
 
-        except Exception as e:
-            logging.error(f"Error processing webhook: {e}", exc_info=True)
+    except Exception as e:
+        logging.error(f"Error processing webhook: {e}", exc_info=True)
 
-        return jsonify({"status": "ok"}), 200
+    return jsonify({"status": "ok"}), 200
 
+def get_conversation_history(customer_number):
+    """Retrieve formatted conversation history"""
+    history = redis.lrange(f"conversation:{customer_number}", 0, 50)
+    history_msg = ""
+    for msg in reversed(history):
+        try:
+            msg_data = json.loads(msg)
+            sender = "You" if msg_data['direction'] == 'inbound' else "Bot"
+            history_msg += f"{sender}: {msg_data['message']}\n"
+        except:
+            continue
+    return history_msg or "No conversation history available"
 
 def message_handler(prompt, sender, phone_id, message):
     prompt = (prompt or "").strip()
