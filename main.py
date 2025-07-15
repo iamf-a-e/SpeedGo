@@ -10282,6 +10282,19 @@ def handle_enter_location_for_quote(prompt, user_data, phone_id):
 
 
 
+def save_message(sender, message, direction, phone_id):
+    """Save a message to conversation history"""
+    message_data = {
+        'sender': sender,
+        'message': message,
+        'direction': direction,  # 'inbound' or 'outbound'
+        'timestamp': time.time(),
+        'phone_id': phone_id
+    }
+    redis.lpush(f"conversation:{sender}", json.dumps(message_data))
+    # Keep only last 100 messages per conversation
+    redis.ltrim(f"conversation:{sender}", 0, 99)
+
 def handle_select_service(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     services = {
@@ -10289,7 +10302,7 @@ def handle_select_service(prompt, user_data, phone_id):
         "2": "Borehole drilling",
         "3": "Pump installation",
         "4": "Commercial hole drilling",
-        "5": "Borehole Deepening",
+        "5": "Borehole Deepening",
     }
     if prompt in services:
         user.quote_data['service'] = services[prompt]
@@ -10297,21 +10310,22 @@ def handle_select_service(prompt, user_data, phone_id):
             'step': 'collect_quote_details',
             'user': user.to_dict()
         })
-        send(
-            "To give you a quick estimate, please answer the following:\n\n"
-            "1. Your location (City/Town or GPS):\n",            
-            user_data['sender'], phone_id
-        )
+        response_msg = ("To give you a quick estimate, please answer the following:\n\n"
+                       "1. Your location (City/Town or GPS):\n")
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         return {'step': 'handle_select_service_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Please select a valid service (1-4).", user_data['sender'], phone_id)
+        error_msg = "Please select a valid service (1-4)."
+        send(error_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], error_msg, 'outbound', phone_id)
         return {'step': 'select_service', 'user': user.to_dict(), 'sender': user_data['sender']}
-
-
 
 def handle_collect_quote_details(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     responses = prompt.split('\n')
+    save_message(user_data['sender'], prompt, 'inbound', phone_id)
+    
     if len(responses) >= 4:
         user.quote_data.update({
             'location': responses[0].strip(),
@@ -10322,7 +10336,6 @@ def handle_collect_quote_details(prompt, user_data, phone_id):
         })
         quote_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
         user.quote_data['quote_id'] = quote_id
-        # Save quote to Redis (simulate DB)
         redis.set(f"quote:{quote_id}", json.dumps({
             'quote_id': quote_id,
             'user_data': user.to_dict(),
@@ -10334,65 +10347,74 @@ def handle_collect_quote_details(prompt, user_data, phone_id):
             'user': user.to_dict()
         })
         estimate = "Class 6: Estimated Cost: $2500\nIncludes drilling, PVC casing 140mm"
-        send(
-            f"Thank you! Based on your details:\n\n"
-            f"{estimate}\n\n"
-            f"Note: Double casing costs are charged as additional costs if need be, and upon client confirmation\n\n"
-            f"Would you like to:\n"
-            f"1. Offer your price?\n"
-            f"2. Book a Site Survey\n"
-            f"3. Book for a Drilling\n"
-            f"4. Talk to a human Agent",
-            user_data['sender'], phone_id
-        )
+        response_msg = (f"Thank you! Based on your details:\n\n"
+                       f"{estimate}\n\n"
+                       f"Note: Double casing costs are charged as additional costs if need be, and upon client confirmation\n\n"
+                       f"Would you like to:\n"
+                       f"1. Offer your price?\n"
+                       f"2. Book a Site Survey\n"
+                       f"3. Book for a Drilling\n"
+                       f"4. Talk to a human Agent")
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         return {'step': 'quote_response', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Please provide all the requested information (at least 4 lines).", user_data['sender'], phone_id)
+        error_msg = "Please provide all the requested information (at least 4 lines)."
+        send(error_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], error_msg, 'outbound', phone_id)
         return {'step': 'collect_quote_details', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 def handle_quote_response(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
+    save_message(user_data['sender'], prompt, 'inbound', phone_id)
+    
     if prompt == "1":  # Offer price
         update_user_state(user_data['sender'], {
             'step': 'collect_offer_details',
             'user': user.to_dict()
         })
-        send(
-            "Sure! You can share your proposed prices below.\n\n"
-            "Please reply with your offer in the format:\n\n"
-            "- Water Survey: $_\n"
-            "- Borehole Drilling: $_",
-            user_data['sender'], phone_id
-        )
+        response_msg = ("Sure! You can share your proposed prices below.\n\n"
+                       "Please reply with your offer in the format:\n\n"
+                       "- Water Survey: $_\n"
+                       "- Borehole Drilling: $_")
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         return {'step': 'collect_offer_details', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "2":  # Book site survey
         update_user_state(user_data['sender'], {
             'step': 'collect_booking_info',
             'user': user.to_dict()
         })
-        send(
-            "Great! Please provide the following information to finalize your booking:\n\n"
-            "- Full Name:\n"
-            "- Preferred Date (dd/mm/yyyy):\n"
-            "- Site Address: GPS or address\n"
-            "- Mobile Number:\n"
-            "- Payment Method (Prepayment / Cash at site):\n\n"
-            "Type: Submit",
-            user_data['sender'], phone_id
-        )
+        response_msg = ("Great! Please provide the following information to finalize your booking:\n\n"
+                       "- Full Name:\n"
+                       "- Preferred Date (dd/mm/yyyy):\n"
+                       "- Site Address: GPS or address\n"
+                       "- Mobile Number:\n"
+                       "- Payment Method (Prepayment / Cash at site):\n\n"
+                       "Type: Submit")
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         return {'step': 'collect_booking_info', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "3":  # Book for a Drilling
-        send("Our agent will contact you to finalize the drilling booking.", user_data['sender'], phone_id)
+        response_msg = "Our agent will contact you to finalize the drilling booking."
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
     elif prompt == "4":  # Human Agent
-        send("Connecting you to a human agent...", user_data['sender'], phone_id)
+        response_msg = "Connecting you to a human agent..."
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
     else:
-        send("Please select a valid option (1-4).", user_data['sender'], phone_id)
+        error_msg = "Please select a valid option (1-4)."
+        send(error_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], error_msg, 'outbound', phone_id)
         return {'step': 'quote_response', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 def handle_collect_offer_details(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
+    save_message(user_data['sender'], prompt, 'inbound', phone_id)
+    
     user.offer_data['offer'] = prompt
     user.offer_data['status'] = 'pending'
     quote_id = user.quote_data.get('quote_id')
@@ -10406,49 +10428,51 @@ def handle_collect_offer_details(prompt, user_data, phone_id):
         'step': 'offer_response',
         'user': user.to_dict()
     })
-    send(
-        "Your request has been sent to our sales manager. We will reply within 1 hour.\n\n"
-        "Thank you for your offer!\n\n"
-        "Our team will review it and respond shortly.\n\n"
-        "While we aim to be affordable, our prices reflect quality, safety, and reliability.\n\n"
-        "Would you like to:\n"
-        "1. Proceed if offer is accepted\n"
-        "2. Speak to a human\n"
-        "3. Revise your offer",
-        user_data['sender'], phone_id
-    )
+    response_msg = ("Your request has been sent to our sales manager. We will reply within 1 hour.\n\n"
+                   "Thank you for your offer!\n\n"
+                   "Our team will review it and respond shortly.\n\n"
+                   "While we aim to be affordable, our prices reflect quality, safety, and reliability.\n\n"
+                   "Would you like to:\n"
+                   "1. Proceed if offer is accepted\n"
+                   "2. Speak to a human\n"
+                   "3. Revise your offer")
+    send(response_msg, user_data['sender'], phone_id)
+    save_message(user_data['sender'], response_msg, 'outbound', phone_id)
     return {'step': 'offer_response', 'user': user.to_dict(), 'sender': user_data['sender']}
 
 def handle_offer_response(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
+    save_message(user_data['sender'], prompt, 'inbound', phone_id)
     quote_id = user.quote_data.get('quote_id')
 
     if prompt in ["1", "2", "3"]:  # All options now go to human agent
-        # Get last 24 hours of conversation history
-        history = redis.lrange(f"conversation:{user_data['sender']}", 0, 50)  # Get last 50 messages
+        # Get conversation history
+        history = redis.lrange(f"conversation:{user_data['sender']}", 0, 50)
         filtered_history = []
         for msg in history:
             try:
                 msg_data = json.loads(msg)
-                if time.time() - msg_data['timestamp'] <= 86400:  # 24 hours
-                    filtered_history.append(msg_data)
+                filtered_history.append(msg_data)
             except:
                 continue
         
         # Format history for agent
-        history_msg = "📋 Conversation History (last 24hrs):\n"
+        history_msg = "📋 Full Conversation History:\n"
         for msg in reversed(filtered_history):  # Show newest first
             sender = "Customer" if msg['direction'] == 'inbound' else "Bot"
             history_msg += f"{sender}: {msg['message']}\n"
         
         # Notify user
-        send("Connecting you to a human agent...", user_data['sender'], phone_id)
+        response_msg = "Connecting you to a human agent..."
+        send(response_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         
         # Prepare message for agent
         offer_msg = "\n".join([
             "💬 New Customer Request",
             f"📱 Customer: {user_data['sender']}",
             f"📅 Reason: {'Offer acceptance' if prompt == '1' else 'Offer negotiation' if prompt == '3' else 'General help'}",
+            f"📝 Quote ID: {quote_id or 'N/A'}",
             "",
             history_msg,
             "",
@@ -10457,6 +10481,7 @@ def handle_offer_response(prompt, user_data, phone_id):
             "2. Return to bot 🤖"
         ])
         send(offer_msg, AGENT_NUMBER, phone_id)
+        save_message(AGENT_NUMBER, offer_msg, 'outbound', phone_id)
 
         # Save agent-customer link
         redis.set(f"agent_session:{user_data['sender']}", json.dumps({
@@ -10471,9 +10496,10 @@ def handle_offer_response(prompt, user_data, phone_id):
         return {'step': 'human_agent_offer', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
-        send("Please select a valid option (1-3).", user_data['sender'], phone_id)
+        error_msg = "Please select a valid option (1-3)."
+        send(error_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], error_msg, 'outbound', phone_id)
         return {'step': 'offer_response', 'user': user.to_dict(), 'sender': user_data['sender']}
-
 
 def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
     session_key = f"agent_session:{user_data['sender']}"
@@ -10481,24 +10507,30 @@ def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
     
     if not session_data:
         # Session expired or invalid
-        send("Agent session expired. Please start over.", user_data['sender'], phone_id)
+        error_msg = "Agent session expired. Please start over."
+        send(error_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], error_msg, 'outbound', phone_id)
         return {'step': 'main_menu', 'user': user_data['user'], 'sender': user_data['sender']}
     
     session = json.loads(session_data)
     
     if is_agent:
-        # Message from agent
+        save_message(AGENT_NUMBER, prompt, 'inbound', phone_id)
         if prompt == "1":
             # Agent accepts conversation - notify customer
-            send("You're now connected to an agent. Please describe your needs.", session['customer_number'], session['phone_id'])
+            response_msg = "You're now connected to an agent. Please describe your needs."
+            send(response_msg, session['customer_number'], session['phone_id'])
+            save_message(session['customer_number'], response_msg, 'outbound', session['phone_id'])
             # Update session
             session['status'] = 'active'
             redis.set(session_key, json.dumps(session))
-            return None  # No state change needed
+            return None
             
         elif prompt == "2":
             # Agent wants to return to bot
-            send("The agent has ended the conversation. You'll be returned to the bot.", session['customer_number'], session['phone_id'])
+            response_msg = "The agent has ended the conversation. You'll be returned to the bot."
+            send(response_msg, session['customer_number'], session['phone_id'])
+            save_message(session['customer_number'], response_msg, 'outbound', session['phone_id'])
             redis.delete(session_key)
             return {
                 'step': 'offer_response', 
@@ -10509,25 +10541,29 @@ def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
         else:
             # Forward agent message to customer
             send(prompt, session['customer_number'], session['phone_id'])
+            save_message(session['customer_number'], prompt, 'outbound', session['phone_id'])
             # Update last interaction time
             session['last_interaction'] = time.time()
             redis.set(session_key, json.dumps(session))
             return None
             
     else:
-        # Message from customer
+        save_message(user_data['sender'], prompt, 'inbound', phone_id)
         if session.get('status') == 'active':
             # Forward customer message to agent
             send(f"Customer: {prompt}", session['agent_number'], session['phone_id'])
+            save_message(session['agent_number'], f"Customer: {prompt}", 'outbound', session['phone_id'])
             # Update last interaction time
             session['last_interaction'] = time.time()
             redis.set(session_key, json.dumps(session))
             return None
         else:
             # Agent hasn't accepted yet
-            send("Please wait while we connect you to an agent...", user_data['sender'], phone_id)
+            response_msg = "Please wait while we connect you to an agent..."
+            send(response_msg, user_data['sender'], phone_id)
+            save_message(user_data['sender'], response_msg, 'outbound', phone_id)
             return {'step': 'human_agent_offer', 'user': user_data['user'], 'sender': user_data['sender']}
-
+            
 
 def handle_booking_details(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
