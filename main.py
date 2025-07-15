@@ -10524,7 +10524,7 @@ def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
             # Update session
             session['status'] = 'active'
             redis.set(session_key, json.dumps(session))
-            return {'step': 'handle_agent_reply', 'user': user_data['user'], 'sender': user_data['sender']}
+            return {'step': 'agent_reply', 'user': user_data['user'], 'sender': user_data['sender']}
             
         elif prompt == "2":
             # Agent wants to return to bot
@@ -10545,7 +10545,7 @@ def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
             # Update last interaction time
             session['last_interaction'] = time.time()
             redis.set(session_key, json.dumps(session))
-            return {'step': 'handle_agent_reply', 'user': user_data['user'], 'sender': user_data['sender']}
+            return {'step': 'agent_reply', 'user': user_data['user'], 'sender': user_data['sender']}
             
     else:
         save_message(user_data['sender'], prompt, 'inbound', phone_id)
@@ -10556,7 +10556,7 @@ def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
             # Update last interaction time
             session['last_interaction'] = time.time()
             redis.set(session_key, json.dumps(session))
-            return {'step': 'handle_agent_reply', 'user': user_data['user'], 'sender': user_data['sender']}
+            return {'step': 'agent_reply', 'user': user_data['user'], 'sender': user_data['sender']}
         else:
             # Agent hasn't accepted yet
             response_msg = "Please wait while we connect you to an agent..."
