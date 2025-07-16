@@ -4,7 +4,8 @@ import logging
 import requests
 import random
 import string
-from datetime import datetime
+from datetime import datetime, timedelta
+import httpx
 from flask import Flask, request, jsonify, render_template
 from upstash_redis import Redis
 import google.generativeai as genai
@@ -9667,54 +9668,75 @@ def handle_main_menu(prompt, user_data, phone_id):
         send("Please select a valid option (1-6).", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-def human_agent(prompt, user_data, phone_id):
-    customer_number = user_data['sender']
+async def get_conversation_history(customer_number):
+    """Fetch last 5 messages from Upstash Redis"""
+    redis_url = "https://organic-cub-37552.upstash.io"
+    headers = {
+        "Authorization": f"Bearer {UPSTASH_TOKEN}"
+    }
+    try:
+        # Fetch message IDs (assuming you store them in a list)
+        response = await httpx.post(
+            f"{redis_url}/lrange/{customer_number}/0/-1",
+            headers=headers
+        )
+        message_ids = response.json()["result"] or []
+        
+        # Get actual messages (last 5)
+        messages = []
+        for msg_id in message_ids[-5:]:
+            msg_response = await httpx.post(
+                f"{redis_url}/get/{msg_id}",
+                headers=headers
+            )
+            if msg_response.json()["result"]:
+                messages.append(json.loads(msg_response.json()["result"]))
+        return messages
+        
+    except Exception as e:
+        logging.error(f"Failed to fetch history: {e}")
+        return []
 
+def format_history(messages):
+    """Convert raw messages to readable text"""
+    history_text = "🕒 Previous Messages:\n"
+    for msg in messages:
+        time = msg.get("timestamp", datetime.now()).strftime("%H:%M")
+        sender = "You" if msg.get("sender") == "bot" else "Customer"
+        history_text += f"[{time}] {sender}: {msg.get('text', '...')}\n"
+    return history_text
+
+async def human_agent(prompt, user_data, phone_id):
+    customer_number = user_data['sender']
+    
     # 1. Notify customer
     send("Connecting you to a human agent...", customer_number, phone_id)
 
-    # 2. Get conversation history (assuming you have a function to fetch it)
-    conversation_history = get_conversation_history(customer_number)  # Implement this function
-    
-    # Format conversation history for the agent
-    history_text = "🕒 Previous Conversation:\n"
-    for msg in conversation_history[-5:]:  # Send last 5 messages to avoid overload
-        timestamp = msg['timestamp'].strftime('%H:%M') if 'timestamp' in msg else '--:--'
-        sender = "You" if msg['sender'] == customer_number else "Customer"
-        history_text += f"[{timestamp}] {sender}: {msg['text']}\n"
+    # 2. Fetch and format history
+    history = await get_conversation_history(customer_number)
+    history_text = format_history(history) if history else "No chat history found.\n"
 
-    # 3. Notify agent with full context
+    # 3. Prepare agent message
     agent_message = (
-        f"🚨 New Customer Assistance Request 🚨\n\n"
+        f"🚨 New Customer Request 🚨\n\n"
         f"📱 Customer: {customer_number}\n"
         f"📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n"
         f"{history_text}\n"
-        f"📩 Newest Message: \"{prompt}\"\n\n"
-        f"Current Context:\n"
-        f"- Language: {user_data.get('user', {}).get('language', 'English')}\n"
-        f"- Last Service: {user_data.get('user', {}).get('quote_data', {}).get('service', 'N/A')}\n\n"
-        f"Reply with:\n"
-        f"1 - Accept conversation\n"
-        f"2 - Back to bot"
+        f"📩 New Message: \"{prompt}\"\n\n"
+        f"Reply with:\n1 - Accept\n2 - Reject"
     )
     
+    # 4. Send to agent
     send(agent_message, AGENT_NUMBER, phone_id)
     
-    # 4. Update states (same as before)
+    # 5. Update states (store history in state if needed)
     update_user_state(AGENT_NUMBER, {
-        'step': 'agent_reply',
-        'customer_number': customer_number,
-        'phone_id': phone_id,
-        'conversation_history': conversation_history  # Store full history if needed
+        "step": "agent_reply",
+        "customer_number": customer_number,
+        "history": history  # Raw history for reference
     })
 
-    update_user_state(customer_number, {
-        'step': 'waiting_for_human_agent_response',
-        'user': user_data.get('user', {}),
-        'sender': customer_number,
-        'waiting_since': time.time()
-    })
-
+    
     # 3. Schedule fallback
     def send_fallback():
         user_data = get_user_state(customer_number)
