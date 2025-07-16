@@ -9673,8 +9673,8 @@ def human_agent(prompt, user_data, phone_id):
     # 1. Notify customer
     send("Connecting you to a human agent...", customer_number, phone_id)
 
-    # 2. Retrieve recent conversation history (last 6 messages)
-    history = get_conversation_history(customer_number, limit=6)
+    # 2. Retrieve recent conversation history (last 10 messages)
+    history = get_conversation_history(customer_number, limit=10)
     history_text = "\n".join([
         f"{msg['timestamp']} - {msg['direction'].capitalize()}: {msg['text']}"
         for msg in history
@@ -20385,8 +20385,8 @@ def human_agent_shona(prompt, user_data, phone_id):
     # 1. Notify customer in Shona
     send("Tiri kukubatanidza nemumiriri wevanhu...", customer_number, phone_id)
 
-    # 2. Retrieve recent conversation history (last 6 messages)
-    history = get_conversation_history(customer_number, limit=6)
+    # 2. Retrieve recent conversation history (last 10 messages)
+    history = get_conversation_history(customer_number, limit=10)
     history_text = "\n".join([
         f"{msg['timestamp']} - {msg['direction'].capitalize()}: {msg['text']}"
         for msg in history
@@ -31392,8 +31392,8 @@ def human_agent_ndebele(prompt, user_data, phone_id):
     # 1. Notify customer in isiNdebele
     send("Sikuxhumanisa nomuntu ongumsebenzi...", customer_number, phone_id)
 
-    # 2. Retrieve recent conversation history (last 6 messages)
-    history = get_conversation_history(customer_number, limit=6)
+    # 2. Retrieve recent conversation history (last 10 messages)
+    history = get_conversation_history(customer_number, limit=10)
     history_text = "\n".join([
         f"{msg['timestamp']} - {msg['direction'].capitalize()}: {msg['text']}"
         for msg in history
