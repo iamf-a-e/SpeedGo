@@ -9673,25 +9673,39 @@ def human_agent(prompt, user_data, phone_id):
     # 1. Notify customer
     send("Connecting you to a human agent...", customer_number, phone_id)
 
-    # 2. Retrieve recent conversation history (last 6 messages)
-    history = get_conversation_history(customer_number, limit=6)
-    history_text = "\n".join([
-        f"{msg['timestamp']} - {msg['direction'].capitalize()}: {msg['text']}"
-        for msg in history
-    ]) or "No previous conversation."
+    # 2. Retrieve conversation history from Redis
+    history = redis.lrange(f"conversation:{customer_number}", 0, 30)
+    formatted_history = []
+    for msg in reversed(history):  # Chronological order
+        try:
+            msg_data = json.loads(msg)
+            who = "Customer" if msg_data['direction'] == 'inbound' else "Bot"
+            text = msg_data['message']
+            formatted_history.append(f"{who}: {text}")
+        except:
+            continue
 
-    # 3. Send message to human agent
+    history_text = "\n".join(formatted_history) or "No previous messages available."
+
+    # 3. Notify agent with details and chat history
     agent_message = (
         f"🚨 New Customer Assistance Request 🚨\n\n"
         f"📱 Customer: {customer_number}\n"
-        f"🕘 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
+        f"📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
         f"📩 Initial Message: \"{prompt}\"\n\n"
-        f"Recent Conversation:\n{history_text}\n\n"
-        f"Reply with:\n1 - Talk to customer\n2 - Back to bot"
+        f"Current Conversation Context:\n"
+        f"- Language: {user_data.get('user', {}).get('language', 'English')}\n"
+        f"- Last Service: {user_data.get('user', {}).get('quote_data', {}).get('service', 'Not specified')}\n\n"
+        f"{'-'*30}\n"
+        f"🗂️ Chat History:\n{history_text}\n"
+        f"{'-'*30}\n\n"
+        f"Reply with:\n"
+        f"1 - Talk to customer\n"
+        f"2 - Back to bot"
     )
     send(agent_message, AGENT_NUMBER, phone_id)
 
-    # 4. Update agent state
+    # 4. Update agent state (linking them to the customer)
     update_user_state(AGENT_NUMBER, {
         'step': 'agent_reply',
         'customer_number': customer_number,
@@ -9706,10 +9720,10 @@ def human_agent(prompt, user_data, phone_id):
         'waiting_since': time.time()
     })
 
-    # 6. Schedule fallback if no response in 90 seconds
+    # 6. Fallback in case no agent response
     def send_fallback():
-        user_data = get_user_state(customer_number)
-        if user_data and user_data.get('step') == 'waiting_for_human_agent_response':
+        state = get_user_state(customer_number)
+        if state and state.get('step') == 'waiting_for_human_agent_response':
             send("If you haven't been contacted yet, you can call us directly at +263779562095 or +263779469216", customer_number, phone_id)
             send("Would you like to:\n1. Return to main menu\n2. Keep waiting", customer_number, phone_id)
             update_user_state(customer_number, {
@@ -9721,11 +9735,7 @@ def human_agent(prompt, user_data, phone_id):
     fallback_timer = threading.Timer(90, send_fallback)
     fallback_timer.start()
 
-    return {
-        'step': 'waiting_for_human_agent_response',
-        'user': user_data.get('user', {}),
-        'sender': customer_number
-    }
+    return {'step': 'waiting_for_human_agent_response', 'user': user_data.get('user', {}), 'sender': customer_number}
 
 
 def get_conversation_history(sender, limit=6):
@@ -34089,8 +34099,12 @@ def webhook():
                     customer_number = agent_state.get("customer_number")
             
                     if not customer_number:
+                        agent_state["customer_number"] = customer_number  # recover if it was lost
+                        agent_state["sender"] = AGENT_NUMBER
+                        update_user_state(AGENT_NUMBER, agent_state)
                         send("⚠️ No customer to reply to. Wait for a new request.", AGENT_NUMBER, phone_id)
                         return "OK"
+
 
                         # Always re-store the agent state with the customer_number to ensure it's not lost
                         agent_state["customer_number"] = customer_number
