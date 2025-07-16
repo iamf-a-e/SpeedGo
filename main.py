@@ -10501,72 +10501,15 @@ def handle_offer_response(prompt, user_data, phone_id):
         save_message(user_data['sender'], error_msg, 'outbound', phone_id)
         return {'step': 'offer_response', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
-    if is_agent:
-        # ===== AGENT SIDE PROCESSING =====
-        save_message(AGENT_NUMBER, prompt, 'inbound', phone_id)
-        
-        # 1. Get current agent state
-        agent_state = get_user_state(AGENT_NUMBER) or {}
-        customer_number = agent_state.get('customer_number')
-        
-        if not customer_number:
-            send("⚠️ No active customer request found. Please wait for new requests.", 
-                AGENT_NUMBER, phone_id)
-            return {'step': 'main_menu'}
+def handle_human_agent_offer(prompt, user_data, phone_id):
+    customer_number = user_data['sender']
 
-        # 2. Handle agent's response
-        if prompt == "1":  # Accept conversation
-            # Notify both parties
-            send("✅ You're now connected to the customer. Send '2' to return to bot.", 
-                AGENT_NUMBER, phone_id)
-            send("🔵 You're now speaking with a human agent. Please describe your request.", 
-                customer_number, phone_id)
-            
-            # Update states
-            update_user_state(AGENT_NUMBER, {
-                'step': 'agent_reply',
-                'customer_number': customer_number,  # Track which customer they're handling
-                'phone_id': phone_id
-            })
-        
-            # Update customer's state (waiting for agent)
-            update_user_state(customer_number, {
-                'step': 'waiting_for_human_agent_response',
-                'user': user_data.get('user', {}),
-                'sender': customer_number,
-                'waiting_since': time.time()
-            })
-            
+    # 1. Notify customer
+    send("Connecting you to a human agent...", customer_number, phone_id)
 
-        elif prompt == "2":  # Reject conversation
-            send("✅ You've ended the conversation. Waiting for new requests.", 
-                AGENT_NUMBER, phone_id)
-            send("🔵 The agent has ended the conversation. Returning you to automated help.", 
-                customer_number, phone_id)
-            
-            # Reset states
-            update_user_state(AGENT_NUMBER, {'step': 'main_menu'})
-            update_user_state(customer_number, {
-                'step': 'main_menu',
-                'user': get_user_state(customer_number).get('user', {}),
-                'sender': customer_number
-            })
-            
-            show_main_menu(customer_number, phone_id)
-            
-        else:  # Forward message to customer
-            send(prompt, customer_number, phone_id)
-
-        return agent_state
-
-    else:
-        # ===== CUSTOMER SIDE PROCESSING =====
-        customer_number = user_data['sender']
-        save_message(customer_number, prompt, 'inbound', phone_id)
-        
-        # 1. Prepare COMPLETE agent notification
-        agent_message = (
+    
+    # 2. Notify agent
+    agent_message = (
             f"🚨 NEW CUSTOMER REQUEST 🚨\n\n"
             f"📱 Customer: {customer_number}\n"
             f"📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
@@ -10578,47 +10521,50 @@ def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
             f"1 - Accept conversation\n"
             f"2 - Reject (return to bot)"
         )
-        
-        # 2. FIRST update agent state (critical)
-        update_user_state(AGENT_NUMBER, {
-            'step': 'human_agent_offer',
-            'customer_number': customer_number,  # MUST include this
-            'phone_id': phone_id,
-            'original_message': prompt,
-            'waiting_since': time.time()
-        })
-        
-        # 3. THEN send to agent (after state is set)
-        send(agent_message, AGENT_NUMBER, phone_id)  # <-- THIS WAS MISSING
-        
-        # 4. Update customer state
-        update_user_state(customer_number, {
-            'step': 'waiting_for_human_agent_response',
-            'user': user_data.get('user', {}),
-            'sender': customer_number,
-            'waiting_since': time.time()
-        })
-        
-        # 5. Acknowledge customer request
-        send("We're connecting you to an agent. Please wait...", customer_number, phone_id)
-        
-        # 6. Add fallback timer
-        def fallback_handler():
-            current_state = get_user_state(customer_number)
-            if current_state and current_state.get('step') == 'waiting_for_human_agent_response':
-                send("Our agents are busy. Call us directly at +263779562095 or:", 
-                    customer_number, phone_id)
-                send("Choose:\n1. Keep waiting\n2. Return to main menu", 
-                    customer_number, phone_id)
-                update_user_state(customer_number, {
-                    'step': 'human_agent_fallback',
-                    'user': current_state.get('user', {}),
-                    'sender': customer_number
-                })
-        
-        threading.Timer(300, fallback_handler).start()  # 5-minute timeout
-        
-        return {'step': 'waiting_for_human_agent_response'}
+    send(agent_message, AGENT_NUMBER, phone_id) 
+    
+    update_user_state(AGENT_NUMBER, {
+        'step': 'agent_reply',
+        'customer_number': customer_number,  # Track which customer they're handling
+        'phone_id': phone_id
+    })
+
+    # Update customer's state (waiting for agent)
+    update_user_state(customer_number, {
+        'step': 'waiting_for_human_agent_response',
+        'user': user_data.get('user', {}),
+        'sender': customer_number,
+        'waiting_since': time.time()
+    })
+    
+
+
+    # 3. Schedule fallback
+    def send_fallback():
+        user_data = get_user_state(customer_number)
+        if user_data and user_data.get('step') == 'waiting_for_human_agent_response':
+            send("If you haven't been contacted yet, you can call us directly at +263779562095 or +263779469216", customer_number, phone_id)
+            send("Would you like to:\n1. Return to main menu\n2. Keep waiting", customer_number, phone_id)
+            update_user_state(customer_number, {
+                'step': 'human_agent_followup',
+                'user': user_data.get('user', {}),
+                'sender': customer_number
+            })
+
+    fallback_timer = threading.Timer(90, send_fallback)
+    fallback_timer.start()
+    
+
+
+    # 4. Update customer state
+    update_user_state(customer_number, {
+        'step': 'waiting_for_human_agent_response',
+        'user': user_data.get('user', {}),
+        'sender': customer_number,
+        'waiting_since': time.time()
+    })
+
+    return {'step': 'waiting_for_human_agent_response', 'user': user_data.get('user', {}), 'sender': customer_number}
         
 
 def handle_booking_details(prompt, user_data, phone_id):
