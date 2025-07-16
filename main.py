@@ -9728,14 +9728,14 @@ def human_agent(prompt, user_data, phone_id):
     }
 
 
-def get_conversation_history(sender, limit=6):
+def get_conversation_history(sender, limit=10):
     """
     Retrieves the most recent `limit` messages for a user from Redis.
     """
     try:
         raw_messages = redis.lrange(f"conversation:{sender}", 0, limit - 1)
         history = []
-        for msg in reversed(raw_messages):  # reverse to chronological order
+        for msg in (raw_messages):  # reverse to chronological order
             data = json.loads(msg)
             history.append({
                 "text": data.get("message", ""),
