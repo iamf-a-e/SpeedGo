@@ -67,7 +67,7 @@ def get_user_state(phone_number):
         return json.loads(state)
     return state
 
-def update_user_state(phone_number, updates, ttl_seconds=86400):
+def update_user_state(phone_number, updates, ttl_seconds=60):
     updates['phone_number'] = phone_number
     if 'sender' not in updates:
         updates['sender'] = phone_number
