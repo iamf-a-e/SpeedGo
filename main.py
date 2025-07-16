@@ -9735,13 +9735,14 @@ def human_agent(prompt, user_data, phone_id):
     }
     
 
-def get_recent_messages(phone_number, limit=5):
+def get_recent_messages(phone_number, limit=6):
     try:
-        messages = redis.lrange(f"messages:{phone_number}", -limit, -1)
-        return [json.loads(m) for m in messages] if messages else []
+        raw_messages = redis.lrange(f"conversation:{phone_number}", 0, limit - 1)
+        return [json.loads(m) for m in reversed(raw_messages)] if raw_messages else []
     except Exception as e:
-        print(f"Error fetching chat history: {e}")
+        logging.error(f"Error retrieving chat history for {phone_number}: {e}")
         return []
+
 
 
 def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
