@@ -9768,8 +9768,7 @@ def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
             'step': 'main_menu',
             'user': get_user_state(customer_number).get('user', {}),
             'sender': session['customer_number']
-            }
-        })
+            })
         show_main_menu(customer_number, phone_id)
 
     else:
