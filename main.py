@@ -34101,6 +34101,10 @@ def webhook():
                             send(message_text, customer_number, phone_id)
                         return "OK"
 
+                    if agent_state.get("step") == "human_agent_offer":
+                        handle_human_agent_offer(message_text, {"sender": AGENT_NUMBER, "user": agent_state}, phone_id, is_agent=True)
+                        return "OK"
+
             
                     send("⚠️ No active chat. Please wait for a new request.", AGENT_NUMBER, phone_id)
                     return "OK"
