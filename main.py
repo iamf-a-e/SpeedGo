@@ -9734,6 +9734,8 @@ def human_agent(prompt, user_data, phone_id):
 
 def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
     agent_reply = message_text.strip()
+    session_key = f"agent_session:{user_data['sender']}"
+    session_data = redis.get(session_key)
     
     if agent_reply == "1":
          # Cancel fallback timer if exists
@@ -9743,7 +9745,11 @@ def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
             timer.cancel()
         # Agent chooses to talk to customer
         send("✅ You're now talking to the customer. Bot is paused until you send '2' to return to bot.", AGENT_NUMBER, phone_id)
-        send("✅ You are now connected to a human agent. Please wait for their response.", customer_number, phone_id)
+        send("✅ You are now connected to a human agent. Please wait for their response.", session['customer_number'], session['phone_id'])
+        save_message(session['customer_number'], response_msg, 'outbound', session['phone_id'])
+        # Update session
+        session['status'] = 'active'
+        redis.set(session_key, json.dumps(session))
 
         update_user_state(customer_number, {
             'step': 'talking_to_human_agent',
@@ -9754,47 +9760,17 @@ def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
     elif agent_reply == "2":
         # Agent returns control to bot
         send("✅ The bot has resumed and will assist the customer from here.", AGENT_NUMBER, phone_id)
-        send("👋 You're now back with our automated assistant.", customer_number, phone_id)
+        send("👋 You're now back with our automated assistant.", session['customer_number'], session['phone_id'])
+        save_message(session['customer_number'], response_msg, 'outbound', session['phone_id'])
+        redis.delete(session_key)
 
         update_user_state(customer_number, {
             'step': 'main_menu',
             'user': get_user_state(customer_number).get('user', {}),
-            'sender': customer_number
+            'sender': session['customer_number']
+            }
         })
         show_main_menu(customer_number, phone_id)
-
-    elif current_state == "awaiting_offer_approval":
-        if agent_reply == "3":
-            # Agent accepts offer
-            quote['offer_data']['status'] = 'agent_accepted'
-            redis.set(quote_key, json.dumps(quote))
-
-            # Notify customer
-            send("✅ Your offer has been accepted by our team! Let's proceed to the next step.", customer_number, phone_id)
-
-            # Notify agent
-            send("👍 You have accepted the customer's offer.", agent_number, phone_id)
-
-            # Update customer state
-            update_user_state(customer_number, {"step": "booking_details"})
-            redis.delete(state_key)
-            return
-
-        elif agent_reply == "4":
-            # Agent declines offer
-            quote['offer_data']['status'] = 'agent_declined'
-            redis.set(quote_key, json.dumps(quote))
-
-            # Notify customer
-            send("❌ Your offer was declined. Please revise your offer or proceed with the listed prices.", customer_number, phone_id)
-
-            # Notify agent
-            send("☑️ You have declined the customer's offer.", agent_number, phone_id)
-
-            # Revert customer to offer step
-            update_user_state(customer_number, {"step": "offer_response"})
-            redis.delete(state_key)
-            return
 
     else:
         # Forward other agent messages to the customer directly
