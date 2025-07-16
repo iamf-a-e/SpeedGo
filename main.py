@@ -34070,6 +34070,7 @@ app = Flask(__name__)
 def index():
     return render_template("connected.html")
 
+
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     if request.method == "GET":
@@ -34081,7 +34082,7 @@ def webhook():
             return challenge, 200
         return "Failed", 403
 
-     elif request.method == "POST":
+    elif request.method == "POST":
         data = request.get_json()
         logging.info(f"Incoming webhook data: {json.dumps(data, indent=2)}")
     
@@ -34159,7 +34160,6 @@ def webhook():
             logging.error(f"Error processing webhook: {e}", exc_info=True)
     
         return jsonify({"status": "ok"}), 200
-
    
 
 def message_handler(prompt, sender, phone_id, message):
