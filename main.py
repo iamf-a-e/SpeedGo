@@ -10492,7 +10492,13 @@ def handle_offer_response(prompt, user_data, phone_id):
             "quote_id": quote_id,
             "last_interaction": time.time()
         }))
-        
+
+        update_user_state(AGENT_NUMBER, {
+            "step": "human_agent_offer",
+            "customer_number": user_data['sender'],
+            "phone_id": phone_id
+        })
+
         return {'step': 'human_agent_offer', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
