@@ -10427,12 +10427,13 @@ def handle_collect_offer_details(prompt, user_data, phone_id):
 
 def handle_offer_response(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
-    save_message(user_data['sender'], prompt, 'inbound', phone_id)
+    sender = user_data['sender']
+    save_message(sender, prompt, 'inbound', phone_id)
     quote_id = user.quote_data.get('quote_id')
 
     if prompt in ["1", "2", "3"]:  # All options now go to human agent
         # Get conversation history
-        history = redis.lrange(f"conversation:{user_data['sender']}", 0, 50)
+        history = redis.lrange(f"conversation:{sender}", 0, 50)
         filtered_history = []
         for msg in history:
             try:
@@ -10440,22 +10441,22 @@ def handle_offer_response(prompt, user_data, phone_id):
                 filtered_history.append(msg_data)
             except:
                 continue
-        
+
         # Format history for agent
         history_msg = "📋 Full Conversation History:\n"
-        for msg in reversed(filtered_history):  # Show newest first
-            sender = "Customer" if msg['direction'] == 'inbound' else "Bot"
-            history_msg += f"{sender}: {msg['message']}\n"
-        
-        # Notify user
+        for msg in (filtered_history):  # Show newest first
+            who = "Customer" if msg['direction'] == 'inbound' else "Bot"
+            history_msg += f"{who}: {msg['message']}\n"
+
+        # Notify customer
         response_msg = "Connecting you to a human agent..."
-        send(response_msg, user_data['sender'], phone_id)
-        save_message(user_data['sender'], response_msg, 'outbound', phone_id)
-        
+        send(response_msg, sender, phone_id)
+        save_message(sender, response_msg, 'outbound', phone_id)
+
         # Prepare message for agent
         offer_msg = "\n".join([
             "💬 New Customer Request",
-            f"📱 Customer: {user_data['sender']}",
+            f"📱 Customer: {sender}",
             f"📅 Reason: {'Offer acceptance' if prompt == '1' else 'Offer negotiation' if prompt == '3' else 'General help'}",
             f"📝 Quote ID: {quote_id or 'N/A'}",
             "",
@@ -10468,23 +10469,28 @@ def handle_offer_response(prompt, user_data, phone_id):
         send(offer_msg, AGENT_NUMBER, phone_id)
         save_message(AGENT_NUMBER, offer_msg, 'outbound', phone_id)
 
-        # Save agent-customer link
-        redis.set(f"agent_session:{user_data['sender']}", json.dumps({
-            "agent_number": AGENT_NUMBER,
-            "customer_number": user_data['sender'],
-            "phone_id": phone_id,
-            "state": "human_agent_offer",
-            "quote_id": quote_id,
-            "last_interaction": time.time()
-        }))
-        
-        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
+        # Save agent's session context
+        update_user_state(AGENT_NUMBER, {
+            'step': 'agent_reply',
+            'customer_number': sender,
+            'phone_id': phone_id
+        })
+
+        # Save customer state
+        update_user_state(sender, {
+            'step': 'human_agent',
+            'user': user.to_dict(),
+            'sender': sender,
+            'waiting_since': time.time()
+        })
+
+        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': sender}
 
     else:
         error_msg = "Please select a valid option (1-3)."
-        send(error_msg, user_data['sender'], phone_id)
-        save_message(user_data['sender'], error_msg, 'outbound', phone_id)
-        return {'step': 'offer_response', 'user': user.to_dict(), 'sender': user_data['sender']}
+        send(error_msg, sender, phone_id)
+        save_message(sender, error_msg, 'outbound', phone_id)
+        return {'step': 'offer_response', 'user': user.to_dict(), 'sender': sender}
 
 def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
     session_key = f"agent_session:{user_data['sender']}"
