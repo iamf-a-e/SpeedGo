@@ -33484,34 +33484,34 @@ def handle_collect_offer_details_ndebele(prompt, user_data, phone_id):
     )
     return {'step': 'offer_response_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-def handle_offer_response_shona(prompt, user_data, phone_id):
+def handle_offer_response_ndebele(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
     save_message(user_data['sender'], prompt, 'inbound', phone_id)
     
     # Validate input
     if prompt.strip() not in ['1', '2', '3']:
-        response_msg = "Ndapota sarudza sarudzo inoshanda (1, 2, kana 3):\n\n" \
-                      "1. Enderera kana uchibvuma chipo\n" \
-                      "2. Taura nemunhu\n" \
-                      "3. Chinja chipo chako"
+        response_msg = "Sicela ukhethe okulandelayo (1, 2, noma 3):\n\n" \
+                      "1. Qhubeka uma uvuma isiphakamiso\n" \
+                      "2. Khuluma nomuntu\n" \
+                      "3. Buyisela isiphakamiso sakho"
         send(response_msg, user_data['sender'], phone_id)
         save_message(user_data['sender'], response_msg, 'outbound', phone_id)
-        return {'step': 'offer_response_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'offer_response_ndebele', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     # Determine the reason for human agent transfer
     if prompt.strip() == '1':
         user.offer_data['status'] = 'accepted'
-        transfer_reason = "Kubvuma chipo"
+        transfer_reason = "Ukuvuma isiphakamiso"
     elif prompt.strip() == '2':
         user.offer_data['status'] = 'human_requested'
-        transfer_reason = "Kukumbira kutaura nemunhu"
+        transfer_reason = "Ukufuna ukukhuluma nomuntu"
     else:  # option 3
         user.offer_data['status'] = 'revision_requested'
-        transfer_reason = "Kukumbira kuchinja chipo"
+        transfer_reason = "Ukufuna ukuchibuyisela isiphakamiso"
 
     # Update user state for human agent transfer
     update_user_state(user_data['sender'], {
-        'step': 'human_agent_shona',
+        'step': 'human_agent_ndebele',
         'user': user.to_dict(),
         'transfer_reason': transfer_reason,
         'original_prompt': prompt
@@ -33519,7 +33519,7 @@ def handle_offer_response_shona(prompt, user_data, phone_id):
 
     # Prepare the payload for human agent
     agent_payload = {
-        'step': 'human_agent_shona',
+        'step': 'human_agent_ndebele',
         'user': user.to_dict(),
         'sender': user_data['sender'],
         'phone_id': phone_id,
@@ -33541,12 +33541,12 @@ def handle_offer_response_shona(prompt, user_data, phone_id):
             redis.set(f"quote:{quote_id}", json.dumps(q))
 
     # Send transfer confirmation to user
-    confirmation_msg = f"Tiri kukubatanidza nemumiriri nezve: {transfer_reason}. Ndapota mira..."
+    confirmation_msg = f"Sikuxhumanisa nomphathi mayelana: {transfer_reason}. Sicela ulinde..."
     send(confirmation_msg, user_data['sender'], phone_id)
     save_message(user_data['sender'], confirmation_msg, 'outbound', phone_id)
 
     # Immediately call the human_agent handler
-    return human_agent_shona(prompt, agent_payload, phone_id)
+    return human_agent_ndebele(prompt, agent_payload, phone_id)
 
 
 def handle_booking_details_ndebele(prompt, user_data, phone_id):
