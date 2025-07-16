@@ -6,6 +6,7 @@ import random
 import string
 from datetime import datetime, timedelta
 import httpx
+import asyncio
 from flask import Flask, request, jsonify, render_template
 from upstash_redis import Redis
 import google.generativeai as genai
@@ -34072,7 +34073,7 @@ def index():
 
 
 @app.route("/webhook", methods=["GET", "POST"])
-async def webhook():
+def webhook():
     if request.method == "GET":
         mode = request.args.get("hub.mode")
         token = request.args.get("hub.verify_token")
@@ -34108,7 +34109,6 @@ async def webhook():
                         send("⚠️ No customer to reply to. Wait for a new request.", AGENT_NUMBER, phone_id)
                         return "OK"
     
-                    # Always re-store the agent state with the customer_number
                     agent_state["customer_number"] = customer_number
                     agent_state["sender"] = AGENT_NUMBER
                     update_user_state(AGENT_NUMBER, agent_state)
@@ -34138,14 +34138,18 @@ async def webhook():
                     update_user_state(from_number, user_data) 
                     return "OK"
                 
-                # Normal bot processing
+                # Normal bot processing with async handling
                 if msg_type == "text":
                     if message_text.lower() in ["agent", "human", "representative"]:
+                        # Properly run async function in sync context
                         loop = asyncio.new_event_loop()
                         asyncio.set_event_loop(loop)
                         try:
                             loop.run_until_complete(
-                                human_agent(message_text, user_data, phone_id))
+                                human_agent(message_text, user_data, phone_id)
+                            )
+                        except Exception as e:
+                            logging.error(f"Error in human_agent: {e}")
                         finally:
                             loop.close()
                     else:
@@ -34160,7 +34164,7 @@ async def webhook():
             logging.error(f"Error processing webhook: {e}", exc_info=True)
     
         return jsonify({"status": "ok"}), 200
-   
+
 
 def message_handler(prompt, sender, phone_id, message):
     prompt = (prompt or "").strip()
