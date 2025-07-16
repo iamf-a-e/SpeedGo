@@ -91,6 +91,38 @@ def send(answer, sender, phone_id):
     except requests.exceptions.RequestException as e:
         logging.error(f"Failed to send message: {e}")
 
+
+def log_user_message(sender, message):
+    key = f"{sender}:messages"
+    redis.rpush(key, message)
+    redis.ltrim(key, -5, -1)  # Keep only the last 5 messages
+
+
+def human_agent_offer(sender):
+    try:
+        # Notify agents
+        send(f"📞 New customer request from *{sender}*. Connecting them to a human agent...", AGENT_NUMBER, phone_id)
+        send(f"📞 New customer request from *{sender}*.", AGENT_NUMBER1, phone_id)
+
+        # Get last 5 messages
+        history_key = f"{sender}:messages"
+        messages = redis.lrange(history_key, -5, -1)
+        if messages:
+            compiled = "\n".join([f"{i+1}. {m.decode('utf-8') if isinstance(m, bytes) else m}" for i, m in enumerate(messages)])
+            send(f"📝 Last 5 messages from {sender}:\n{compiled}", AGENT_NUMBER, phone_id)
+        else:
+            send(f"(No recent messages found for {sender})", AGENT_NUMBER, phone_id)
+
+    except Exception as e:
+        logging.error(f"❌ Failed to notify human agent: {e}")
+        send("We encountered an error connecting you to an agent. Please try again shortly.", sender, phone_id)
+        return
+
+    # Let the user know
+    send("You are now being connected to a human agent. Please wait...", sender, phone_id)
+
+
+
 def reverse_geocode_location(gps_coords):
     """
     Converts GPS coordinates (latitude,longitude) to a city using local logic first,
@@ -10483,33 +10515,6 @@ def handle_offer_response(prompt, user_data, phone_id):
         send("Please select a valid option (1-3).", user_data['sender'], phone_id)
         return {'step': 'human_agent_offer', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-
-def human_agent_offer(sender):
-    # Notify agent
-    notification = f"New customer ({sender}) has requested to speak to a human agent."
-    send(notification, AGENT_NUMBER, phone_id)
-
-    # Fetch last 5 user messages
-    try:
-        history_key = f"{sender}:messages"
-        messages = redis.lrange(history_key, -5, -1) or []
-        if isinstance(messages, list):
-            messages = [m.decode("utf-8") if isinstance(m, bytes) else m for m in messages]
-        else:
-            messages = []
-
-        if messages:
-            compiled = "\n".join([f"- {msg}" for msg in messages])
-            send(f"Last 5 messages from {sender}:\n{compiled}", AGENT_NUMBER, phone_id)
-        else:
-            send(f"No recent messages found for {sender}.", AGENT_NUMBER, phone_id)
-
-    except Exception as e:
-        logging.error(f"Error sending messages to agent: {e}")
-        send(f"Error fetching user history for {sender}", AGENT_NUMBER, phone_id)
-
-    # Let the user know
-    send("You are now being connected to a human agent. Please wait a moment...", sender, phone_id)
 
 
 def handle_booking_details(prompt, user_data, phone_id):
@@ -34011,6 +34016,8 @@ def webhook():
                 from_number = message.get("from")
                 msg_type = message.get("type")
                 message_text = message.get("text", {}).get("body", "").strip()
+                log_user_message(sender, message_text)
+
             
                 # Handle agent messages
                 if from_number.endswith(AGENT_NUMBER.replace("+", "")):
@@ -34084,11 +34091,6 @@ def message_handler(prompt, sender, phone_id, message):
     user_data['sender'] = sender
 
     text = prompt.strip().lower()
-
-    def log_user_message(sender, message):
-        key = f"{sender}:messages"
-        redis.rpush(key, message)
-        redis.ltrim(key, -5, -1)  # Keep only last 5 messages
 
 
 # English greetings
