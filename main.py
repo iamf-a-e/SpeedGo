@@ -9780,39 +9780,7 @@ def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
         })
         show_main_menu(customer_number, phone_id)
 
-    elif current_state == "awaiting_offer_approval":
-        if agent_reply == "3":
-            # Agent accepts offer
-            quote['offer_data']['status'] = 'agent_accepted'
-            redis.set(quote_key, json.dumps(quote))
-
-            # Notify customer
-            send("✅ Your offer has been accepted by our team! Let's proceed to the next step.", customer_number, phone_id)
-
-            # Notify agent
-            send("👍 You have accepted the customer's offer.", agent_number, phone_id)
-
-            # Update customer state
-            update_user_state(customer_number, {"step": "booking_details"})
-            redis.delete(state_key)
-            return
-
-        elif agent_reply == "4":
-            # Agent declines offer
-            quote['offer_data']['status'] = 'agent_declined'
-            redis.set(quote_key, json.dumps(quote))
-
-            # Notify customer
-            send("❌ Your offer was declined. Please revise your offer or proceed with the listed prices.", customer_number, phone_id)
-
-            # Notify agent
-            send("☑️ You have declined the customer's offer.", agent_number, phone_id)
-
-            # Revert customer to offer step
-            update_user_state(customer_number, {"step": "offer_response"})
-            redis.delete(state_key)
-            return
-
+   
     else:
         # Forward other agent messages to the customer directly
         send(agent_reply, customer_number, phone_id)
@@ -10510,7 +10478,7 @@ def handle_offer_response(prompt, user_data, phone_id):
             "last_interaction": time.time()
         }))
         
-        return {'step': 'human_agent_offer', 'user': user.to_dict(), 'sender': user_data['sender']}
+        return {'step': 'human_agent', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     else:
         error_msg = "Please select a valid option (1-3)."
