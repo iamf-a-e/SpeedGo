@@ -9591,7 +9591,7 @@ def handle_main_menu(prompt, user_data, phone_id):
             'step': 'enter_location_for_quote',
             'user': user.to_dict()
         })
-        send("Please enter your location (City/Town or GPS coordinates) to get started.", user_data['sender'], phone_id)
+        send("please enter your location (City/Town or GPS coordinates) to get started.", user_data['sender'], phone_id)
         return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":  # Search Price Using Location
@@ -9673,37 +9673,47 @@ def human_agent(prompt, user_data, phone_id):
     # 1. Notify customer
     send("Connecting you to a human agent...", customer_number, phone_id)
 
+    # 2. Get conversation history (assuming you have a function to fetch it)
+    conversation_history = get_conversation_history(customer_number)  # Implement this function
     
-    # 2. Notify agent
+    # Format conversation history for the agent
+    history_text = "🕒 Previous Conversation:\n"
+    for msg in conversation_history[-5:]:  # Send last 5 messages to avoid overload
+        timestamp = msg['timestamp'].strftime('%H:%M') if 'timestamp' in msg else '--:--'
+        sender = "You" if msg['sender'] == customer_number else "Customer"
+        history_text += f"[{timestamp}] {sender}: {msg['text']}\n"
+
+    # 3. Notify agent with full context
     agent_message = (
         f"🚨 New Customer Assistance Request 🚨\n\n"
         f"📱 Customer: {customer_number}\n"
-        f"📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
-        f"📩 Initial Message: \"{prompt}\"\n\n"
-        f"Current Conversation Context:\n"
+        f"📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n"
+        f"{history_text}\n"
+        f"📩 Newest Message: \"{prompt}\"\n\n"
+        f"Current Context:\n"
         f"- Language: {user_data.get('user', {}).get('language', 'English')}\n"
-        f"- Last Service: {user_data.get('user', {}).get('quote_data', {}).get('service', 'Not specified')}\n\n"
+        f"- Last Service: {user_data.get('user', {}).get('quote_data', {}).get('service', 'N/A')}\n\n"
         f"Reply with:\n"
-        f"1 - Talk to customer\n"
+        f"1 - Accept conversation\n"
         f"2 - Back to bot"
     )
-    send(agent_message, AGENT_NUMBER, phone_id) 
     
+    send(agent_message, AGENT_NUMBER, phone_id)
+    
+    # 4. Update states (same as before)
     update_user_state(AGENT_NUMBER, {
         'step': 'agent_reply',
-        'customer_number': customer_number,  # Track which customer they're handling
-        'phone_id': phone_id
+        'customer_number': customer_number,
+        'phone_id': phone_id,
+        'conversation_history': conversation_history  # Store full history if needed
     })
 
-    # Update customer's state (waiting for agent)
     update_user_state(customer_number, {
         'step': 'waiting_for_human_agent_response',
         'user': user_data.get('user', {}),
         'sender': customer_number,
         'waiting_since': time.time()
     })
-    
-
 
     # 3. Schedule fallback
     def send_fallback():
@@ -9734,8 +9744,6 @@ def human_agent(prompt, user_data, phone_id):
 
 def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
     agent_reply = message_text.strip()
-    session_key = f"agent_session:{user_data['sender']}"
-    session_data = redis.get(session_key)
     
     if agent_reply == "1":
          # Cancel fallback timer if exists
@@ -9745,11 +9753,7 @@ def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
             timer.cancel()
         # Agent chooses to talk to customer
         send("✅ You're now talking to the customer. Bot is paused until you send '2' to return to bot.", AGENT_NUMBER, phone_id)
-        send("✅ You are now connected to a human agent. Please wait for their response.", session['customer_number'], session['phone_id'])
-        save_message(session['customer_number'], response_msg, 'outbound', session['phone_id'])
-        # Update session
-        session['status'] = 'active'
-        redis.set(session_key, json.dumps(session))
+        send("✅ You are now connected to a human agent. Please wait for their response.", customer_number, phone_id)
 
         update_user_state(customer_number, {
             'step': 'talking_to_human_agent',
@@ -9760,16 +9764,47 @@ def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
     elif agent_reply == "2":
         # Agent returns control to bot
         send("✅ The bot has resumed and will assist the customer from here.", AGENT_NUMBER, phone_id)
-        send("👋 You're now back with our automated assistant.", session['customer_number'], session['phone_id'])
-        save_message(session['customer_number'], response_msg, 'outbound', session['phone_id'])
-        redis.delete(session_key)
+        send("👋 You're now back with our automated assistant.", customer_number, phone_id)
 
         update_user_state(customer_number, {
             'step': 'main_menu',
             'user': get_user_state(customer_number).get('user', {}),
-            'sender': session['customer_number']
-            })
+            'sender': customer_number
+        })
         show_main_menu(customer_number, phone_id)
+
+    elif current_state == "awaiting_offer_approval":
+        if agent_reply == "3":
+            # Agent accepts offer
+            quote['offer_data']['status'] = 'agent_accepted'
+            redis.set(quote_key, json.dumps(quote))
+
+            # Notify customer
+            send("✅ Your offer has been accepted by our team! Let's proceed to the next step.", customer_number, phone_id)
+
+            # Notify agent
+            send("👍 You have accepted the customer's offer.", agent_number, phone_id)
+
+            # Update customer state
+            update_user_state(customer_number, {"step": "booking_details"})
+            redis.delete(state_key)
+            return
+
+        elif agent_reply == "4":
+            # Agent declines offer
+            quote['offer_data']['status'] = 'agent_declined'
+            redis.set(quote_key, json.dumps(quote))
+
+            # Notify customer
+            send("❌ Your offer was declined. Please revise your offer or proceed with the listed prices.", customer_number, phone_id)
+
+            # Notify agent
+            send("☑️ You have declined the customer's offer.", agent_number, phone_id)
+
+            # Revert customer to offer step
+            update_user_state(customer_number, {"step": "offer_response"})
+            redis.delete(state_key)
+            return
 
     else:
         # Forward other agent messages to the customer directly
@@ -10476,71 +10511,69 @@ def handle_offer_response(prompt, user_data, phone_id):
         save_message(user_data['sender'], error_msg, 'outbound', phone_id)
         return {'step': 'offer_response', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-def handle_human_agent_offer(prompt, user_data, phone_id):
-    customer_number = user_data['sender']
-
-    # 1. Notify customer
-    send("Connecting you to a human agent...", customer_number, phone_id)
-
+def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
+    session_key = f"agent_session:{user_data['sender']}"
+    session_data = redis.get(session_key)
     
-    # 2. Notify agent
-    agent_message = (
-            f"🚨 New Customer Assistance Request 🚨\n\n"
-            f"📱 Customer: {customer_number}\n"
-            f"📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
-            f"📩 Message: \"{prompt}\"\n\n"
-            f"Current Context:\n"
-            f"- Language: {user_data.get('user', {}).get('language', 'English')}\n"
-            f"- Last Service: {user_data.get('user', {}).get('quote_data', {}).get('service', 'N/A')}\n\n"
-            f"Reply with:\n"
-            f"1 - Accept conversation\n"
-            f"2 - Reject (return to bot)"
-        )
-    send(agent_message, AGENT_NUMBER, phone_id) 
+    if not session_data:
+        # Session expired or invalid
+        error_msg = "Agent session expired. Please start over."
+        send(error_msg, user_data['sender'], phone_id)
+        save_message(user_data['sender'], error_msg, 'outbound', phone_id)
+        return {'step': 'main_menu', 'user': user_data['user'], 'sender': user_data['sender']}
     
-    update_user_state(AGENT_NUMBER, {
-        'step': 'agent_reply',
-        'customer_number': customer_number,  # Track which customer they're handling
-        'phone_id': phone_id
-    })
-
-    # Update customer's state (waiting for agent)
-    update_user_state(customer_number, {
-        'step': 'waiting_for_human_agent_response',
-        'user': user_data.get('user', {}),
-        'sender': customer_number,
-        'waiting_since': time.time()
-    })
+    session = json.loads(session_data)
     
-
-
-    # 3. Schedule fallback
-    def send_fallback():
-        user_data = get_user_state(customer_number)
-        if user_data and user_data.get('step') == 'waiting_for_human_agent_response':
-            send("If you haven't been contacted yet, you can call us directly at +263779562095 or +263779469216", customer_number, phone_id)
-            send("Would you like to:\n1. Return to main menu\n2. Keep waiting", customer_number, phone_id)
-            update_user_state(customer_number, {
-                'step': 'human_agent_followup',
-                'user': user_data.get('user', {}),
-                'sender': customer_number
-            })
-
-    fallback_timer = threading.Timer(90, send_fallback)
-    fallback_timer.start()
-    
-
-
-    # 4. Update customer state
-    update_user_state(customer_number, {
-        'step': 'waiting_for_human_agent_response',
-        'user': user_data.get('user', {}),
-        'sender': customer_number,
-        'waiting_since': time.time()
-    })
-
-    return {'step': 'waiting_for_human_agent_response', 'user': user_data.get('user', {}), 'sender': customer_number}
-        
+    if is_agent:
+        save_message(AGENT_NUMBER, prompt, 'inbound', phone_id)
+        if prompt == "1":
+            # Agent accepts conversation - notify customer
+            response_msg = "You're now connected to an agent. Please describe your needs."
+            send(response_msg, session['customer_number'], session['phone_id'])
+            save_message(session['customer_number'], response_msg, 'outbound', session['phone_id'])
+            # Update session
+            session['status'] = 'active'
+            redis.set(session_key, json.dumps(session))
+            return None
+            
+        elif prompt == "2":
+            # Agent wants to return to bot
+            response_msg = "The agent has ended the conversation. You'll be returned to the bot."
+            send(response_msg, session['customer_number'], session['phone_id'])
+            save_message(session['customer_number'], response_msg, 'outbound', session['phone_id'])
+            redis.delete(session_key)
+            return {
+                'step': 'offer_response', 
+                'user': user_data['user'], 
+                'sender': session['customer_number']
+            }
+            
+        else:
+            # Forward agent message to customer
+            send(prompt, session['customer_number'], session['phone_id'])
+            save_message(session['customer_number'], prompt, 'outbound', session['phone_id'])
+            # Update last interaction time
+            session['last_interaction'] = time.time()
+            redis.set(session_key, json.dumps(session))
+            return None
+            
+    else:
+        save_message(user_data['sender'], prompt, 'inbound', phone_id)
+        if session.get('status') == 'active':
+            # Forward customer message to agent
+            send(f"Customer: {prompt}", session['agent_number'], session['phone_id'])
+            save_message(session['agent_number'], f"Customer: {prompt}", 'outbound', session['phone_id'])
+            # Update last interaction time
+            session['last_interaction'] = time.time()
+            redis.set(session_key, json.dumps(session))
+            return None
+        else:
+            # Agent hasn't accepted yet
+            response_msg = "Please wait while we connect you to an agent..."
+            send(response_msg, user_data['sender'], phone_id)
+            save_message(user_data['sender'], response_msg, 'outbound', phone_id)
+            return {'step': 'human_agent_offer', 'user': user_data['user'], 'sender': user_data['sender']}
+            
 
 def handle_booking_details(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
@@ -34068,18 +34101,6 @@ def webhook():
                         update_user_state(AGENT_NUMBER, agent_state)
 
                         return "OK"
-
-                    if agent_state.get("step") == "human_agent_offer":
-                        handle_agent_reply(message_text, customer_number, phone_id, agent_state)
-                        
-                        # 🔄 Re-save agent state to ensure customer_number is preserved
-                        agent_state["customer_number"] = customer_number
-                        agent_state["step"] = "talking_to_human_agent"
-                        update_user_state(AGENT_NUMBER, agent_state)
-
-                        return "OK"
-
-                    
             
                     if agent_state.get("step") == "talking_to_human_agent":
                         if message_text.strip() == "2":
