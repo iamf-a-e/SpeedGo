@@ -20405,7 +20405,7 @@ def human_agent_shona(prompt, user_data, phone_id):
 
     # 4. Update agent state
     update_user_state(AGENT_NUMBER, {
-        'step': 'agent_reply_shona',
+        'step': 'agent_reply',
         'customer_number': customer_number,
         'phone_id': phone_id
     })
