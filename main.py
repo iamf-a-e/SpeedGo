@@ -10438,26 +10438,36 @@ def handle_offer_response(prompt, user_data, phone_id):
         send(response_msg, user_data['sender'], phone_id)
         save_message(user_data['sender'], response_msg, 'outbound', phone_id)
         return {'step': 'offer_response', 'user': user.to_dict(), 'sender': user_data['sender']}
-    
-    # Handle the selected option - all paths lead to human agent
+
+    # Determine the reason for human agent transfer
     if prompt.strip() == '1':
         user.offer_data['status'] = 'accepted'
-        response_msg = "Thank you for accepting the offer. A human agent will contact you shortly to finalize details."
-        
+        transfer_reason = "Offer acceptance"
     elif prompt.strip() == '2':
         user.offer_data['status'] = 'human_requested'
-        response_msg = "We're connecting you to a human agent. Please hold while we transfer your chat."
-        
-    elif prompt.strip() == '3':
+        transfer_reason = "Direct request for human agent"
+    else:  # option 3
         user.offer_data['status'] = 'revision_requested'
-        response_msg = "A human agent will assist you with revising your offer. Please hold while we transfer your chat."
-    
-    # Update state to transfer to human agent regardless of option chosen
+        transfer_reason = "Offer revision requested"
+
+    # Update user state for human agent transfer
     update_user_state(user_data['sender'], {
         'step': 'human_agent',
-        'user': user.to_dict()
+        'user': user.to_dict(),
+        'transfer_reason': transfer_reason,
+        'original_prompt': prompt
     })
-    
+
+    # Prepare the payload for human agent
+    agent_payload = {
+        'step': 'human_agent',
+        'user': user.to_dict(),
+        'sender': user_data['sender'],
+        'phone_id': phone_id,
+        'transfer_reason': transfer_reason,
+        'offer_data': user.offer_data
+    }
+
     # Update quote in redis if exists
     quote_id = user.quote_data.get('quote_id')
     if quote_id:
@@ -10465,20 +10475,20 @@ def handle_offer_response(prompt, user_data, phone_id):
         if q:
             q = json.loads(q)
             q['offer_data'] = user.offer_data
+            q['agent_transfer'] = {
+                'timestamp': datetime.datetime.now().isoformat(),
+                'reason': transfer_reason
+            }
             redis.set(f"quote:{quote_id}", json.dumps(q))
-    
-    # Send response and update message history
-    send(response_msg, user_data['sender'], phone_id)
-    save_message(user_data['sender'], response_msg, 'outbound', phone_id)
-    
-    return {
-        'step': 'human_agent',
-        'user': user.to_dict(),
-        'sender': user_data['sender'],       
-        'offer_status': user.offer_data['status']  # Include status for the human agent
-    }
-    
 
+    # Send transfer confirmation to user
+    confirmation_msg = f"We're connecting you to an agent regarding: {transfer_reason}. Please hold..."
+    send(confirmation_msg, user_data['sender'], phone_id)
+    save_message(user_data['sender'], confirmation_msg, 'outbound', phone_id)
+
+    # Immediately call the human_agent handler
+    return human_agent(prompt, agent_payload, phone_id)
+    
 
 def handle_human_agent_offer(prompt, user_data, phone_id, is_agent=False):
     session_key = f"agent_session:{user_data['sender']}"
