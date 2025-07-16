@@ -34081,7 +34081,7 @@ def webhook():
             return challenge, 200
         return "Failed", 403
 
-   elif request.method == "POST":
+     elif request.method == "POST":
         data = request.get_json()
         logging.info(f"Incoming webhook data: {json.dumps(data, indent=2)}")
     
@@ -34107,56 +34107,44 @@ def webhook():
                         send("⚠️ No customer to reply to. Wait for a new request.", AGENT_NUMBER, phone_id)
                         return "OK"
     
-                    # Always re-store the agent state with the customer_number to ensure it's not lost
+                    # Always re-store the agent state with the customer_number
                     agent_state["customer_number"] = customer_number
                     agent_state["sender"] = AGENT_NUMBER
-                
-                    # Persist again defensively
                     update_user_state(AGENT_NUMBER, agent_state)
             
                     if agent_state.get("step") == "agent_reply":
                         handle_agent_reply(message_text, customer_number, phone_id, agent_state)
-                        
-                        # 🔄 Re-save agent state to ensure customer_number is preserved
-                        agent_state["customer_number"] = customer_number
                         agent_state["step"] = "talking_to_human_agent"
                         update_user_state(AGENT_NUMBER, agent_state)
-    
                         return "OK"
             
                     if agent_state.get("step") == "talking_to_human_agent":
                         if message_text.strip() == "2":
-                            # ✅ This is the agent saying "return to bot"
                             handle_agent_reply("2", customer_number, phone_id, agent_state)
                         else:
-                            # ✅ Forward any other message to the customer
                             send(message_text, customer_number, phone_id)
                         return "OK"
     
-            
                     send("⚠️ No active chat. Please wait for a new request.", AGENT_NUMBER, phone_id)
                     return "OK"
             
-                # Handle normal user messages (only if NOT agent)
+                # Handle normal user messages
                 user_data = get_user_state(from_number)
                 user_data['sender'] = from_number
                 
-                # If user is talking to a human agent, suppress bot
                 if handle_customer_message_during_agent_chat(message_text, user_data, phone_id):
                     forward_message_to_agent(message_text, user_data, phone_id)
                     update_user_state(from_number, user_data) 
                     return "OK"
                 
-                # Continue with normal bot processing
+                # Normal bot processing
                 if msg_type == "text":
-                    # Check if this is a request for human agent
                     if message_text.lower() in ["agent", "human", "representative"]:
-                        # Run async human_agent in synchronous context
                         loop = asyncio.new_event_loop()
                         asyncio.set_event_loop(loop)
                         try:
                             loop.run_until_complete(
-                                human_agent(message_text, user_data, phone_id)
+                                human_agent(message_text, user_data, phone_id))
                         finally:
                             loop.close()
                     else:
@@ -34165,13 +34153,14 @@ def webhook():
                     gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
                     message_handler(gps_coords, from_number, phone_id, message)
                 else:
-                    send("Please send a text message or share your location using the 📍 button.", from_number, phone_id)
+                    send("Please send text or location 📍", from_number, phone_id)
     
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
     
         return jsonify({"status": "ok"}), 200
 
+   
 
 def message_handler(prompt, sender, phone_id, message):
     prompt = (prompt or "").strip()
