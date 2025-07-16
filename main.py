@@ -9673,39 +9673,40 @@ def human_agent(prompt, user_data, phone_id):
     # 1. Notify customer
     send("Connecting you to a human agent...", customer_number, phone_id)
 
-    
-    # 2. Notify agent
+    # 2. Retrieve recent conversation history (last 6 messages)
+    history = get_conversation_history(customer_number, limit=6)
+    history_text = "\n".join([
+        f"{msg['timestamp']} - {msg['direction'].capitalize()}: {msg['text']}"
+        for msg in history
+    ]) or "No previous conversation."
+
+    # 3. Send message to human agent
     agent_message = (
         f"🚨 New Customer Assistance Request 🚨\n\n"
         f"📱 Customer: {customer_number}\n"
-        f"📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
+        f"🕘 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
         f"📩 Initial Message: \"{prompt}\"\n\n"
-        f"Current Conversation Context:\n"
-        f"- Language: {user_data.get('user', {}).get('language', 'English')}\n"
-        f"- Last Service: {user_data.get('user', {}).get('quote_data', {}).get('service', 'Not specified')}\n\n"
-        f"Reply with:\n"
-        f"1 - Talk to customer\n"
-        f"2 - Back to bot"
+        f"Recent Conversation:\n{history_text}\n\n"
+        f"Reply with:\n1 - Talk to customer\n2 - Back to bot"
     )
-    send(agent_message, AGENT_NUMBER, phone_id) 
-    
+    send(agent_message, AGENT_NUMBER, phone_id)
+
+    # 4. Update agent state
     update_user_state(AGENT_NUMBER, {
         'step': 'agent_reply',
-        'customer_number': customer_number,  # Track which customer they're handling
+        'customer_number': customer_number,
         'phone_id': phone_id
     })
 
-    # Update customer's state (waiting for agent)
+    # 5. Update customer state
     update_user_state(customer_number, {
         'step': 'waiting_for_human_agent_response',
         'user': user_data.get('user', {}),
         'sender': customer_number,
         'waiting_since': time.time()
     })
-    
 
-
-    # 3. Schedule fallback
+    # 6. Schedule fallback if no response in 90 seconds
     def send_fallback():
         user_data = get_user_state(customer_number)
         if user_data and user_data.get('step') == 'waiting_for_human_agent_response':
@@ -9719,18 +9720,34 @@ def human_agent(prompt, user_data, phone_id):
 
     fallback_timer = threading.Timer(90, send_fallback)
     fallback_timer.start()
-    
 
-
-    # 4. Update customer state
-    update_user_state(customer_number, {
+    return {
         'step': 'waiting_for_human_agent_response',
         'user': user_data.get('user', {}),
-        'sender': customer_number,
-        'waiting_since': time.time()
-    })
+        'sender': customer_number
+    }
 
-    return {'step': 'waiting_for_human_agent_response', 'user': user_data.get('user', {}), 'sender': customer_number}
+
+def get_conversation_history(sender, limit=6):
+    """
+    Retrieves the most recent `limit` messages for a user from Redis.
+    """
+    try:
+        raw_messages = redis.lrange(f"conversation:{sender}", 0, limit - 1)
+        history = []
+        for msg in reversed(raw_messages):  # reverse to chronological order
+            data = json.loads(msg)
+            history.append({
+                "text": data.get("message", ""),
+                "direction": data.get("direction", ""),
+                "timestamp": datetime.fromtimestamp(data.get("timestamp", time.time())).strftime('%H:%M')
+            })
+        return history
+    except Exception as e:
+        print(f"Error retrieving chat history for {sender}: {e}")
+        return []
+
+
 
 def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
     agent_reply = message_text.strip()
