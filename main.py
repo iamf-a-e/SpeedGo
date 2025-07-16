@@ -10510,7 +10510,7 @@ def handle_human_agent_offer(prompt, user_data, phone_id):
     
     # 2. Notify agent
     agent_message = (
-            f"🚨 NEW CUSTOMER REQUEST 🚨\n\n"
+            f"🚨 New Customer Assistance Request 🚨\n\n"
             f"📱 Customer: {customer_number}\n"
             f"📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
             f"📩 Message: \"{prompt}\"\n\n"
