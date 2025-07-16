@@ -4,9 +4,7 @@ import logging
 import requests
 import random
 import string
-from datetime import datetime, timedelta
-import httpx
-import asyncio
+from datetime import datetime
 from flask import Flask, request, jsonify, render_template
 from upstash_redis import Redis
 import google.generativeai as genai
@@ -9669,75 +9667,44 @@ def handle_main_menu(prompt, user_data, phone_id):
         send("Please select a valid option (1-6).", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
-async def get_conversation_history(customer_number):
-    """Fetch last 5 messages from Upstash Redis"""
-    redis_url = "https://organic-cub-37552.upstash.io"
-    headers = {
-        "Authorization": f"Bearer {UPSTASH_TOKEN}"
-    }
-    try:
-        # Fetch message IDs (assuming you store them in a list)
-        response = await httpx.post(
-            f"{redis_url}/lrange/{customer_number}/0/-1",
-            headers=headers
-        )
-        message_ids = response.json()["result"] or []
-        
-        # Get actual messages (last 5)
-        messages = []
-        for msg_id in message_ids[-5:]:
-            msg_response = await httpx.post(
-                f"{redis_url}/get/{msg_id}",
-                headers=headers
-            )
-            if msg_response.json()["result"]:
-                messages.append(json.loads(msg_response.json()["result"]))
-        return messages
-        
-    except Exception as e:
-        logging.error(f"Failed to fetch history: {e}")
-        return []
-
-def format_history(messages):
-    """Convert raw messages to readable text"""
-    history_text = "🕒 Previous Messages:\n"
-    for msg in messages:
-        time = msg.get("timestamp", datetime.now()).strftime("%H:%M")
-        sender = "You" if msg.get("sender") == "bot" else "Customer"
-        history_text += f"[{time}] {sender}: {msg.get('text', '...')}\n"
-    return history_text
-
-async def human_agent(prompt, user_data, phone_id):
+def human_agent(prompt, user_data, phone_id):
     customer_number = user_data['sender']
-    
+
     # 1. Notify customer
     send("Connecting you to a human agent...", customer_number, phone_id)
 
-    # 2. Fetch and format history
-    history = await get_conversation_history(customer_number)
-    history_text = format_history(history) if history else "No chat history found.\n"
-
-    # 3. Prepare agent message
+    
+    # 2. Notify agent
     agent_message = (
-        f"🚨 New Customer Request 🚨\n\n"
+        f"🚨 New Customer Assistance Request 🚨\n\n"
         f"📱 Customer: {customer_number}\n"
-        f"📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n"
-        f"{history_text}\n"
-        f"📩 New Message: \"{prompt}\"\n\n"
-        f"Reply with:\n1 - Accept\n2 - Reject"
+        f"📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
+        f"📩 Initial Message: \"{prompt}\"\n\n"
+        f"Current Conversation Context:\n"
+        f"- Language: {user_data.get('user', {}).get('language', 'English')}\n"
+        f"- Last Service: {user_data.get('user', {}).get('quote_data', {}).get('service', 'Not specified')}\n\n"
+        f"Reply with:\n"
+        f"1 - Talk to customer\n"
+        f"2 - Back to bot"
     )
+    send(agent_message, AGENT_NUMBER, phone_id) 
     
-    # 4. Send to agent
-    send(agent_message, AGENT_NUMBER, phone_id)
-    
-    # 5. Update states (store history in state if needed)
     update_user_state(AGENT_NUMBER, {
-        "step": "agent_reply",
-        "customer_number": customer_number,
-        "history": history  # Raw history for reference
+        'step': 'agent_reply',
+        'customer_number': customer_number,  # Track which customer they're handling
+        'phone_id': phone_id
     })
 
+    # Update customer's state (waiting for agent)
+    update_user_state(customer_number, {
+        'step': 'waiting_for_human_agent_response',
+        'user': user_data.get('user', {}),
+        'sender': customer_number,
+        'waiting_since': time.time()
+    })
     
+
+
     # 3. Schedule fallback
     def send_fallback():
         user_data = get_user_state(customer_number)
@@ -34071,7 +34038,6 @@ app = Flask(__name__)
 def index():
     return render_template("connected.html")
 
-
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     if request.method == "GET":
@@ -34086,14 +34052,14 @@ def webhook():
     elif request.method == "POST":
         data = request.get_json()
         logging.info(f"Incoming webhook data: {json.dumps(data, indent=2)}")
-    
+
         try:
             entry = data.get("entry", [])[0]
             changes = entry.get("changes", [])[0]
             value = changes.get("value", {})
             phone_id = value.get("metadata", {}).get("phone_number_id")
             messages = value.get("messages", [])
-    
+
             if messages:
                 message = messages[0]
                 from_number = message.get("from")
@@ -34108,61 +34074,61 @@ def webhook():
                     if not customer_number:
                         send("⚠️ No customer to reply to. Wait for a new request.", AGENT_NUMBER, phone_id)
                         return "OK"
-    
-                    agent_state["customer_number"] = customer_number
-                    agent_state["sender"] = AGENT_NUMBER
-                    update_user_state(AGENT_NUMBER, agent_state)
+
+                        # Always re-store the agent state with the customer_number to ensure it's not lost
+                        agent_state["customer_number"] = customer_number
+                        agent_state["sender"] = AGENT_NUMBER
+                    
+                        # Persist again defensively
+                        update_user_state(AGENT_NUMBER, agent_state)
             
                     if agent_state.get("step") == "agent_reply":
                         handle_agent_reply(message_text, customer_number, phone_id, agent_state)
+                        
+                        # 🔄 Re-save agent state to ensure customer_number is preserved
+                        agent_state["customer_number"] = customer_number
                         agent_state["step"] = "talking_to_human_agent"
                         update_user_state(AGENT_NUMBER, agent_state)
+
                         return "OK"
             
                     if agent_state.get("step") == "talking_to_human_agent":
                         if message_text.strip() == "2":
+                            # ✅ This is the agent saying "return to bot"
                             handle_agent_reply("2", customer_number, phone_id, agent_state)
                         else:
+                            # ✅ Forward any other message to the customer
                             send(message_text, customer_number, phone_id)
                         return "OK"
-    
+
+            
                     send("⚠️ No active chat. Please wait for a new request.", AGENT_NUMBER, phone_id)
                     return "OK"
             
-                # Handle normal user messages
+                # Handle normal user messages (only if NOT agent)
+
                 user_data = get_user_state(from_number)
                 user_data['sender'] = from_number
                 
+                # If user is talking to a human agent, suppress bot
                 if handle_customer_message_during_agent_chat(message_text, user_data, phone_id):
                     forward_message_to_agent(message_text, user_data, phone_id)
                     update_user_state(from_number, user_data) 
                     return "OK"
                 
-                # Normal bot processing with async handling
+                # Continue with normal bot processing
                 if msg_type == "text":
-                    if message_text.lower() in ["agent", "human", "representative"]:
-                        # Properly run async function in sync context
-                        loop = asyncio.new_event_loop()
-                        asyncio.set_event_loop(loop)
-                        try:
-                            loop.run_until_complete(
-                                human_agent(message_text, user_data, phone_id)
-                            )
-                        except Exception as e:
-                            logging.error(f"Error in human_agent: {e}")
-                        finally:
-                            loop.close()
-                    else:
-                        message_handler(message_text, from_number, phone_id, message)
+                    message_handler(message_text, from_number, phone_id, message)
                 elif msg_type == "location":
                     gps_coords = f"{message['location']['latitude']},{message['location']['longitude']}"
                     message_handler(gps_coords, from_number, phone_id, message)
                 else:
-                    send("Please send text or location 📍", from_number, phone_id)
-    
+                    send("Please send a text message or share your location using the 📍 button.", from_number, phone_id)
+
+
         except Exception as e:
             logging.error(f"Error processing webhook: {e}", exc_info=True)
-    
+
         return jsonify({"status": "ok"}), 200
 
 
