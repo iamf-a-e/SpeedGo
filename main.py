@@ -9673,47 +9673,39 @@ def human_agent(prompt, user_data, phone_id):
     # 1. Notify customer
     send("Connecting you to a human agent...", customer_number, phone_id)
 
-    # 2. Fetch chat history
-    chat_history = get_recent_messages(customer_number, limit=6)  # Customize limit
-    if chat_history:
-        formatted_history = "\n".join([
-            f"{'👤' if msg['direction'] == 'inbound' else '🤖'} {msg['text']}" 
-            for msg in chat_history
-        ])
-    else:
-        formatted_history = "No prior chat history available."
-
-    # 3. Notify agent
+    
+    # 2. Notify agent
     agent_message = (
         f"🚨 New Customer Assistance Request 🚨\n\n"
         f"📱 Customer: {customer_number}\n"
         f"📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
         f"📩 Initial Message: \"{prompt}\"\n\n"
-        f"Current Context:\n"
+        f"Current Conversation Context:\n"
         f"- Language: {user_data.get('user', {}).get('language', 'English')}\n"
         f"- Last Service: {user_data.get('user', {}).get('quote_data', {}).get('service', 'Not specified')}\n\n"
-        f"🕘 Chat History:\n{formatted_history}\n\n"
         f"Reply with:\n"
         f"1 - Talk to customer\n"
         f"2 - Back to bot"
     )
-    send(agent_message, AGENT_NUMBER, phone_id)
-
-    # 4. Update states
+    send(agent_message, AGENT_NUMBER, phone_id) 
+    
     update_user_state(AGENT_NUMBER, {
         'step': 'agent_reply',
-        'customer_number': customer_number,
+        'customer_number': customer_number,  # Track which customer they're handling
         'phone_id': phone_id
     })
 
+    # Update customer's state (waiting for agent)
     update_user_state(customer_number, {
         'step': 'waiting_for_human_agent_response',
         'user': user_data.get('user', {}),
         'sender': customer_number,
         'waiting_since': time.time()
     })
+    
 
-    # 5. Fallback timer
+
+    # 3. Schedule fallback
     def send_fallback():
         user_data = get_user_state(customer_number)
         if user_data and user_data.get('step') == 'waiting_for_human_agent_response':
@@ -9727,23 +9719,18 @@ def human_agent(prompt, user_data, phone_id):
 
     fallback_timer = threading.Timer(90, send_fallback)
     fallback_timer.start()
-
-    return {
-        'step': 'waiting_for_human_agent_response',
-        'user': user_data.get('user', {}),
-        'sender': customer_number
-    }
     
 
-def get_recent_messages(phone_number, limit=6):
-    try:
-        raw_messages = redis.lrange(f"conversation:{phone_number}", 0, limit - 1)
-        return [json.loads(m) for m in reversed(raw_messages)] if raw_messages else []
-    except Exception as e:
-        logging.error(f"Error retrieving chat history for {phone_number}: {e}")
-        return []
 
+    # 4. Update customer state
+    update_user_state(customer_number, {
+        'step': 'waiting_for_human_agent_response',
+        'user': user_data.get('user', {}),
+        'sender': customer_number,
+        'waiting_since': time.time()
+    })
 
+    return {'step': 'waiting_for_human_agent_response', 'user': user_data.get('user', {}), 'sender': customer_number}
 
 def handle_agent_reply(message_text, customer_number, phone_id, agent_state):
     agent_reply = message_text.strip()
@@ -33926,7 +33913,8 @@ action_mapping = {
     "talking_to_customer": handle_agent_conversation,
     "agent_available": handle_agent_available,
     "borehole_class_pricing": handle_borehole_class_pricing,
-    "agent_reply": handle_agent_reply,    
+    "agent_reply": handle_agent_reply,
+    "agent_reply": handle_agent_reply,
     "talking_to_customer": handle_agent_conversation,
     "agent_available": handle_agent_available,
     "select_pump_option": handle_select_pump_option,
@@ -33959,7 +33947,12 @@ action_mapping = {
     "borehole_deepening_casing": handle_borehole_deepening_casing,
     "borehole_flushing_problem": handle_borehole_flushing_problem,
     "pvc_casing_selection": handle_pvc_casing_selection,
-    "deepening_location": handle_deepening_location,    
+    "deepening_location": handle_deepening_location,
+    "human_agent": lambda prompt, user_data, phone_id: (
+        send("A human agent will contact you soon.", user_data['sender'], phone_id)
+        or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
+    ),
+    
     "main_menu_shona": handle_main_menu_shona,
     "enter_location_for_quote_shona": handle_enter_location_for_quote_shona,
     "select_service_quote_shona": handle_select_service_quote_shona,
