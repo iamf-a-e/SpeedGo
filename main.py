@@ -9591,7 +9591,7 @@ def handle_main_menu(prompt, user_data, phone_id):
             'step': 'enter_location_for_quote',
             'user': user.to_dict()
         })
-        send("please enter your location (City/Town or GPS coordinates) to get started.", user_data['sender'], phone_id)
+        send("Please enter your location (City/Town or GPS coordinates) to get started.", user_data['sender'], phone_id)
         return {'step': 'enter_location_for_quote', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":  # Search Price Using Location
@@ -20304,7 +20304,7 @@ def handle_main_menu_shona(prompt, user_data, phone_id):
             'step': 'enter_location_for_quote_shona',
             'user': user.to_dict()
         })
-        send("ndapota isa nzvimbo yako (Guta/Dhorobha kana GPS) kuti titange.", user_data['sender'], phone_id)
+        send("Ndapota isa nzvimbo yako (Guta/Dhorobha kana GPS) kuti titange.", user_data['sender'], phone_id)
         return {'step': 'enter_location_for_quote_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
 
     elif prompt == "2":  # Search Price Using Location
@@ -22329,7 +22329,7 @@ def handle_borehole_deepening_casing_shona(prompt, user_data, phone_id):
     choice = prompt.strip()
 
     if choice == "1":
-        send("chibhorani rako rinokodzera kudzamiswa.\nNdapota isa nzvimbo yako (dhorobha, wadhi, growth point, kana GPS pin):",
+        send("Chibhorani rako rinokodzera kudzamiswa.\nNdapota isa nzvimbo yako (dhorobha, wadhi, growth point, kana GPS pin):",
              user_data['sender'], phone_id)
         update_user_state(user_data['sender'], {'step': 'deepening_location_shona', 'user': user.to_dict()})
         return {'step': 'deepening_location_shona', 'user': user.to_dict(), 'sender': user_data['sender']}
@@ -31412,7 +31412,7 @@ def human_agent_ndebele(prompt, user_data, phone_id):
 
     # 4. Update agent state
     update_user_state(AGENT_NUMBER, {
-        'step': 'agent_reply_ndebele',
+        'step': 'agent_reply',
         'customer_number': customer_number,
         'phone_id': phone_id
     })
