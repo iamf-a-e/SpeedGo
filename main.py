@@ -33926,8 +33926,7 @@ action_mapping = {
     "talking_to_customer": handle_agent_conversation,
     "agent_available": handle_agent_available,
     "borehole_class_pricing": handle_borehole_class_pricing,
-    "agent_reply": handle_agent_reply,
-    "agent_reply": handle_agent_reply,
+    "agent_reply": handle_agent_reply,    
     "talking_to_customer": handle_agent_conversation,
     "agent_available": handle_agent_available,
     "select_pump_option": handle_select_pump_option,
@@ -33960,12 +33959,7 @@ action_mapping = {
     "borehole_deepening_casing": handle_borehole_deepening_casing,
     "borehole_flushing_problem": handle_borehole_flushing_problem,
     "pvc_casing_selection": handle_pvc_casing_selection,
-    "deepening_location": handle_deepening_location,
-    "human_agent": lambda prompt, user_data, phone_id: (
-        send("A human agent will contact you soon.", user_data['sender'], phone_id)
-        or {'step': 'main_menu', 'user': user_data.get('user', {}), 'sender': user_data['sender']}
-    ),
-    
+    "deepening_location": handle_deepening_location,    
     "main_menu_shona": handle_main_menu_shona,
     "enter_location_for_quote_shona": handle_enter_location_for_quote_shona,
     "select_service_quote_shona": handle_select_service_quote_shona,
