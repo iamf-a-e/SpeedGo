@@ -34011,6 +34011,14 @@ def webhook():
             phone_id = value.get("metadata", {}).get("phone_number_id")
             messages = value.get("messages", [])
 
+            if not messages:
+                return "No messages", 200
+                
+            message = messages[0]
+            sender = message["from"]
+            message_text = message.get("text", {}).get("body", "")
+            log_user_message(sender, message_text)
+
             if messages:
                 message = messages[0]
                 from_number = message.get("from")
