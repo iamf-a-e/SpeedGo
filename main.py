@@ -121,7 +121,7 @@ def chat_users():
         return jsonify({"error": str(e)}), 500
 
 @app.route("/api/send-message", methods=["POST"])
-def send_message():
+def sendmessage():
     data = request.json
     user_id = data.get("user_id")
     message = data.get("message")
