@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Demo</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 600px; margin: auto; }
+        #chatBox { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
+        .msg { margin: 5px 0; }
+        .user { text-align: right; color: blue; }
+        .bot { text-align: left; color: green; }
+    </style>
+</head>
+<body>
+    <h2>Simple Chat Viewer</h2>
+
+    <label for="userId">User ID:</label>
+    <input id="userId" value="user123" />
+    <button onclick="loadChat()">Load Chat</button>
+
+    <div id="chatBox"></div>
+
+    <textarea id="messageInput" rows="3" style="width:100%;"></textarea><br>
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        async function loadChat() {
+            const userId = document.getElementById("userId").value;
+            const res = await fetch(`/api/chat-history/${userId}`);
+            const messages = await res.json();
+            const chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML = '';
+
+            if (Array.isArray(messages)) {
+                messages.forEach(m => {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = `msg ${m.role}`;
+                    msgDiv.textContent = `${m.role === 'user' ? 'You' : 'Bot'}: ${m.message}`;
+                    chatBox.appendChild(msgDiv);
+                });
+            }
+        }
+
+        async function sendMessage() {
+            const userId = document.getElementById("userId").value;
+            const message = document.getElementById("messageInput").value;
+            if (!message) return;
+
+            await fetch('/api/send-message', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ user_id: userId, message })
+            });
+
+            document.getElementById("messageInput").value = '';
+            loadChat();
+        }
+
+        // Load on first load
+        loadChat();
+    </script>
+</body>
+</html>
