@@ -58,5 +58,40 @@
         // Load on first load
         loadChat();
     </script>
+
+    <select id="userSelect" onchange="loadChat()"></select>
+    <div id="chatBox" style="height:300px;overflow:auto;border:1px solid #ccc;margin-top:10px;"></div>
+    
+    <script>
+    async function loadUsers() {
+    	const res = await fetch('/api/chat-users');
+    	const users = await res.json();
+    	const select = document.getElementById('userSelect');
+    	select.innerHTML = '';
+    	users.forEach(u => {
+    		const opt = document.createElement('option');
+    		opt.value = u;
+    		opt.textContent = u;
+    		select.appendChild(opt);
+    	});
+    	loadChat();
+    }
+    
+    async function loadChat() {
+    	const userId = document.getElementById('userSelect').value;
+    	const res = await fetch(`/api/chat-history/${userId}`);
+    	const data = await res.json();
+    	const box = document.getElementById('chatBox');
+    	box.innerHTML = '';
+    	data.forEach(m => {
+    		const msg = document.createElement('div');
+    		msg.textContent = `[${m.role}] ${m.message}`;
+    		box.appendChild(msg);
+    	});
+    }
+    
+    window.onload = loadUsers;
+    </script>
+
 </body>
 </html>
