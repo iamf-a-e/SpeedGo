@@ -133,6 +133,38 @@ def send_message():
     save_chat_message(user_id, "user", message)
     return jsonify({"status": "ok", "logged": True})
 
+
+@app.route('/api/send-message', methods=['POST'])
+def send_message():
+    data = request.get_json()
+    user_id = data.get('user_id')  # This should be the full phone number in international format
+    message = data.get('message')
+
+    if not user_id or not message:
+        return jsonify({'error': 'Missing user_id or message'}), 400
+
+    url = f'https://graph.facebook.com/v19.0/{PHONE_ID}/messages'
+    headers = {
+        'Authorization': f'Bearer {WA_TOKEN}',
+        'Content-Type': 'application/json'
+    }
+    payload = {
+        'messaging_product': 'whatsapp',
+        'to': user_id,
+        'type': 'text',
+        'text': {
+            'body': message
+        }
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+
+    if response.ok:
+        return jsonify({'status': 'Message sent'}), 200
+    else:
+        return jsonify({'error': response.text}), response.status_code
+
+
 # === Verify webhook (GET) ===
 @app.route("/webhook", methods=["GET"])
 def verify():
