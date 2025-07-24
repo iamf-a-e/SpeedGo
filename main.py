@@ -121,7 +121,7 @@ def chat_users():
         return jsonify({"error": str(e)}), 500
 
 @app.route("/api/send-message", methods=["POST"])
-def sendmessage():
+def send_message():
     data = request.json
     user_id = data.get("user_id")
     message = data.get("message")
@@ -134,7 +134,7 @@ def sendmessage():
     return jsonify({"status": "ok", "logged": True})
 
 
-@app.route('/api/send-message', methods=['POST'])
+@app.route('/api/send_message', methods=['POST'])
 def send_message():
     data = request.get_json()
     user_id = data.get('user_id')  # This should be the full phone number in international format
