@@ -8,8 +8,8 @@ app = Flask(__name__)
 
 # Use your actual Upstash values here (DO NOT expose in frontend)
 redis = Redis(
-    url='https://organic-cub-37552.upstash.io',
-    token='AZKwAAIjcDEyOGMzNzE4NmVjYmE0YzA5OGRlNTFlNWM0YWExZjE3ZXAxMA'
+    url=os.environ["UPSTASH_REDIS_REST_URL"],
+    token=os.environ["UPSTASH_REDIS_REST_TOKEN"]
 )
 
 def save_chat_message(user_id, role, message):
