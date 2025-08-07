@@ -20389,62 +20389,67 @@ def human_agent_shona(prompt, user_data, phone_id):
     customer_number = user_data['sender']
 
     # 1. Notify customer in Shona
-    send("Tiri kukubatanidza nemumiriri wevanhu...", customer_number, phone_id)
+    send("Kubatanidza iwe nemumiriri wevanhu...", customer_number, phone_id)
 
     # 2. Retrieve recent conversation history (last 10 messages)
     history = get_conversation_history(customer_number, limit=10)
     history_text = "\n".join([
         f"{msg['timestamp']} - {msg['direction'].capitalize()}: {msg['text']}"
         for msg in history
-    ]) or "Hapana hurukuro yapfuura."
+    ]) or "Hapana nhaurirano yapfuura."
 
-    # 3. Send message to human agent (kept in English for agent efficiency)
+    # 3. Randomly select an agent number
+    selected_agent = random.choice(AGENT_NUMBER)
+
+    # 4. Send message to randomly selected human agent (English remains for agents)
     agent_message = (
-        f"🚨 New Customer Assistance Request 🚨\n\n"
-        f"📱 Customer: {customer_number}\n"
-        f"🕘 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
-        f"📩 Initial Message: \"{prompt}\"\n\n"
-        f"Recent Conversation:\n{history_text}\n\n"
-        f"Reply with:\n1 - Talk to customer\n2 - Back to bot"
+        f"🚨 Chikumbiro Chitsva Chebatsiro 🚨\n\n"
+        f"📱 Mutengi: {customer_number}\n"
+        f"🕘 Nguva: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
+        f"📩 Mharidzo Yekutanga: \"{prompt}\"\n\n"
+        f"Nhaurirano Dzichangobva Kuitika:\n{history_text}\n\n"
+        f"Pindura ne:\n1 - Taura nemutengi\n2 - Dzokera kubhoti"
     )
-    send(agent_message, AGENT_NUMBER, phone_id)
+    send(agent_message, selected_agent, phone_id)
 
-    # 4. Update agent state
-    update_user_state(AGENT_NUMBER, {
-        'step': 'agent_reply',
+    # 5. Update agent state with Shona suffix
+    update_user_state(selected_agent, {
+        'step': 'agent_reply_shona',
         'customer_number': customer_number,
         'phone_id': phone_id
     })
 
-    # 5. Update customer state
+    # 6. Update customer state with Shona suffix
     update_user_state(customer_number, {
         'step': 'waiting_for_human_agent_response_shona',
         'user': user_data.get('user', {}),
         'sender': customer_number,
-        'waiting_since': time.time()
+        'waiting_since': time.time(),
+        'assigned_agent': selected_agent  # Store which agent was assigned
     })
 
-    # 6. Schedule fallback if no response in 90 seconds (in Shona)
+    # 7. Schedule fallback if no response in 90 seconds (in Shona)
     def send_fallback_shona():
         user_data = get_user_state(customer_number)
         if user_data and user_data.get('step') == 'waiting_for_human_agent_response_shona':
-            send("Kana musati mawana mhinduro, tinokurudzira kufona panhamba dzedu +263779562095 kana +263779469216", customer_number, phone_id)
-            send("Unoda here:\n1. Kudzokera kumenu huru\n2. Kuramba wakamirira", customer_number, phone_id)
+            send("Kana usati waitaurirwa, unogona kutifonera pa +263779562095 kana +263779469216", customer_number, phone_id)
+            send("Unoda here:\n1. Kudzokera kumenyu huru\n2. Ramba wakamirira", customer_number, phone_id)
             update_user_state(customer_number, {
                 'step': 'human_agent_followup_shona',
                 'user': user_data.get('user', {}),
                 'sender': customer_number
             })
 
-    fallback_timer = threading.Timer(90, send_fallback)
+    fallback_timer = threading.Timer(90, send_fallback_shona)
     fallback_timer.start()
 
     return {
         'step': 'waiting_for_human_agent_response_shona',
         'user': user_data.get('user', {}),
-        'sender': customer_number
+        'sender': customer_number,
+        'assigned_agent': selected_agent
     }
-
+    
 
 def handle_enter_location_for_quote_shona(prompt, user_data, phone_id):
     user = User.from_dict(user_data['user'])
@@ -31395,61 +31400,66 @@ def handle_mgodi_class_pricing_ndebele(prompt, user_data, phone_id):
 def human_agent_ndebele(prompt, user_data, phone_id):
     customer_number = user_data['sender']
 
-    # 1. Notify customer in isiNdebele
-    send("Sikuxhumanisa nomuntu ongumsebenzi...", customer_number, phone_id)
+    # 1. Notify customer in Ndebele
+    send("Ukukuxhumanisa nomuntu ongumsebenzi...", customer_number, phone_id)
 
     # 2. Retrieve recent conversation history (last 10 messages)
     history = get_conversation_history(customer_number, limit=10)
     history_text = "\n".join([
         f"{msg['timestamp']} - {msg['direction'].capitalize()}: {msg['text']}"
         for msg in history
-    ]) or "Ayikho ingxoxo yangaphambilini."
+    ]) or "Ayikho ingxoxo yangaphambili."
 
-    # 3. Send message to human agent (kept in English for agent efficiency)
+    # 3. Randomly select an agent number
+    selected_agent = random.choice(AGENT_NUMBER)
+
+    # 4. Send message to randomly selected human agent (English remains for agents)
     agent_message = (
-        f"🚨 New Customer Assistance Request 🚨\n\n"
-        f"📱 Customer: {customer_number}\n"
-        f"🕘 Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
-        f"📩 Initial Message: \"{prompt}\"\n\n"
-        f"Recent Conversation:\n{history_text}\n\n"
-        f"Reply with:\n1 - Talk to customer\n2 - Back to bot"
+        f"🚨 Isicelo Esisha Sosizo 🚨\n\n"
+        f"📱 Umthengi: {customer_number}\n"
+        f"🕘 Isikhathi: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
+        f"📩 Umlayezo Wokuqala: \"{prompt}\"\n\n"
+        f"Ingxoxo Yakamuva:\n{history_text}\n\n"
+        f"Phendula nge:\n1 - Khuluma nomthengi\n2 - Buyela kubhoti"
     )
-    send(agent_message, AGENT_NUMBER, phone_id)
+    send(agent_message, selected_agent, phone_id)
 
-    # 4. Update agent state
-    update_user_state(AGENT_NUMBER, {
-        'step': 'agent_reply',
+    # 5. Update agent state with Ndebele suffix
+    update_user_state(selected_agent, {
+        'step': 'agent_reply_ndebele',
         'customer_number': customer_number,
         'phone_id': phone_id
     })
 
-    # 5. Update customer state
+    # 6. Update customer state with Ndebele suffix
     update_user_state(customer_number, {
         'step': 'waiting_for_human_agent_response_ndebele',
         'user': user_data.get('user', {}),
         'sender': customer_number,
-        'waiting_since': time.time()
+        'waiting_since': time.time(),
+        'assigned_agent': selected_agent  # Store which agent was assigned
     })
 
-    # 6. Schedule fallback if no response in 90 seconds (in isiNdebele)
+    # 7. Schedule fallback if no response in 90 seconds (in Ndebele)
     def send_fallback_ndebele():
         user_data = get_user_state(customer_number)
         if user_data and user_data.get('step') == 'waiting_for_human_agent_response_ndebele':
-            send("Uma ungakatholi impendulo, ungafona kulezinombolo zethu +263779562095 noma +263779469216", customer_number, phone_id)
-            send("Uyafuna:\n1. Ukubuyela kumenyu enkulu\n2. Ukuqhubeka nokulinda", customer_number, phone_id)
+            send("Uma ungakathintwa, ungasingela ku-+263779562095 noma ku-+263779469216", customer_number, phone_id)
+            send("Ungathanda:\n1. Ukubuyela kumenyu enkulu\n2. Qhubeka ulinde", customer_number, phone_id)
             update_user_state(customer_number, {
                 'step': 'human_agent_followup_ndebele',
                 'user': user_data.get('user', {}),
                 'sender': customer_number
             })
 
-    fallback_timer = threading.Timer(90, send_fallback)
+    fallback_timer = threading.Timer(90, send_fallback_ndebele)
     fallback_timer.start()
 
     return {
         'step': 'waiting_for_human_agent_response_ndebele',
         'user': user_data.get('user', {}),
-        'sender': customer_number
+        'sender': customer_number,
+        'assigned_agent': selected_agent
     }
     
 def handle_agent_reply_ndebele(message_text, customer_number, phone_id, agent_state):
