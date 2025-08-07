@@ -22,8 +22,8 @@ phone_id = os.environ.get("PHONE_ID")
 gen_api = os.environ.get("GEN_API")
 owner_phone = os.environ.get("OWNER_PHONE")
 GOOGLE_MAPS_API_KEY = "AlzaSyCXDMMhg7FzP|ElKmrlkv1TqtD3HgHwW50"
-AGENT_NUMBER = "+263779562095"
-AGENT_NUMBER = "+263776954188"
+AGENT_NUMBER = ["+263779562095", "+263785019494"]
+
 
 # Upstash Redis setup
 redis = Redis(
@@ -9667,6 +9667,7 @@ def handle_main_menu(prompt, user_data, phone_id):
         send("Please select a valid option (1-6).", user_data['sender'], phone_id)
         return {'step': 'main_menu', 'user': user.to_dict(), 'sender': user_data['sender']}
 
+
 def human_agent(prompt, user_data, phone_id):
     customer_number = user_data['sender']
 
@@ -9680,7 +9681,10 @@ def human_agent(prompt, user_data, phone_id):
         for msg in history
     ]) or "No previous conversation."
 
-    # 3. Send message to human agent
+    # 3. Randomly select an agent number
+    selected_agent = random.choice(AGENT_NUMBER)
+
+    # 4. Send message to randomly selected human agent
     agent_message = (
         f"🚨 New Customer Assistance Request 🚨\n\n"
         f"📱 Customer: {customer_number}\n"
@@ -9689,24 +9693,25 @@ def human_agent(prompt, user_data, phone_id):
         f"Recent Conversation:\n{history_text}\n\n"
         f"Reply with:\n1 - Talk to customer\n2 - Back to bot"
     )
-    send(agent_message, AGENT_NUMBER, phone_id)
+    send(agent_message, selected_agent, phone_id)
 
-    # 4. Update agent state
-    update_user_state(AGENT_NUMBER, {
+    # 5. Update agent state
+    update_user_state(selected_agent, {
         'step': 'agent_reply',
         'customer_number': customer_number,
         'phone_id': phone_id
     })
 
-    # 5. Update customer state
+    # 6. Update customer state
     update_user_state(customer_number, {
         'step': 'waiting_for_human_agent_response',
         'user': user_data.get('user', {}),
         'sender': customer_number,
-        'waiting_since': time.time()
+        'waiting_since': time.time(),
+        'assigned_agent': selected_agent  # Store which agent was assigned
     })
 
-    # 6. Schedule fallback if no response in 90 seconds
+    # 7. Schedule fallback if no response in 90 seconds
     def send_fallback():
         user_data = get_user_state(customer_number)
         if user_data and user_data.get('step') == 'waiting_for_human_agent_response':
@@ -9724,9 +9729,10 @@ def human_agent(prompt, user_data, phone_id):
     return {
         'step': 'waiting_for_human_agent_response',
         'user': user_data.get('user', {}),
-        'sender': customer_number
+        'sender': customer_number,
+        'assigned_agent': selected_agent
     }
-
+    
 
 def get_conversation_history(sender, limit=10):
     """
@@ -34049,21 +34055,24 @@ def webhook():
                 message_text = message.get("text", {}).get("body", "").strip()
             
                 # Handle agent messages
-                if from_number.endswith(AGENT_NUMBER.replace("+", "")):
-                    agent_state = get_user_state(AGENT_NUMBER)
-                    customer_number = agent_state.get("customer_number")
-            
-                    if not customer_number:
-                        send("⚠️ No customer to reply to. Wait for a new request.", AGENT_NUMBER, phone_id)
-                        return "OK"
-
-                        # Always re-store the agent state with the customer_number to ensure it's not lost
-                        agent_state["customer_number"] = customer_number
-                        agent_state["sender"] = AGENT_NUMBER
+                if any(from_number.endswith(agent_num.replace("+", "")) for agent_num in AGENT_NUMBERS):
+                    # Find which agent this message is coming from
+                    selected_agent = next(agent_num for agent_num in AGENT_NUMBERS 
+                                        if from_number.endswith(agent_num.replace("+", "")))
                     
-                        # Persist again defensively
-                        update_user_state(AGENT_NUMBER, agent_state)
-            
+                    agent_state = get_user_state(selected_agent)
+                    customer_number = agent_state.get("customer_number")
+                
+                    if not customer_number:
+                        send("⚠️ No customer to reply to. Wait for a new request.", selected_agent, phone_id)
+                        return "OK"
+                
+                    # Always re-store the agent state with the customer_number to ensure it's not lost
+                    agent_state["customer_number"] = customer_number
+                    agent_state["sender"] = selected_agent
+                    
+                    # Persist again defensively
+                    update_user_state(selected_agent, agent_state)
                     if agent_state.get("step") == "agent_reply":
                         handle_agent_reply(message_text, customer_number, phone_id, agent_state)
                         
